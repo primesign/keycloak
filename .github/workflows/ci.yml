@@ -79,6 +79,7 @@ jobs:
         run: mvn clean install -B -f testsuite/integration-arquillian/tests/base/pom.xml -Dkeycloak.client.provider=map | misc/log/trimmer.sh; exit ${PIPESTATUS[0]}
   deploy:
     name: Push Docker image to GitHub Packages
+    needs: test
     runs-on: ubuntu-latest
     steps:
       - name: Check out keycloak/keycloak-containers
