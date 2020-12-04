@@ -39,7 +39,7 @@ jobs:
           name: keycloak-server
           path: /tmp/keycloak-server.tar.gz
       - name: Push to GitHub Packages
-        uses: docker/build-push-action@v1
+        uses: docker/build-push-action@v2
         with:
           file: server/Dockerfile
           build-args: 'KEYCLOAK_DIST=file:///tmp/keycloak-server.tar.gz'
