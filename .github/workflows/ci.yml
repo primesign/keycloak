@@ -94,8 +94,7 @@ jobs:
         uses: docker/build-push-action@v1
         with:
           file: server/Dockerfile
-          build-args:
-            KEYCLOAK_DIST: 'file:///tmp/keycloak-server.tar.gz'
+          build-args: 'KEYCLOAK_DIST=file:///tmp/keycloak-server.tar.gz'
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
           registry: docker.pkg.github.com
