@@ -38,11 +38,8 @@ jobs:
         with:
           name: keycloak-server
           path: /tmp
-      - name: Display structure of downloaded files
-        run: ls -R
-        working-directory: /tmp
       - name: Strip version from artifact
-        run: mv /tmp/keycloak-server-*.tar.gz /tmp/keycloak-server.tar.gz
+        run: mv /tmp/keycloak-*.tar.gz /tmp/keycloak.tar.gz
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
       - name: Login to GitHub Packages
@@ -58,7 +55,7 @@ jobs:
           file: server/Dockerfile
           pull: true
           push: true
-          build-args: 'KEYCLOAK_DIST=file:///tmp/keycloak-server.tar.gz'
+          build-args: 'KEYCLOAK_DIST=file:///tmp/keycloak.tar.gz'
           cache-from: type=registry,ref=primesign/keycloak:latest
           cache-to: type=inline
           tags: primesign/keycloak:latest
