@@ -37,7 +37,10 @@ jobs:
         uses: actions/download-artifact@v1
         with:
           name: keycloak-server
-          path: /tmp/keycloak-server.tar.gz
+          path: /tmp
+      - name: Strip version from artifact
+        shell: bash
+        run: mv /tmp/keycloak-server-*.tar.gz /tmp/keycloak-server.tar.gz
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
       - name: Login to GitHub Packages
