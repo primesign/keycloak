@@ -27,11 +27,6 @@ jobs:
         with:
           name: maven-repo
           path: maven-repo.tgz
-      - name: Persist Keycloak Server
-        uses: actions/upload-artifact@v1
-        with:
-          name: keycloak-server
-          path: distribution/server-dist/target/keycloak-*.tar.gz
 
   test:
     name: Test
@@ -77,27 +72,3 @@ jobs:
         run: mvn clean install -B -DskipTests -f testsuite/pom.xml
       - name: Run base tests - undertow
         run: mvn clean install -B -f testsuite/integration-arquillian/tests/base/pom.xml -Dkeycloak.client.provider=map | misc/log/trimmer.sh; exit ${PIPESTATUS[0]}
-  deploy:
-    name: Push Docker image to GitHub Packages
-    needs: test
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out keycloak/keycloak-containers
-        uses: actions/checkout@v2
-        with:
-          repository: keycloak/keycloak-containers
-      - name: Download Keycloak Server
-        uses: actions/download-artifact@v1
-        with:
-          name: keycloak-server
-          path: /tmp/keycloak-server.tar.gz
-      - name: Push to GitHub Packages
-        uses: docker/build-push-action@v1
-        with:
-          file: server/Dockerfile
-          build-args: 'KEYCLOAK_DIST=file:///tmp/keycloak-server.tar.gz'
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-          registry: docker.pkg.github.com
-          repository: primesign/keycloak/keycloak
-          tag_with_ref: true
