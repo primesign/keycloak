@@ -20,7 +20,7 @@ jobs:
       - name: Build
         run: mvn -Pdistribution -pl distribution/server-dist -am -Dmaven.test.skip install
       - name: Persist Keycloak Server
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v2
         with:
           name: keycloak-server
           path: distribution/server-dist/target/keycloak-*.tar.gz
