@@ -26,7 +26,7 @@ jobs:
       - name: Push to GitHub Packages
         uses: docker/build-push-action@v2
         with:
-          context: .
+          context: server
           file: server/Dockerfile
           push: true
           build-args: GIT_REPO=primesign/keycloak
