@@ -11,10 +11,6 @@ jobs:
     name: Build and push docker image
     runs-on: ubuntu-latest
     steps:
-      - name: Check out keycloak/keycloak-containers
-        uses: actions/checkout@v2
-        with:
-          repository: keycloak/keycloak-containers
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
       - name: Login to GitHub Packages
@@ -26,10 +22,9 @@ jobs:
       - name: Push to GitHub Packages
         uses: docker/build-push-action@v2
         with:
-          context: server
-          file: server/Dockerfile
+          context: https://github.com/keycloak/keycloak-containers.git#master:server
           push: true
           build-args: GIT_REPO=primesign/keycloak
           cache-from: type=registry,ref=primesign/keycloak:latest
           cache-to: type=inline
-          tags: primesign/keycloak:latest
+          tags: docker.pkg.github.com/primesign/keycloak/keycloak:latest
