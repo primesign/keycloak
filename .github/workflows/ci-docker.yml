@@ -1,4 +1,4 @@
-name: Keycloak Primesign CI
+name: Keycloak Docker CI
 
 on: [push, pull_request]
 
