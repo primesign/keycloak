@@ -1,6 +1,10 @@
 name: Keycloak Docker CI
 
 on: [push, pull_request]
+#on:
+#  push:
+#    branches:
+#      - master
 
 jobs:
   build:
@@ -22,9 +26,8 @@ jobs:
       - name: Push to GitHub Packages
         uses: docker/build-push-action@v2
         with:
-          context: server
+          context: .
           file: server/Dockerfile
-          pull: true
           push: true
           build-args: GIT_REPO=primesign/keycloak
           cache-from: type=registry,ref=primesign/keycloak:latest
