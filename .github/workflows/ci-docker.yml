@@ -1,4 +1,4 @@
-name: Keycloak Docker CI
+name: Docker CI
 
 on:
   push:
@@ -28,10 +28,8 @@ jobs:
         with:
           context: server
           file: server/Dockerfile
-          load: true
+          push: true
           build-args: GIT_REPO=primesign/keycloak
           cache-from: type=registry,ref=primesign/keycloak:latest
           cache-to: type=inline
           tags: ghcr.io/primesign/keycloak:latest
-      - name: Push docker image
-        run: docker push ghcr.io/primesign/keycloak
