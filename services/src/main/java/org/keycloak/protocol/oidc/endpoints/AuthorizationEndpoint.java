@@ -17,6 +17,13 @@
 
 package org.keycloak.protocol.oidc.endpoints;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ValueNode;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import org.jboss.logging.Logger;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.OAuthErrorException;
@@ -41,6 +48,8 @@ import org.keycloak.protocol.oidc.utils.OIDCRedirectUriBuilder;
 import org.keycloak.protocol.oidc.utils.OIDCResponseMode;
 import org.keycloak.protocol.oidc.utils.OIDCResponseType;
 import org.keycloak.protocol.oidc.utils.RedirectUtils;
+import org.keycloak.representations.ClaimsParameter;
+import org.keycloak.representations.IDToken;
 import org.keycloak.services.ErrorPageException;
 import org.keycloak.services.ServicesLogger;
 import org.keycloak.services.Urls;
@@ -52,6 +61,7 @@ import org.keycloak.services.messages.Messages;
 import org.keycloak.services.resources.LoginActionsService;
 import org.keycloak.services.util.CacheControlUtil;
 import org.keycloak.sessions.AuthenticationSessionModel;
+import org.keycloak.util.JsonSerialization;
 import org.keycloak.util.TokenUtil;
 
 import javax.ws.rs.Consumes;
@@ -466,6 +476,14 @@ public class AuthorizationEndpoint extends AuthorizationEndpointBase {
         if (request.getCodeChallenge() != null) authenticationSession.setClientNote(OIDCLoginProtocol.CODE_CHALLENGE_PARAM, request.getCodeChallenge());
         if (request.getCodeChallengeMethod() != null) authenticationSession.setClientNote(OIDCLoginProtocol.CODE_CHALLENGE_METHOD_PARAM, request.getCodeChallengeMethod());
 
+        if (request.getClaims() != null) {
+            List<String> requiredAcrValues = parseClaimsForRequiredAcrValues(request.getClaims());
+            if (!requiredAcrValues.isEmpty()) {
+                // TODO: transform acr values to loa
+                authenticationSession.setAuthNote(Constants.LEVEL_OF_AUTHENTICATION, "2");
+            }
+        }
+
         if (request.getAdditionalReqParams() != null) {
             for (String paramName : request.getAdditionalReqParams().keySet()) {
                 authenticationSession.setClientNote(LOGIN_SESSION_NOTE_ADDITIONAL_REQ_PARAMS_PREFIX + paramName, request.getAdditionalReqParams().get(paramName));
@@ -473,6 +491,26 @@ public class AuthorizationEndpoint extends AuthorizationEndpointBase {
         }
     }
 
+    private List<String> parseClaimsForRequiredAcrValues(String claimsParam) {
+        if (claimsParam != null) {
+            try {
+                ClaimsParameter claims = JsonSerialization.readValue(claimsParam, ClaimsParameter.class);
+                Map<String, ClaimsParameter.ClaimRequest> idTokenClaims = claims.getIdToken();
+                if (idTokenClaims != null) {
+                    ClaimsParameter.ClaimRequest acrClaim = idTokenClaims.get(IDToken.ACR);
+                    if (acrClaim != null && acrClaim.isEssential()) {
+                        List<ValueNode> values = acrClaim.getValues();
+                        if (values != null) {
+                            return values.stream().map(JsonNode::asText).collect(Collectors.toList());
+                        }
+                    }
+                }
+            } catch (IOException e) {
+                logger.debugv("Invalid claims parameter:  {0}", claimsParam);
+            }
+        }
+        return Collections.emptyList();
+    }
 
     private Response buildAuthorizationCodeAuthorizationResponse() {
         this.event.event(EventType.LOGIN);
