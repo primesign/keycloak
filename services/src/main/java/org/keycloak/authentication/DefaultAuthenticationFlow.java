@@ -17,25 +17,23 @@
 
 package org.keycloak.authentication;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.stream.Collectors;
+import javax.ws.rs.HttpMethod;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
 import org.jboss.logging.Logger;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.authentication.authenticators.conditional.ConditionalAuthenticator;
 import org.keycloak.models.AuthenticationExecutionModel;
 import org.keycloak.models.AuthenticationFlowModel;
 import org.keycloak.models.Constants;
-import org.keycloak.models.RealmModel;
 import org.keycloak.models.UserModel;
 import org.keycloak.services.ServicesLogger;
 import org.keycloak.sessions.AuthenticationSessionModel;
-
-import javax.ws.rs.HttpMethod;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -240,7 +238,7 @@ public class DefaultAuthenticationFlow implements AuthenticationFlow {
         fillListsOfExecutions(executions, requiredList, alternativeList);
 
         //handle required elements : all required elements need to be executed
-        boolean requiredElementsSuccessful = true;
+        boolean flowSuccessful = true;
         Iterator<AuthenticationExecutionModel> requiredIListIterator = requiredList.listIterator();
         while (requiredIListIterator.hasNext()) {
             AuthenticationExecutionModel required = requiredIListIterator.next();
@@ -250,13 +248,13 @@ public class DefaultAuthenticationFlow implements AuthenticationFlow {
                 continue;
             }
             Response response = processSingleFlowExecutionModel(required, true);
-            requiredElementsSuccessful &= processor.isSuccessful(required) || isSetupRequired(required);
+            flowSuccessful = processor.isSuccessful(required) || isSetupRequired(required);
             if (response != null) {
                 return response;
             }
             // Some required elements were not successful and did not return response.
             // We can break as we know that the whole subflow would be considered unsuccessful as well
-            if (!requiredElementsSuccessful) {
+            if (!flowSuccessful) {
                 break;
             }
         }
@@ -264,12 +262,13 @@ public class DefaultAuthenticationFlow implements AuthenticationFlow {
         //Evaluate alternative elements only if there are no required elements. This may also occur if there was only condition elements
         if (requiredList.isEmpty()) {
             //check if an alternative is already successful, in case we are returning in the flow after an action
-            if (alternativeList.stream().anyMatch(alternative -> processor.isSuccessful(alternative) || isSetupRequired(alternative))) {
+            if (isLevelOfAuthenticationSatisfied() && alternativeList.stream().anyMatch(alternative -> processor.isSuccessful(alternative) || isSetupRequired(alternative))) {
                 successful = true;
                 return null;
             }
 
-            //handle alternative elements: the first alternative element to be satisfied is enough
+            //handle alternative elements: the first alternative element to be satisfied is enough if LOA is also satisfied
+            flowSuccessful = false;
             for (AuthenticationExecutionModel alternative : alternativeList) {
                 try {
                     Response response = processSingleFlowExecutionModel(alternative, true);
@@ -277,8 +276,12 @@ public class DefaultAuthenticationFlow implements AuthenticationFlow {
                         return response;
                     }
                     if (processor.isSuccessful(alternative) || isSetupRequired(alternative)) {
-                        successful = true;
-                        return null;
+                        if (isLevelOfAuthenticationSatisfied()) {
+                            successful = true;
+                            return null;
+                        } else {
+                            flowSuccessful = true;
+                        }
                     }
                 } catch (AuthenticationFlowException afe) {
                     //consuming the error is not good here from an administrative point of view, but the user, since he has alternatives, should be able to go to another alternative and continue
@@ -286,8 +289,9 @@ public class DefaultAuthenticationFlow implements AuthenticationFlow {
                     processor.getAuthenticationSession().setExecutionStatus(alternative.getId(), AuthenticationSessionModel.ExecutionStatus.ATTEMPTED);
                 }
             }
-        } else {
-            successful = requiredElementsSuccessful;
+        }
+        if (!flow.isTopLevel() | isLevelOfAuthenticationSatisfied()) {
+            successful = flowSuccessful;
         }
         return null;
     }
@@ -475,6 +479,24 @@ public class DefaultAuthenticationFlow implements AuthenticationFlow {
         return AuthenticationSelectionResolver.createAuthenticationSelectionList(processor, model);
     }
 
+    /**
+     * Checks if the Level of Authentication (LOA) has been reached. The LOA can be set by
+     * a specific authenticator. The check wil always return true if the request does not require
+     * a specific LOA.
+     *
+     * @return true if the requested LOA has been reached
+     */
+    private boolean isLevelOfAuthenticationSatisfied() {
+        String requiredLoa = processor.getAuthenticationSession().getAuthNote(Constants.LEVEL_OF_AUTHENTICATION);
+        if (requiredLoa == null) return true;
+        String reachedLoa = processor.getAuthenticationSession().getUserSessionNotes().get(Constants.LEVEL_OF_AUTHENTICATION);
+        if (reachedLoa == null) return false;
+        try {
+            return Integer.parseInt(reachedLoa) < Integer.parseInt(requiredLoa);
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
 
     public Response processResult(AuthenticationProcessor.Result result, boolean isAction) {
         AuthenticationExecutionModel execution = result.getExecution();
