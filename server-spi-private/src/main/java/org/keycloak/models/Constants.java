@@ -107,4 +107,6 @@ public final class Constants {
     public static final Pattern CFG_DELIMITER_PATTERN = Pattern.compile("\\s*" + CFG_DELIMITER + "\\s*");
 
     public static final String OFFLINE_ACCESS_SCOPE_CONSENT_TEXT = "${offlineAccessScopeConsentText}";
+
+    public static final String LEVEL_OF_AUTHENTICATION = "level-of-authentication";
 }
