@@ -3,6 +3,7 @@ package org.keycloak.authentication.authenticators.browser;
 import org.jboss.logging.Logger;
 import org.keycloak.authentication.AuthenticationFlowContext;
 import org.keycloak.authentication.Authenticator;
+import org.keycloak.authentication.AuthenticatorUtil;
 import org.keycloak.models.Constants;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.RealmModel;
@@ -19,7 +20,7 @@ public class SetLoaAuthenticator implements Authenticator {
   @Override
   public void authenticate(AuthenticationFlowContext context) {
     AuthenticationSessionModel authSession = context.getAuthenticationSession();
-    int currentLoa = Math.max(getConfiguredLoa(context), getCurrentLoa(authSession));
+    int currentLoa = Math.max(getConfiguredLoa(context), AuthenticatorUtil.getCurrentLevelOfAuthentication(authSession));
     authSession.setAuthNote(Constants.LEVEL_OF_AUTHENTICATION, String.valueOf(currentLoa));
     if (isStoreInUserSession(context)) {
       authSession.setUserSessionNote(Constants.LEVEL_OF_AUTHENTICATION, String.valueOf(currentLoa));
@@ -65,21 +66,6 @@ public class SetLoaAuthenticator implements Authenticator {
       return Integer.parseInt(context.getAuthenticatorConfig().getConfig().get(LEVEL));
     } catch (NullPointerException | NumberFormatException e) {
       logger.errorv("Invalid configuration: {0}", LEVEL);
-      return -1;
-    }
-  }
-
-  private int getCurrentLoa(AuthenticationSessionModel authSession) {
-    String currentLoa = authSession.getAuthNote(Constants.LEVEL_OF_AUTHENTICATION);
-    if (currentLoa == null) {
-      currentLoa = authSession.getUserSessionNotes().get(Constants.LEVEL_OF_AUTHENTICATION);
-      if (currentLoa == null) {
-        return -1;
-      }
-    }
-    try {
-      return Integer.parseInt(currentLoa);
-    } catch (NumberFormatException e) {
       return -1;
     }
   }
