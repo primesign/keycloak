@@ -1,5 +1,6 @@
 package org.keycloak.authentication.authenticators.browser;
 
+import org.jboss.logging.Logger;
 import org.keycloak.authentication.AuthenticationFlowContext;
 import org.keycloak.authentication.Authenticator;
 import org.keycloak.models.Constants;
@@ -7,12 +8,10 @@ import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.RealmModel;
 import org.keycloak.models.UserModel;
 import org.keycloak.sessions.AuthenticationSessionModel;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class LoaAuthenticator implements Authenticator {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(LoaAuthenticator.class);
+  private static final Logger logger = Logger.getLogger(LoaAuthenticator.class);
 
   static final String LEVEL = "loa-level";
   static final String STORE_IN_USER_SESSION = "loa-store-in-user-session";
@@ -56,7 +55,7 @@ public class LoaAuthenticator implements Authenticator {
     try {
       return Boolean.parseBoolean(context.getAuthenticatorConfig().getConfig().get(STORE_IN_USER_SESSION));
     } catch (NullPointerException | NumberFormatException e) {
-      LOGGER.error("Invalid configuration: {}", STORE_IN_USER_SESSION);
+      logger.errorv("Invalid configuration: {0}", STORE_IN_USER_SESSION);
       return false;
     }
   }
@@ -65,7 +64,7 @@ public class LoaAuthenticator implements Authenticator {
     try {
       return Integer.parseInt(context.getAuthenticatorConfig().getConfig().get(LEVEL));
     } catch (NullPointerException | NumberFormatException e) {
-      LOGGER.error("Invalid configuration: {}", LEVEL);
+      logger.errorv("Invalid configuration: {0}", LEVEL);
       return -1;
     }
   }
