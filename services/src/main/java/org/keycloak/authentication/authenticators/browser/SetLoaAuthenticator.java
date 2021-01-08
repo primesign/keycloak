@@ -9,9 +9,9 @@ import org.keycloak.models.RealmModel;
 import org.keycloak.models.UserModel;
 import org.keycloak.sessions.AuthenticationSessionModel;
 
-public class LoaAuthenticator implements Authenticator {
+public class SetLoaAuthenticator implements Authenticator {
 
-  private static final Logger logger = Logger.getLogger(LoaAuthenticator.class);
+  private static final Logger logger = Logger.getLogger(SetLoaAuthenticator.class);
 
   static final String LEVEL = "loa-level";
   static final String STORE_IN_USER_SESSION = "loa-store-in-user-session";

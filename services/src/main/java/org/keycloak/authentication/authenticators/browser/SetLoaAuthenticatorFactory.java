@@ -10,24 +10,25 @@ import org.keycloak.models.KeycloakSessionFactory;
 import org.keycloak.provider.ProviderConfigProperty;
 import org.keycloak.provider.ProviderConfigurationBuilder;
 
-public class LoaAuthenticatorFactory implements AuthenticatorFactory {
+public class SetLoaAuthenticatorFactory implements AuthenticatorFactory {
 
-  private static final String PROVIDER_ID = "auth-level-of-authentication";
-  private static final LoaAuthenticator SINGLETON = new LoaAuthenticator();
-  private static final AuthenticationExecutionModel.Requirement[] REQUIREMENT_CHOICES
-      = new AuthenticationExecutionModel.Requirement[]{AuthenticationExecutionModel.Requirement.REQUIRED};
+  private static final String PROVIDER_ID = "set-level-of-authentication";
+  private static final SetLoaAuthenticator SINGLETON = new SetLoaAuthenticator();
+  private static final AuthenticationExecutionModel.Requirement[] REQUIREMENT_CHOICES = new AuthenticationExecutionModel.Requirement[]{
+      AuthenticationExecutionModel.Requirement.REQUIRED, AuthenticationExecutionModel.Requirement.DISABLED
+  };
 
   private static final List<ProviderConfigProperty> CONFIG = ProviderConfigurationBuilder.create()
       .property()
-      .name(LoaAuthenticator.LEVEL)
-      .label(LoaAuthenticator.LEVEL)
-      .helpText(LoaAuthenticator.LEVEL + ".tooltip")
+      .name(SetLoaAuthenticator.LEVEL)
+      .label(SetLoaAuthenticator.LEVEL)
+      .helpText(SetLoaAuthenticator.LEVEL + ".tooltip")
       .type(ProviderConfigProperty.STRING_TYPE)
       .add()
       .property()
-      .name(LoaAuthenticator.STORE_IN_USER_SESSION)
-      .label(LoaAuthenticator.STORE_IN_USER_SESSION)
-      .helpText(LoaAuthenticator.STORE_IN_USER_SESSION + ".tooltip")
+      .name(SetLoaAuthenticator.STORE_IN_USER_SESSION)
+      .label(SetLoaAuthenticator.STORE_IN_USER_SESSION)
+      .helpText(SetLoaAuthenticator.STORE_IN_USER_SESSION + ".tooltip")
       .type(ProviderConfigProperty.BOOLEAN_TYPE)
       .defaultValue("true")
       .add()
@@ -35,7 +36,7 @@ public class LoaAuthenticatorFactory implements AuthenticatorFactory {
 
   @Override
   public String getDisplayType() {
-    return "Level of Authentication";
+    return "Set Level of Authentication";
   }
 
   @Override
@@ -60,7 +61,7 @@ public class LoaAuthenticatorFactory implements AuthenticatorFactory {
 
   @Override
   public String getHelpText() {
-    return "Sets the Level of Authentication (LOA) and checks if the requested LOA has been satisfied.";
+    return "Set the Level of Authentication (LOA).";
   }
 
   @Override
