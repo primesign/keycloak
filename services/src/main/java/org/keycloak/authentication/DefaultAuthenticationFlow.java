@@ -25,7 +25,9 @@ import org.keycloak.models.AuthenticationFlowModel;
 import org.keycloak.models.Constants;
 import org.keycloak.models.UserModel;
 import org.keycloak.models.UserSessionModel;
+import org.keycloak.services.ErrorPage;
 import org.keycloak.services.ServicesLogger;
+import org.keycloak.services.messages.Messages;
 import org.keycloak.sessions.AuthenticationSessionModel;
 
 import javax.ws.rs.HttpMethod;
@@ -170,6 +172,8 @@ public class DefaultAuthenticationFlow implements AuthenticationFlow {
     /**
      * Called after "actionExecutionModel" execution is finished (Either successful or attempted). Find the next appropriate authentication
      * flow where the authentication should continue and continue with authentication process.
+     * The method recursively continues with the parent flow
+     * until finally the top flow is processed.
      *
      * @param actionExecutionModel
      * @return Response if some more forms should be displayed during authentication. Null otherwise.
@@ -186,8 +190,8 @@ public class DefaultAuthenticationFlow implements AuthenticationFlow {
         } else {
             Response response = processSingleFlowExecutionModel(parentFlowExecution, false);
             if (response == null) {
-                processor.getAuthenticationSession().removeAuthNote(AuthenticationProcessor.CURRENT_AUTHENTICATION_EXECUTION);
-                return processFlow();
+                // the parent flow is now the last action that has been executed, continue with that until the top flow is reached
+                return continueAuthenticationAfterSuccessfulAction(parentFlowExecution);
             } else {
                 return response;
             }
@@ -247,7 +251,8 @@ public class DefaultAuthenticationFlow implements AuthenticationFlow {
         while (requiredIListIterator.hasNext()) {
             AuthenticationExecutionModel required = requiredIListIterator.next();
             //Conditional flows must be considered disabled (non-existent) if their condition evaluates to false.
-            if (required.isConditional() && isConditionalSubflowDisabled(required)) {
+            //If the flow has been processed before it will not be removed to consider its execution status.
+            if (required.isConditional() && !isProcessed(required) && isConditionalSubflowDisabled(required, true)) {
                 requiredIListIterator.remove();
                 continue;
             }
@@ -294,8 +299,11 @@ public class DefaultAuthenticationFlow implements AuthenticationFlow {
                 }
             }
         }
-        if (!flow.isTopLevel() | isLevelOfAuthenticationSatisfied()) {
+        if (!flow.isTopLevel() || isLevelOfAuthenticationSatisfied()) {
             successful = flowSuccessful;
+        } else {
+            throw new AuthenticationFlowException(AuthenticationFlowError.INVALID_CREDENTIALS,
+                ErrorPage.error(processor.getSession(), processor.getAuthenticationSession(), Response.Status.BAD_REQUEST, Messages.INSUFFICIENT_LEVEL_OF_AUTHENTICATION));
         }
         return null;
     }
@@ -329,9 +337,10 @@ public class DefaultAuthenticationFlow implements AuthenticationFlow {
     /**
      * Checks if the conditional subflow passed in parameter is disabled.
      * @param model
+     * @param storeResult whether to store the result of the conditional evaluations
      * @return
      */
-    boolean isConditionalSubflowDisabled(AuthenticationExecutionModel model) {
+    boolean isConditionalSubflowDisabled(AuthenticationExecutionModel model, boolean storeResult) {
         if (model == null || !model.isAuthenticatorFlow() || !model.isConditional()) {
             return false;
         };
@@ -342,7 +351,7 @@ public class DefaultAuthenticationFlow implements AuthenticationFlow {
                 .filter(s -> s.isEnabled())
                 .collect(Collectors.toList());
         return conditionalAuthenticatorList.isEmpty() || conditionalAuthenticatorList.stream()
-                .anyMatch(m -> conditionalNotMatched(m, modelList));
+                .anyMatch(m -> conditionalNotMatched(m, modelList, storeResult));
     }
 
     private boolean isConditionalAuthenticator(AuthenticationExecutionModel model) {
@@ -357,7 +366,7 @@ public class DefaultAuthenticationFlow implements AuthenticationFlow {
         return factory;
     }
 
-    private boolean conditionalNotMatched(AuthenticationExecutionModel model, List<AuthenticationExecutionModel> executionList) {
+    private boolean conditionalNotMatched(AuthenticationExecutionModel model, List<AuthenticationExecutionModel> executionList, boolean storeResult) {
         AuthenticatorFactory factory = getAuthenticatorFactory(model);
         ConditionalAuthenticator authenticator = (ConditionalAuthenticator) createAuthenticator(factory);
         AuthenticationProcessor.Result context = processor.createAuthenticatorContext(model, authenticator, executionList);
@@ -371,8 +380,11 @@ public class DefaultAuthenticationFlow implements AuthenticationFlow {
             matchCondition = false;
         } else {
             matchCondition = authenticator.matchCondition(context);
-            processor.getAuthenticationSession().setExecutionStatus(model.getId(),
-                    matchCondition ? AuthenticationSessionModel.ExecutionStatus.EVALUATED_TRUE : AuthenticationSessionModel.ExecutionStatus.EVALUATED_FALSE);
+            if (storeResult) {
+                processor.getAuthenticationSession().setExecutionStatus(model.getId(), matchCondition
+                    ? AuthenticationSessionModel.ExecutionStatus.EVALUATED_TRUE
+                    : AuthenticationSessionModel.ExecutionStatus.EVALUATED_FALSE);
+            }
         }
 
         return !matchCondition;
@@ -485,40 +497,8 @@ public class DefaultAuthenticationFlow implements AuthenticationFlow {
         return AuthenticationSelectionResolver.createAuthenticationSelectionList(processor, model);
     }
 
-    /**
-     * Checks if the Level of Authentication (LOA) has been reached. The LOA can be set by
-     * a specific authenticator. The check wil always return true if the request does not require
-     * a specific LOA.
-     *
-     * @return true if the requested LOA has been reached
-     */
     private boolean isLevelOfAuthenticationSatisfied() {
-        UserSessionModel userSession = processor.getUserSession();
-        String userSessionLoa;
-        if (userSession == null) {
-            userSessionLoa = null;
-        } else {
-            // Increase the LOA in the user session if a higher LOA has been set in the user session notes.
-            userSessionLoa = userSession.getNote(Constants.LEVEL_OF_AUTHENTICATION);
-            String userSessionNotesLoa = processor.getAuthenticationSession().getUserSessionNotes().get(Constants.LEVEL_OF_AUTHENTICATION);
-            if (userSessionNotesLoa != null && (userSessionLoa == null || Integer.parseInt(userSessionNotesLoa) > Integer.parseInt(userSessionLoa))) {
-                userSession.setNote(Constants.LEVEL_OF_AUTHENTICATION, userSessionNotesLoa);
-            }
-        }
-        // Get the requested LOA. If no LOA has been requested, the check is always satisfied.
-        String requestedLoa = processor.getAuthenticationSession().getClientNote(Constants.LEVEL_OF_AUTHENTICATION);
-        if (requestedLoa == null) return true;
-        // Check if the requested LOA has been reached.
-        String authSessionLoa = processor.getAuthenticationSession().getAuthNote(Constants.LEVEL_OF_AUTHENTICATION);
-        int currentLoa = authSessionLoa == null
-            ? userSessionLoa == null ? -1 : Integer.parseInt(userSessionLoa)
-            : userSessionLoa == null ? Integer.parseInt(authSessionLoa)
-            : Math.max(Integer.parseInt(authSessionLoa), Integer.parseInt(userSessionLoa));
-        try {
-            return currentLoa >= Integer.parseInt(requestedLoa);
-        } catch (NumberFormatException e) {
-            return false;
-        }
+        return AuthenticatorUtil.isLevelOfAuthenticationSatisfied(processor.getAuthenticationSession());
     }
 
     public Response processResult(AuthenticationProcessor.Result result, boolean isAction) {
