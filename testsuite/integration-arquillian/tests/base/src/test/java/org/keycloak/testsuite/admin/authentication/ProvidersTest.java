@@ -215,6 +215,9 @@ public class ProvidersTest extends AbstractAuthenticationTest {
         addProviderInfo(result, "set-attribute", "Set user attribute",
                 "Set a user attribute");
 
+        addProviderInfo(result, "set-level-of-authentication", "Set Level of Authentication",
+            "Set the Level of Authentication (LOA).");
+
         return result;
     }
 
