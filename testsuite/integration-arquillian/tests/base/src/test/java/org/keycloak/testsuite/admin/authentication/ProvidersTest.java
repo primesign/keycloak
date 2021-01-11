@@ -222,6 +222,9 @@ public class ProvidersTest extends AbstractAuthenticationTest {
         addProviderInfo(result, "allow-access-authenticator", "Allow access",
                 "Authenticator will always successfully authenticate. Useful for example in the conditional flows to be used after satisfying the previous conditions");
 
+        addProviderInfo(result, "set-level-of-authentication", "Set Level of Authentication",
+            "Set the Level of Authentication (LOA).");
+
         return result;
     }
 
