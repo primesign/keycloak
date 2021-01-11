@@ -480,7 +480,7 @@ public class AuthorizationEndpoint extends AuthorizationEndpointBase {
             List<String> requiredAcrValues = parseClaimsForRequiredAcrValues(request.getClaims());
             if (!requiredAcrValues.isEmpty()) {
                 // TODO: transform acr values to loa
-                authenticationSession.setAuthNote(Constants.LEVEL_OF_AUTHENTICATION, "2");
+                authenticationSession.setClientNote(Constants.LEVEL_OF_AUTHENTICATION, "1");
             }
         }
 

@@ -32,6 +32,7 @@ import org.keycloak.models.AuthenticationExecutionModel;
 import org.keycloak.models.AuthenticationFlowModel;
 import org.keycloak.models.Constants;
 import org.keycloak.models.UserModel;
+import org.keycloak.models.UserSessionModel;
 import org.keycloak.services.ServicesLogger;
 import org.keycloak.sessions.AuthenticationSessionModel;
 
@@ -487,12 +488,29 @@ public class DefaultAuthenticationFlow implements AuthenticationFlow {
      * @return true if the requested LOA has been reached
      */
     private boolean isLevelOfAuthenticationSatisfied() {
-        String requiredLoa = processor.getAuthenticationSession().getAuthNote(Constants.LEVEL_OF_AUTHENTICATION);
-        if (requiredLoa == null) return true;
-        String reachedLoa = processor.getAuthenticationSession().getUserSessionNotes().get(Constants.LEVEL_OF_AUTHENTICATION);
-        if (reachedLoa == null) return false;
+        UserSessionModel userSession = processor.getUserSession();
+        String userSessionLoa;
+        if (userSession == null) {
+            userSessionLoa = null;
+        } else {
+            // Increase the LOA in the user session if a higher LOA has been set in the user session notes.
+            userSessionLoa = userSession.getNote(Constants.LEVEL_OF_AUTHENTICATION);
+            String userSessionNotesLoa = processor.getAuthenticationSession().getUserSessionNotes().get(Constants.LEVEL_OF_AUTHENTICATION);
+            if (userSessionNotesLoa != null && (userSessionLoa == null || Integer.parseInt(userSessionNotesLoa) > Integer.parseInt(userSessionLoa))) {
+                userSession.setNote(Constants.LEVEL_OF_AUTHENTICATION, userSessionNotesLoa);
+            }
+        }
+        // Get the requested LOA. If no LOA has been requested, the check is always satisfied.
+        String requestedLoa = processor.getAuthenticationSession().getClientNote(Constants.LEVEL_OF_AUTHENTICATION);
+        if (requestedLoa == null) return true;
+        // Check if the requested LOA has been reached.
+        String authSessionLoa = processor.getAuthenticationSession().getAuthNote(Constants.LEVEL_OF_AUTHENTICATION);
+        int currentLoa = authSessionLoa == null
+            ? userSessionLoa == null ? -1 : Integer.parseInt(userSessionLoa)
+            : userSessionLoa == null ? Integer.parseInt(authSessionLoa)
+            : Math.max(Integer.parseInt(authSessionLoa), Integer.parseInt(userSessionLoa));
         try {
-            return Integer.parseInt(reachedLoa) < Integer.parseInt(requiredLoa);
+            return currentLoa >= Integer.parseInt(requestedLoa);
         } catch (NumberFormatException e) {
             return false;
         }
