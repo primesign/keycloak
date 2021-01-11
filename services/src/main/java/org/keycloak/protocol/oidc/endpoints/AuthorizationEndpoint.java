@@ -478,10 +478,14 @@ public class AuthorizationEndpoint extends AuthorizationEndpointBase {
 
         if (request.getClaims() != null) {
             List<String> requiredAcrValues = parseClaimsForRequiredAcrValues(request.getClaims());
-            if (!requiredAcrValues.isEmpty()) {
-                // TODO: transform acr values to loa
-                authenticationSession.setClientNote(Constants.LEVEL_OF_AUTHENTICATION, "1");
-            }
+            // TODO: transform acr values to loa
+            requiredAcrValues.stream().mapToInt(acr -> {
+                try {
+                    return Integer.parseInt(acr);
+                } catch (NumberFormatException e) {
+                    throw new ErrorPageException(session, authenticationSession, Response.Status.BAD_REQUEST, Messages.INVALID_PARAMETER, OIDCLoginProtocol.CLAIMS_PARAM);
+                }
+            }).min().ifPresent(loa -> authenticationSession.setClientNote(Constants.LEVEL_OF_AUTHENTICATION, String.valueOf(loa)));
         }
 
         if (request.getAdditionalReqParams() != null) {
@@ -506,7 +510,7 @@ public class AuthorizationEndpoint extends AuthorizationEndpointBase {
                     }
                 }
             } catch (IOException e) {
-                logger.debugv("Invalid claims parameter:  {0}", claimsParam);
+                throw new ErrorPageException(session, authenticationSession, Response.Status.BAD_REQUEST, Messages.INVALID_PARAMETER, OIDCLoginProtocol.CLAIMS_PARAM);
             }
         }
         return Collections.emptyList();
