@@ -18,7 +18,9 @@
 package org.keycloak.authentication;
 
 import org.keycloak.models.AuthenticationExecutionModel;
+import org.keycloak.models.Constants;
 import org.keycloak.models.RealmModel;
+import org.keycloak.sessions.AuthenticationSessionModel;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -74,5 +76,24 @@ public class AuthenticatorUtil {
             return false;
         }
         return execution.isRequired();
+    }
+
+    public static int getRequestedLevelOfAuthentication(AuthenticationSessionModel authSession) {
+        String requestedLoa = authSession.getClientNote(Constants.LEVEL_OF_AUTHENTICATION);
+        return requestedLoa == null ? -1 : Integer.parseInt(requestedLoa);
+    }
+
+    public static int getCurrentLevelOfAuthentication(AuthenticationSessionModel authSession) {
+        String authSessionLoa = authSession.getAuthNote(Constants.LEVEL_OF_AUTHENTICATION);
+        String userSessionLoa = authSession.getUserSessionNotes().get(Constants.LEVEL_OF_AUTHENTICATION);
+        return authSessionLoa == null
+            ? userSessionLoa == null ? -1 : Integer.parseInt(userSessionLoa)
+            : userSessionLoa == null ? Integer.parseInt(authSessionLoa)
+            : Math.max(Integer.parseInt(authSessionLoa), Integer.parseInt(userSessionLoa));
+    }
+
+    public static boolean isLevelOfAuthenticationSatisfied(AuthenticationSessionModel authSession) {
+        return AuthenticatorUtil.getRequestedLevelOfAuthentication(authSession)
+            <= AuthenticatorUtil.getCurrentLevelOfAuthentication(authSession);
     }
 }
