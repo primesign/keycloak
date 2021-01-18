@@ -44,6 +44,7 @@ import org.keycloak.protocol.oidc.OIDCLoginProtocol;
 import org.keycloak.protocol.oidc.TokenManager;
 import org.keycloak.protocol.oidc.endpoints.request.AuthorizationEndpointRequest;
 import org.keycloak.protocol.oidc.endpoints.request.AuthorizationEndpointRequestParserProcessor;
+import org.keycloak.protocol.oidc.utils.AcrUtils;
 import org.keycloak.protocol.oidc.utils.OIDCRedirectUriBuilder;
 import org.keycloak.protocol.oidc.utils.OIDCResponseMode;
 import org.keycloak.protocol.oidc.utils.OIDCResponseType;
@@ -476,16 +477,20 @@ public class AuthorizationEndpoint extends AuthorizationEndpointBase {
         if (request.getCodeChallenge() != null) authenticationSession.setClientNote(OIDCLoginProtocol.CODE_CHALLENGE_PARAM, request.getCodeChallenge());
         if (request.getCodeChallengeMethod() != null) authenticationSession.setClientNote(OIDCLoginProtocol.CODE_CHALLENGE_METHOD_PARAM, request.getCodeChallengeMethod());
 
-        if (request.getClaims() != null) {
-            List<String> requiredAcrValues = parseClaimsForRequiredAcrValues(request.getClaims());
-            // TODO: transform acr values to loa
-            requiredAcrValues.stream().mapToInt(acr -> {
-                try {
-                    return Integer.parseInt(acr);
-                } catch (NumberFormatException e) {
-                    throw new ErrorPageException(session, authenticationSession, Response.Status.BAD_REQUEST, Messages.INVALID_PARAMETER, OIDCLoginProtocol.CLAIMS_PARAM);
-                }
-            }).min().ifPresent(loa -> authenticationSession.setClientNote(Constants.LEVEL_OF_AUTHENTICATION, String.valueOf(loa)));
+        Map<String, Integer> acrLoaMap = AcrUtils.getAcrLoaMap(authenticationSession.getClient());
+        try {
+            authenticationSession.setClientNote(Constants.REQUIRED_LEVEL_OF_AUTHENTICATION,
+                String.valueOf(AcrUtils.getRequiredAcrValues(request.getClaims()).stream().mapToInt(acr -> {
+                    try {
+                        Integer loa = acrLoaMap.get(acr);
+                        return loa == null ? Integer.parseInt(acr) : loa;
+                    } catch (NumberFormatException e) {
+                        // this is an unknown acr, we assume it is very high
+                        return Integer.MAX_VALUE;
+                    }
+                }).min().orElse(-1)));
+        } catch (IllegalArgumentException e) {
+            throw new ErrorPageException(session, authenticationSession, Response.Status.BAD_REQUEST, Messages.INVALID_PARAMETER, OIDCLoginProtocol.CLAIMS_PARAM);
         }
 
         if (request.getAdditionalReqParams() != null) {
@@ -493,27 +498,6 @@ public class AuthorizationEndpoint extends AuthorizationEndpointBase {
                 authenticationSession.setClientNote(LOGIN_SESSION_NOTE_ADDITIONAL_REQ_PARAMS_PREFIX + paramName, request.getAdditionalReqParams().get(paramName));
             }
         }
-    }
-
-    private List<String> parseClaimsForRequiredAcrValues(String claimsParam) {
-        if (claimsParam != null) {
-            try {
-                ClaimsParameter claims = JsonSerialization.readValue(claimsParam, ClaimsParameter.class);
-                Map<String, ClaimsParameter.ClaimRequest> idTokenClaims = claims.getIdToken();
-                if (idTokenClaims != null) {
-                    ClaimsParameter.ClaimRequest acrClaim = idTokenClaims.get(IDToken.ACR);
-                    if (acrClaim != null && acrClaim.isEssential()) {
-                        List<ValueNode> values = acrClaim.getValues();
-                        if (values != null) {
-                            return values.stream().map(JsonNode::asText).collect(Collectors.toList());
-                        }
-                    }
-                }
-            } catch (IOException e) {
-                throw new ErrorPageException(session, authenticationSession, Response.Status.BAD_REQUEST, Messages.INVALID_PARAMETER, OIDCLoginProtocol.CLAIMS_PARAM);
-            }
-        }
-        return Collections.emptyList();
     }
 
     private Response buildAuthorizationCodeAuthorizationResponse() {

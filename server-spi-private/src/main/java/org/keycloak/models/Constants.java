@@ -107,4 +107,6 @@ public final class Constants {
     public static final String OFFLINE_ACCESS_SCOPE_CONSENT_TEXT = "${offlineAccessScopeConsentText}";
 
     public static final String LEVEL_OF_AUTHENTICATION = "level-of-authentication";
+    public static final String REQUIRED_LEVEL_OF_AUTHENTICATION = "required-level-of-authentication";
+    public static final String ACR_LOA_MAP = "acr.loa.map";
 }

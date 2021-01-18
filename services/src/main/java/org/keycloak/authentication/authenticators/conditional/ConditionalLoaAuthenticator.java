@@ -18,7 +18,7 @@ public class ConditionalLoaAuthenticator implements ConditionalAuthenticator {
   public boolean matchCondition(AuthenticationFlowContext context) {
     AuthenticationSessionModel authSession = context.getAuthenticationSession();
     int currentLoa = AuthenticatorUtil.getCurrentLevelOfAuthentication(authSession);
-    int requestedLoa = AuthenticatorUtil.getRequestedLevelOfAuthentication(authSession);
+    int requestedLoa = AuthenticatorUtil.getRequiredLevelOfAuthentication(authSession);
     return currentLoa < 0 && requestedLoa < 0
         || currentLoa < getConfiguredLoa(context) && currentLoa < requestedLoa;
   }
