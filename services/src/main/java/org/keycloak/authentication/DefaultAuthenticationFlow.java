@@ -296,7 +296,7 @@ public class DefaultAuthenticationFlow implements AuthenticationFlow {
                 }
             }
         }
-        if (!flow.isTopLevel() || isLevelOfAuthenticationSatisfied()) {
+        if (!flow.isTopLevel() || isLevelOfAuthenticationSatisfied() || !isLevelOfAuthenticationForced()) {
             successful = flowSuccessful;
         } else {
             throw new AuthenticationFlowException(AuthenticationFlowError.INVALID_CREDENTIALS,
@@ -494,6 +494,10 @@ public class DefaultAuthenticationFlow implements AuthenticationFlow {
 
     private boolean isLevelOfAuthenticationSatisfied() {
         return AuthenticatorUtil.isLevelOfAuthenticationSatisfied(processor.getAuthenticationSession());
+    }
+
+    private boolean isLevelOfAuthenticationForced() {
+        return AuthenticatorUtil.isLevelOfAuthenticationForced(processor.getAuthenticationSession());
     }
 
     public Response processResult(AuthenticationProcessor.Result result, boolean isAction) {

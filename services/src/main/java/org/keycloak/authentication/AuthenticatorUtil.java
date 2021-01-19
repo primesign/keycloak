@@ -78,8 +78,12 @@ public class AuthenticatorUtil {
         return execution.isRequired();
     }
 
-    public static int getRequiredLevelOfAuthentication(AuthenticationSessionModel authSession) {
-        String requiredLoa = authSession.getClientNote(Constants.REQUIRED_LEVEL_OF_AUTHENTICATION);
+    public static boolean isLevelOfAuthenticationForced(AuthenticationSessionModel authSession) {
+        return Boolean.parseBoolean(authSession.getClientNote(Constants.FORCE_LEVEL_OF_AUTHENTICATION));
+    }
+
+    public static int getRequestedLevelOfAuthentication(AuthenticationSessionModel authSession) {
+        String requiredLoa = authSession.getClientNote(Constants.REQUESTED_LEVEL_OF_AUTHENTICATION);
         return requiredLoa == null ? -1 : Integer.parseInt(requiredLoa);
     }
 
@@ -93,7 +97,7 @@ public class AuthenticatorUtil {
     }
 
     public static boolean isLevelOfAuthenticationSatisfied(AuthenticationSessionModel authSession) {
-        return AuthenticatorUtil.getRequiredLevelOfAuthentication(authSession)
+        return AuthenticatorUtil.getRequestedLevelOfAuthentication(authSession)
             <= AuthenticatorUtil.getCurrentLevelOfAuthentication(authSession);
     }
 }

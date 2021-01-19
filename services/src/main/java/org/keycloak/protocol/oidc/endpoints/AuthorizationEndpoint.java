@@ -479,8 +479,14 @@ public class AuthorizationEndpoint extends AuthorizationEndpointBase {
 
         Map<String, Integer> acrLoaMap = AcrUtils.getAcrLoaMap(authenticationSession.getClient());
         try {
-            authenticationSession.setClientNote(Constants.REQUIRED_LEVEL_OF_AUTHENTICATION,
-                String.valueOf(AcrUtils.getRequiredAcrValues(request.getClaims()).stream().mapToInt(acr -> {
+            List<String> acrValues = AcrUtils.getRequiredAcrValues(request.getClaims());
+            if (acrValues.isEmpty()) {
+                acrValues = AcrUtils.getAcrValues(request.getClaims(), request.getAcr());
+            } else {
+                authenticationSession.setClientNote(Constants.FORCE_LEVEL_OF_AUTHENTICATION, "true");
+            }
+            authenticationSession.setClientNote(Constants.REQUESTED_LEVEL_OF_AUTHENTICATION,
+                String.valueOf(acrValues.stream().mapToInt(acr -> {
                     try {
                         Integer loa = acrLoaMap.get(acr);
                         return loa == null ? Integer.parseInt(acr) : loa;
