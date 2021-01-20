@@ -17,13 +17,13 @@
 
 package org.keycloak.authentication;
 
+import java.util.LinkedList;
+import java.util.List;
+import org.keycloak.models.AuthenticatedClientSessionModel;
 import org.keycloak.models.AuthenticationExecutionModel;
 import org.keycloak.models.Constants;
 import org.keycloak.models.RealmModel;
 import org.keycloak.sessions.AuthenticationSessionModel;
-
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -78,9 +78,13 @@ public class AuthenticatorUtil {
         return execution.isRequired();
     }
 
+    public static boolean isLevelOfAuthenticationForced(AuthenticationSessionModel authSession) {
+        return Boolean.parseBoolean(authSession.getClientNote(Constants.FORCE_LEVEL_OF_AUTHENTICATION));
+    }
+
     public static int getRequestedLevelOfAuthentication(AuthenticationSessionModel authSession) {
-        String requestedLoa = authSession.getClientNote(Constants.LEVEL_OF_AUTHENTICATION);
-        return requestedLoa == null ? -1 : Integer.parseInt(requestedLoa);
+        String requiredLoa = authSession.getClientNote(Constants.REQUESTED_LEVEL_OF_AUTHENTICATION);
+        return requiredLoa == null ? -1 : Integer.parseInt(requiredLoa);
     }
 
     public static int getCurrentLevelOfAuthentication(AuthenticationSessionModel authSession) {
