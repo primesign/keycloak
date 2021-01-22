@@ -22,9 +22,13 @@ import org.keycloak.sessions.AuthenticationSessionModel;
 
 public class AuthenticatorUtil {
 
+    public static boolean isLevelOfAuthenticationForced(AuthenticationSessionModel authSession) {
+        return Boolean.parseBoolean(authSession.getClientNote(Constants.FORCE_LEVEL_OF_AUTHENTICATION));
+    }
+
     public static int getRequestedLevelOfAuthentication(AuthenticationSessionModel authSession) {
-        String requestedLoa = authSession.getClientNote(Constants.LEVEL_OF_AUTHENTICATION);
-        return requestedLoa == null ? -1 : Integer.parseInt(requestedLoa);
+        String requiredLoa = authSession.getClientNote(Constants.REQUESTED_LEVEL_OF_AUTHENTICATION);
+        return requiredLoa == null ? -1 : Integer.parseInt(requiredLoa);
     }
 
     public static int getCurrentLevelOfAuthentication(AuthenticationSessionModel authSession) {
