@@ -97,7 +97,8 @@ public class AuthenticatorUtil {
     }
 
     public static boolean isLevelOfAuthenticationSatisfied(AuthenticationSessionModel authSession) {
-        return AuthenticatorUtil.getRequestedLevelOfAuthentication(authSession)
-            <= AuthenticatorUtil.getCurrentLevelOfAuthentication(authSession);
+        int requestedLoa = AuthenticatorUtil.getRequestedLevelOfAuthentication(authSession);
+        int currentLoa = AuthenticatorUtil.getCurrentLevelOfAuthentication(authSession);
+        return currentLoa >= requestedLoa && requestedLoa >= 0;
     }
 }
