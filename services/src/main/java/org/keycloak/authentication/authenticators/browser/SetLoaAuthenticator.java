@@ -25,8 +25,9 @@ public class SetLoaAuthenticator implements Authenticator {
     if (isStoreInUserSession(context)) {
       authSession.setUserSessionNote(Constants.LEVEL_OF_AUTHENTICATION, String.valueOf(currentLoa));
     }
-    // Checking if the requested LOA has been satisfied is not necessary,
-    // because that is done in the flow processing anyway.
+    // This authenticator only sets the LOA.
+    // It does not check if the requested LOA has been satisfied.
+    // That is done by the flow processor.
     context.success();
   }
 
@@ -36,7 +37,7 @@ public class SetLoaAuthenticator implements Authenticator {
 
   @Override
   public boolean requiresUser() {
-    return true;
+    return false;
   }
 
   @Override
