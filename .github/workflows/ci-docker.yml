@@ -10,6 +10,8 @@ jobs:
     name: Build and push docker image
     runs-on: ubuntu-latest
     steps:
+      - name: Set up environment
+        run: curl https://raw.githubusercontent.com/primesign/keycloak/master/release-details >> $GITHUB_ENV
       - name: Check out keycloak/keycloak-containers
         uses: actions/checkout@v2
         with:
@@ -31,4 +33,7 @@ jobs:
           build-args: GIT_REPO=primesign/keycloak
           cache-from: type=registry,ref=primesign/keycloak:latest
           cache-to: type=inline
-          tags: ghcr.io/primesign/keycloak:latest
+          tags: |
+            ghcr.io/primesign/keycloak:latest
+            ghcr.io/primesign/keycloak:${{env.VERSION}}
+            ghcr.io/primesign/keycloak:${{env.SHORT_VERSION}}

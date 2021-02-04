@@ -36,7 +36,7 @@ public class SetLoaAuthenticator implements Authenticator {
 
   @Override
   public boolean requiresUser() {
-    return true;
+    return false;
   }
 
   @Override
