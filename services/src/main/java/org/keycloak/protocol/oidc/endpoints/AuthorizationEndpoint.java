@@ -17,13 +17,6 @@
 
 package org.keycloak.protocol.oidc.endpoints;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ValueNode;
-import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 import org.jboss.logging.Logger;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.OAuthErrorException;
@@ -49,8 +42,6 @@ import org.keycloak.protocol.oidc.utils.OIDCRedirectUriBuilder;
 import org.keycloak.protocol.oidc.utils.OIDCResponseMode;
 import org.keycloak.protocol.oidc.utils.OIDCResponseType;
 import org.keycloak.protocol.oidc.utils.RedirectUtils;
-import org.keycloak.representations.ClaimsParameter;
-import org.keycloak.representations.IDToken;
 import org.keycloak.services.ErrorPageException;
 import org.keycloak.services.ServicesLogger;
 import org.keycloak.services.Urls;
@@ -62,7 +53,6 @@ import org.keycloak.services.messages.Messages;
 import org.keycloak.services.resources.LoginActionsService;
 import org.keycloak.services.util.CacheControlUtil;
 import org.keycloak.sessions.AuthenticationSessionModel;
-import org.keycloak.util.JsonSerialization;
 import org.keycloak.util.TokenUtil;
 
 import javax.ws.rs.Consumes;
@@ -74,6 +64,8 @@ import javax.ws.rs.core.Response;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author <a href="mailto:sthorger@redhat.com">Stian Thorgersen</a>
@@ -478,26 +470,24 @@ public class AuthorizationEndpoint extends AuthorizationEndpointBase {
         if (request.getCodeChallengeMethod() != null) authenticationSession.setClientNote(OIDCLoginProtocol.CODE_CHALLENGE_METHOD_PARAM, request.getCodeChallengeMethod());
 
         Map<String, Integer> acrLoaMap = AcrUtils.getAcrLoaMap(authenticationSession.getClient());
-        try {
-            List<String> acrValues = AcrUtils.getRequiredAcrValues(request.getClaims());
-            if (acrValues.isEmpty()) {
-                acrValues = AcrUtils.getAcrValues(request.getClaims(), request.getAcr());
-            } else {
-                authenticationSession.setClientNote(Constants.FORCE_LEVEL_OF_AUTHENTICATION, "true");
-            }
-            authenticationSession.setClientNote(Constants.REQUESTED_LEVEL_OF_AUTHENTICATION,
-                String.valueOf(acrValues.stream().mapToInt(acr -> {
-                    try {
-                        Integer loa = acrLoaMap.get(acr);
-                        return loa == null ? Integer.parseInt(acr) : loa;
-                    } catch (NumberFormatException e) {
-                        // this is an unknown acr, we assume it is very high
-                        return Integer.MAX_VALUE;
-                    }
-                }).min().orElse(-1)));
-        } catch (IllegalArgumentException e) {
-            throw new ErrorPageException(session, authenticationSession, Response.Status.BAD_REQUEST, Messages.INVALID_PARAMETER, OIDCLoginProtocol.CLAIMS_PARAM);
+        List<String> acrValues = AcrUtils.getRequiredAcrValues(request.getClaims());
+
+        if (acrValues.isEmpty()) {
+            acrValues = AcrUtils.getAcrValues(request.getClaims(), request.getAcr());
+        } else {
+            authenticationSession.setClientNote(Constants.FORCE_LEVEL_OF_AUTHENTICATION, "true");
         }
+
+        authenticationSession.setClientNote(Constants.REQUESTED_LEVEL_OF_AUTHENTICATION,
+            String.valueOf(acrValues.stream().mapToInt(acr -> {
+                try {
+                    Integer loa = acrLoaMap.get(acr);
+                    return loa == null ? Integer.parseInt(acr) : loa;
+                } catch (NumberFormatException e) {
+                    // this is an unknown acr, we assume it is very high
+                    return Integer.MAX_VALUE;
+                }
+            }).min().orElse(-1)));
 
         if (request.getAdditionalReqParams() != null) {
             for (String paramName : request.getAdditionalReqParams().keySet()) {
