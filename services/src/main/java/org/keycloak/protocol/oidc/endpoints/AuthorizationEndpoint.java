@@ -478,16 +478,15 @@ public class AuthorizationEndpoint extends AuthorizationEndpointBase {
             authenticationSession.setClientNote(Constants.FORCE_LEVEL_OF_AUTHENTICATION, "true");
         }
 
-        authenticationSession.setClientNote(Constants.REQUESTED_LEVEL_OF_AUTHENTICATION,
-            String.valueOf(acrValues.stream().mapToInt(acr -> {
-                try {
-                    Integer loa = acrLoaMap.get(acr);
-                    return loa == null ? Integer.parseInt(acr) : loa;
-                } catch (NumberFormatException e) {
-                    // this is an unknown acr, we assume it is very high
-                    return Integer.MAX_VALUE;
-                }
-            }).min().orElse(-1)));
+        acrValues.stream().mapToInt(acr -> {
+            try {
+                Integer loa = acrLoaMap.get(acr);
+                return loa == null ? Integer.parseInt(acr) : loa;
+            } catch (NumberFormatException e) {
+                // this is an unknown acr, we assume it is very high
+                return Constants.MAXIMUM_LOA;
+            }
+        }).min().ifPresent(loa -> authenticationSession.setClientNote(Constants.REQUESTED_LEVEL_OF_AUTHENTICATION, String.valueOf(loa)));
 
         if (request.getAdditionalReqParams() != null) {
             for (String paramName : request.getAdditionalReqParams().keySet()) {
@@ -495,6 +494,7 @@ public class AuthorizationEndpoint extends AuthorizationEndpointBase {
             }
         }
     }
+
 
     private Response buildAuthorizationCodeAuthorizationResponse() {
         this.event.event(EventType.LOGIN);

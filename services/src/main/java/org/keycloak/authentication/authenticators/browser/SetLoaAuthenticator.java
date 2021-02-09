@@ -66,7 +66,7 @@ public class SetLoaAuthenticator implements Authenticator {
       return Integer.parseInt(context.getAuthenticatorConfig().getConfig().get(LEVEL));
     } catch (NullPointerException | NumberFormatException e) {
       logger.errorv("Invalid configuration: {0}", LEVEL);
-      return -1;
+      return Constants.INVALID_LOA;
     }
   }
 }
