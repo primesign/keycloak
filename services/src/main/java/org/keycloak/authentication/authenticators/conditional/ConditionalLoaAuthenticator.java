@@ -3,6 +3,7 @@ package org.keycloak.authentication.authenticators.conditional;
 import org.jboss.logging.Logger;
 import org.keycloak.authentication.AuthenticationFlowContext;
 import org.keycloak.authentication.AuthenticatorUtil;
+import org.keycloak.models.Constants;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.RealmModel;
 import org.keycloak.models.UserModel;
@@ -19,8 +20,8 @@ public class ConditionalLoaAuthenticator implements ConditionalAuthenticator {
     AuthenticationSessionModel authSession = context.getAuthenticationSession();
     int currentLoa = AuthenticatorUtil.getCurrentLevelOfAuthentication(authSession);
     int requestedLoa = AuthenticatorUtil.getRequestedLevelOfAuthentication(authSession);
-    return currentLoa < 0 && requestedLoa < 0
-        || currentLoa < getConfiguredLoa(context) && currentLoa < requestedLoa;
+    return (currentLoa < Constants.MINIMUM_LOA && requestedLoa < Constants.MINIMUM_LOA)
+        || (currentLoa < getConfiguredLoa(context) && currentLoa < requestedLoa);
   }
 
   private int getConfiguredLoa(AuthenticationFlowContext context) {
@@ -28,7 +29,7 @@ public class ConditionalLoaAuthenticator implements ConditionalAuthenticator {
       return Integer.parseInt(context.getAuthenticatorConfig().getConfig().get(LEVEL));
     } catch (NullPointerException | NumberFormatException e) {
       logger.errorv("Invalid configuration: {0}", LEVEL);
-      return Integer.MAX_VALUE;
+      return Constants.MAXIMUM_LOA;
     }
   }
 
