@@ -28,16 +28,15 @@ public class AuthenticatorUtil {
 
     public static int getRequestedLevelOfAuthentication(AuthenticationSessionModel authSession) {
         String requiredLoa = authSession.getClientNote(Constants.REQUESTED_LEVEL_OF_AUTHENTICATION);
-        return requiredLoa == null ? -1 : Integer.parseInt(requiredLoa);
+        return requiredLoa == null ? Constants.INVALID_LOA : Integer.parseInt(requiredLoa);
     }
 
     public static int getCurrentLevelOfAuthentication(AuthenticationSessionModel authSession) {
-        String authSessionLoa = authSession.getAuthNote(Constants.LEVEL_OF_AUTHENTICATION);
-        String userSessionLoa = authSession.getUserSessionNotes().get(Constants.LEVEL_OF_AUTHENTICATION);
-        return authSessionLoa == null
-            ? userSessionLoa == null ? -1 : Integer.parseInt(userSessionLoa)
-            : userSessionLoa == null ? Integer.parseInt(authSessionLoa)
-            : Math.max(Integer.parseInt(authSessionLoa), Integer.parseInt(userSessionLoa));
+        String authSessionLoaNote = authSession.getAuthNote(Constants.LEVEL_OF_AUTHENTICATION);
+        String userSessionLoaNote = authSession.getUserSessionNotes().get(Constants.LEVEL_OF_AUTHENTICATION);
+        int authSessionLoa = authSessionLoaNote == null ? Constants.INVALID_LOA : Integer.parseInt(authSessionLoaNote);
+        int userSessionLoa = userSessionLoaNote == null ? Constants.INVALID_LOA : Integer.parseInt(userSessionLoaNote);
+        return Math.max(authSessionLoa, userSessionLoa);
     }
 
     public static boolean isLevelOfAuthenticationSatisfied(AuthenticationSessionModel authSession) {

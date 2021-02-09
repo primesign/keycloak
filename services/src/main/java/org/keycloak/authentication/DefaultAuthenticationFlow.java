@@ -380,9 +380,8 @@ public class DefaultAuthenticationFlow implements AuthenticationFlow {
         } else {
             matchCondition = authenticator.matchCondition(context);
             if (storeResult) {
-                processor.getAuthenticationSession().setExecutionStatus(model.getId(), matchCondition
-                    ? AuthenticationSessionModel.ExecutionStatus.EVALUATED_TRUE
-                    : AuthenticationSessionModel.ExecutionStatus.EVALUATED_FALSE);
+                processor.getAuthenticationSession().setExecutionStatus(model.getId(),
+                        matchCondition ? AuthenticationSessionModel.ExecutionStatus.EVALUATED_TRUE : AuthenticationSessionModel.ExecutionStatus.EVALUATED_FALSE);
             }
         }
 
