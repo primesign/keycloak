@@ -12,7 +12,7 @@ import org.keycloak.provider.ProviderConfigurationBuilder;
 
 public class SetLoaAuthenticatorFactory implements AuthenticatorFactory {
 
-  private static final String PROVIDER_ID = "set-level-of-authentication";
+  public static final String PROVIDER_ID = "set-level-of-authentication";
   private static final SetLoaAuthenticator SINGLETON = new SetLoaAuthenticator();
   private static final AuthenticationExecutionModel.Requirement[] REQUIREMENT_CHOICES = new AuthenticationExecutionModel.Requirement[]{
       AuthenticationExecutionModel.Requirement.REQUIRED, AuthenticationExecutionModel.Requirement.DISABLED
