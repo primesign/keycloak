@@ -2,16 +2,15 @@
 
 The Step up mechanism is based on the design proposal https://github.com/keycloak/keycloak-community/blob/master/design/multi-factor-admin-and-step-up.md#design-proposal-for-keycloak-847.
 
-What has been implemented:
+What has been implemented (for OIDC):
 * Text mapping in the client configuration to do the text to value translation
 * Putting the achieved level of authentication at the 'acr' claim in both the access token and the id token (either as an integer or an textual representation)
 * Condition Execution to execute the flow (Condition 1, Condition 2, ...)
-* Set Loa on Success Execution
-** With the option to store the achieved LoA into the user session or not
+* Set Loa on Success Execution (with the option to store the achieved LoA into the user session or not)
 * Extension to the Default Authentication Flow in order to determine if a certain level of authentication is reached
 
-## Auth Request
-To specify a requested level of authentication (LoA) in the auth request, the claims parameter is used.
+## Auth Request for a specific Level of Authentication
+To specify a requested level of authentication (LoA) the claims parameter is used in the auth request.
 
 Example Request:
 
