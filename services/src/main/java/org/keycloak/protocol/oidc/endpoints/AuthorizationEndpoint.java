@@ -59,6 +59,7 @@ import org.keycloak.services.clientpolicy.ClientPolicyException;
 import org.keycloak.services.clientpolicy.context.AuthorizationRequestContext;
 import org.keycloak.services.messages.Messages;
 import org.keycloak.services.resources.LoginActionsService;
+import org.keycloak.services.resources.admin.permissions.AdminPermissions;
 import org.keycloak.services.util.CacheControlUtil;
 import org.keycloak.sessions.AuthenticationSessionModel;
 import org.keycloak.util.JsonSerialization;
@@ -451,9 +452,12 @@ public class AuthorizationEndpoint extends AuthorizationEndpointBase {
         boolean isOIDCRequest = TokenUtil.isOIDCRequest(request.getScope());
 
         event.detail(Details.REDIRECT_URI, redirectUriParam);
-
+        boolean allowRegexRedirectUri = AdminPermissions
+            .management(session, session.getContext().getRealm())
+            .clients().allowRegexRedirectUri(client);
+        
         // redirect_uri parameter is required per OpenID Connect, but optional per OAuth2
-        redirectUri = RedirectUtils.verifyRedirectUri(session, redirectUriParam, client, isOIDCRequest);
+        redirectUri = RedirectUtils.verifyRedirectUri(session, redirectUriParam, client, isOIDCRequest, allowRegexRedirectUri);
         if (redirectUri == null) {
             event.error(Errors.INVALID_REDIRECT_URI);
             throw new ErrorPageException(session, authenticationSession, Response.Status.BAD_REQUEST, Messages.INVALID_PARAMETER, OIDCLoginProtocol.REDIRECT_URI_PARAM);

@@ -103,6 +103,7 @@ import org.keycloak.services.managers.RealmManager;
 import org.keycloak.services.messages.Messages;
 import org.keycloak.services.resources.RealmsResource;
 import org.keycloak.services.scheduled.ScheduledTaskRunner;
+import org.keycloak.services.resources.admin.permissions.AdminPermissions;
 import org.keycloak.services.util.CacheControlUtil;
 import org.keycloak.sessions.AuthenticationSessionModel;
 import org.keycloak.sessions.CommonClientSessionModel;
