@@ -70,6 +70,7 @@ import org.keycloak.services.managers.UserSessionManager;
 import org.keycloak.services.messages.Messages;
 import org.keycloak.services.resources.AbstractSecuredLocalService;
 import org.keycloak.services.resources.RealmsResource;
+import org.keycloak.services.resources.admin.permissions.AdminPermissions;
 import org.keycloak.services.util.ResolveRelative;
 import org.keycloak.services.validation.Validation;
 import org.keycloak.sessions.AuthenticationSessionModel;
@@ -1044,9 +1045,14 @@ public class AccountFormService extends AbstractSecuredLocalService {
         String referrerUri = session.getContext().getUri().getQueryParameters().getFirst("referrer_uri");
 
         ClientModel referrerClient = realm.getClientByClientId(referrer);
+        
+        boolean allowRegexRedirectUri = AdminPermissions
+            .management(session, session.getContext().getRealm())
+            .clients().allowRegexRedirectUri(client);
+        
         if (referrerClient != null) {
             if (referrerUri != null) {
-                referrerUri = RedirectUtils.verifyRedirectUri(session, referrerUri, referrerClient);
+              referrerUri = RedirectUtils.verifyRedirectUri(session, referrerUri, referrerClient, allowRegexRedirectUri);
             } else {
                 referrerUri = ResolveRelative.resolveRelativeUri(session, referrerClient.getRootUrl(), referrerClient.getBaseUrl());
             }
@@ -1060,8 +1066,7 @@ public class AccountFormService extends AbstractSecuredLocalService {
             }
         } else if (referrerUri != null) {
             if (client != null) {
-                referrerUri = RedirectUtils.verifyRedirectUri(session, referrerUri, client);
-
+                referrerUri = RedirectUtils.verifyRedirectUri(session, referrerUri, client, allowRegexRedirectUri);
                 if (referrerUri != null) {
                     return new String[]{referrer, referrerUri};
                 }
