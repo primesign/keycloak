@@ -72,6 +72,12 @@ public class MapAuthEventQuery implements EventQuery {
     }
 
     @Override
+    public EventQuery sessionId(String sessionId) {
+        mcb = mcb.compare(SearchableFields.SESSION_ID, EQ, sessionId);
+        return this;
+    }
+
+    @Override
     public EventQuery fromDate(Date fromDate) {
         mcb = mcb.compare(SearchableFields.TIMESTAMP, GE, fromDate.getTime());
         return this;

@@ -56,6 +56,13 @@ public interface EventQuery {
     EventQuery user(String userId);
 
     /**
+     * Search events for only one session
+     * @param sessionId id of session
+     * @return this object for method chaining
+     */
+    EventQuery sessionId(String sessionId);
+
+    /**
      * Search events that are newer than {@code fromDate}
      * @param fromDate date
      * @return this object for method chaining
