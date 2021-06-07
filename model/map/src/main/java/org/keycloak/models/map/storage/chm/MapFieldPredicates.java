@@ -207,6 +207,8 @@ public class MapFieldPredicates {
         put(AUTH_EVENTS_PREDICATES, Event.SearchableFields.REALM_ID, MapAuthEventEntity::getRealmId);
         put(AUTH_EVENTS_PREDICATES, Event.SearchableFields.CLIENT_ID, MapAuthEventEntity::getClientId);
         put(AUTH_EVENTS_PREDICATES, Event.SearchableFields.USER_ID, MapAuthEventEntity::getUserId);
+        put(AUTH_EVENTS_PREDICATES, Event.SearchableFields.SESSION_ID,
+            MapAuthEventEntity::getSessionId);
         put(AUTH_EVENTS_PREDICATES, Event.SearchableFields.TIMESTAMP, MapAuthEventEntity::getTimestamp);
         put(AUTH_EVENTS_PREDICATES, Event.SearchableFields.IP_ADDRESS, MapAuthEventEntity::getIpAddress);
         put(AUTH_EVENTS_PREDICATES, Event.SearchableFields.EVENT_TYPE, MapAuthEventEntity::getType);

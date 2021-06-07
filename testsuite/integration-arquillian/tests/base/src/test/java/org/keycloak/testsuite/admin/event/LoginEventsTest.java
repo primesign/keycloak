@@ -21,14 +21,11 @@ import org.jboss.arquillian.graphene.page.Page;
 import org.junit.Before;
 import org.junit.Test;
 import org.keycloak.admin.client.resource.RealmResource;
-import org.keycloak.admin.client.resource.UsersResource;
 import org.keycloak.common.Profile;
-import org.keycloak.events.EventBuilder;
 import org.keycloak.events.EventType;
 import org.keycloak.representations.idm.EventRepresentation;
 import org.keycloak.testsuite.arquillian.annotation.DisableFeature;
 import org.keycloak.testsuite.console.page.events.LoginEvents;
-import org.keycloak.testsuite.util.UserBuilder;
 
 import java.util.Arrays;
 import java.util.List;
@@ -129,10 +126,10 @@ public class LoginEventsTest extends AbstractEventTest {
         badLogin();
         assertEquals(2, events().size());
 
-        List<EventRepresentation> filteredEvents = testRealmResource().getEvents(Arrays.asList("REVOKE_GRANT"), null, null, null, null, null, null, null);
+        List<EventRepresentation> filteredEvents = testRealmResource().getEvents(Arrays.asList("REVOKE_GRANT"), null, null, null, null, null, null, null, null);
         assertEquals(0, filteredEvents.size());
 
-        filteredEvents = testRealmResource().getEvents(Arrays.asList("LOGIN_ERROR"), null, null, null, null, null, null, null);
+        filteredEvents = testRealmResource().getEvents(Arrays.asList("LOGIN_ERROR"), null, null, null, null, null, null, null, null);
         assertEquals(2, filteredEvents.size());
     }
 
@@ -147,9 +144,9 @@ public class LoginEventsTest extends AbstractEventTest {
             testingClient.testing("test").onEvent(event);
         }
 
-        assertEquals(100, realm.getEvents(null, null, null, null, null, null, null, null).size());
-        assertEquals(105, realm.getEvents(null, null, null, null, null, null, 0, 105).size());
-        assertTrue(realm.getEvents(null, null, null, null, null, null, 0, 1000).size() >= 110);
+        assertEquals(100, realm.getEvents(null, null, null, null, null, null, null, null, null).size());
+        assertEquals(105, realm.getEvents(null, null, null, null, null, null, null, 0, 105).size());
+        assertTrue(realm.getEvents(null, null, null, null, null, null, null, 0, 1000).size() >= 110);
     }
 
     @Test
@@ -168,8 +165,9 @@ public class LoginEventsTest extends AbstractEventTest {
 
         testingClient.testing("test").onEvent(firstEvent);
         testingClient.testing("test").onEvent(secondEvent);
-
-        List<EventRepresentation> events = realm.getEvents(null, null, null, null, null, null, null, null);
+  
+      List<EventRepresentation> events = realm.getEvents(null, null, null, null, null, null,
+          null, null, null);
         assertEquals(2, events.size());
         assertEquals(EventType.LOGOUT.toString(), events.get(0).getType());
         assertEquals(EventType.LOGIN.toString(), events.get(1).getType());

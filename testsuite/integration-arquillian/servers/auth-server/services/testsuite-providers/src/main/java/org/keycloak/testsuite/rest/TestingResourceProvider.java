@@ -330,6 +330,7 @@ public class TestingResourceProvider implements RealmResourceProvider {
      * @param types       The types of events to return
      * @param client      App or oauth client name
      * @param user        User id
+     * @param sessionId   Session ID
      * @param dateFrom    From date
      * @param dateTo      To date
      * @param ipAddress   IP address
@@ -342,8 +343,8 @@ public class TestingResourceProvider implements RealmResourceProvider {
     @NoCache
     @Produces(MediaType.APPLICATION_JSON)
     public Stream<EventRepresentation> queryEvents(@QueryParam("realmId") String realmId, @QueryParam("type") List<String> types, @QueryParam("client") String client,
-                                                   @QueryParam("user") String user, @QueryParam("dateFrom") String dateFrom, @QueryParam("dateTo") String dateTo,
-                                                   @QueryParam("ipAddress") String ipAddress, @QueryParam("first") Integer firstResult,
+                                                   @QueryParam("user") String user, @QueryParam("sessionId") String sessionId, @QueryParam("dateFrom") String dateFrom,
+                                                   @QueryParam("dateTo") String dateTo, @QueryParam("ipAddress") String ipAddress, @QueryParam("first") Integer firstResult,
                                                    @QueryParam("max") Integer maxResults) {
 
         EventStoreProvider eventStore = session.getProvider(EventStoreProvider.class);
@@ -368,6 +369,10 @@ public class TestingResourceProvider implements RealmResourceProvider {
 
         if (user != null) {
             query.user(user);
+        }
+
+        if (sessionId != null) {
+            query.sessionId(sessionId);
         }
 
         if (dateFrom != null) {
