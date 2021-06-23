@@ -45,6 +45,7 @@ import org.keycloak.testsuite.AbstractTestRealmKeycloakTest;
 import org.keycloak.testsuite.AssertEvents;
 import org.keycloak.testsuite.admin.ApiUtil;
 import org.keycloak.testsuite.arquillian.annotation.DisableFeature;
+import org.keycloak.testsuite.arquillian.annotation.EnableFeature;
 import org.keycloak.testsuite.util.AdminClientUtil;
 import org.keycloak.testsuite.util.ClientBuilder;
 import org.keycloak.testsuite.util.RealmBuilder;
@@ -152,6 +153,7 @@ public class ClientRedirectTest extends AbstractTestRealmKeycloakTest {
 
     // KEYCLOAK-18051
     @Test
+    @EnableFeature(Profile.Feature.ADMIN_FINE_GRAINED_AUTHZ)
     public void testRegexRedirectURI() throws URISyntaxException, MalformedURLException {
 
         ClientsResource clientsResource = testRealm().clients();
