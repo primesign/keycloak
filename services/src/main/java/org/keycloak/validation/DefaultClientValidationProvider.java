@@ -16,6 +16,7 @@
  */
 package org.keycloak.validation;
 
+import org.keycloak.common.Profile;
 import org.keycloak.models.ClientModel;
 import org.keycloak.protocol.ProtocolMapperConfigException;
 import org.keycloak.protocol.oidc.OIDCAdvancedConfigWrapper;
@@ -142,11 +143,15 @@ public class DefaultClientValidationProvider implements ClientValidationProvider
         String backchannelLogoutUrl = OIDCAdvancedConfigWrapper.fromClientModel(client).getBackchannelLogoutUrl();
         String resolvedBackchannelLogoutUrl =
                 ResolveRelative.resolveRelativeUri(authServerUrl, authServerUrl, authServerUrl, backchannelLogoutUrl);
-        
-      // Check if the client allows regex in the redirect uri fields  
-      boolean allowRegexRedirectUri = AdminPermissions
-          .management(context.getSession(), context.getSession().getContext().getRealm())
-          .clients().allowRegexRedirectUri(client);
+
+        // Check if the client allows regex in the redirect uri fields  
+        boolean allowRegexRedirectUri;
+        if (Profile.isFeatureEnabled(Profile.Feature.ADMIN_FINE_GRAINED_AUTHZ)) {
+            allowRegexRedirectUri = AdminPermissions.management(context.getSession(), context.getSession().getContext().getRealm())
+                .clients().allowRegexRedirectUri(client);
+        } else {
+            allowRegexRedirectUri = false;
+        }
       
 
         checkUri(FieldMessages.ROOT_URL, rootUrl, context, true, true, false);
