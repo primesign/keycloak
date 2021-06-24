@@ -72,7 +72,6 @@ import static org.keycloak.testsuite.util.Matchers.statusCodeIs;
 /**
  * @author <a href="mailto:thomas.darimont@gmail.com">Thomas Darimont</a>
  */
-//@EnableFeature(value = Profile.Feature.ADMIN_FINE_GRAINED_AUTHZ, skipRestart = true)
 public class ClientRedirectTest extends AbstractTestRealmKeycloakTest {
 
     @Rule
@@ -152,8 +151,8 @@ public class ClientRedirectTest extends AbstractTestRealmKeycloakTest {
     }
 
     // KEYCLOAK-18051
-//    @Test
-//    @EnableFeature(value = Profile.Feature.ADMIN_FINE_GRAINED_AUTHZ, skipRestart = true)
+    @Test
+    @EnableFeature(value = Profile.Feature.ADMIN_FINE_GRAINED_AUTHZ, skipRestart = true)
     public void testRegexRedirectURI() throws URISyntaxException, MalformedURLException {
         String clientId = null;
         try {
