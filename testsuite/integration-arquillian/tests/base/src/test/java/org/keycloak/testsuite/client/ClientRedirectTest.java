@@ -152,8 +152,8 @@ public class ClientRedirectTest extends AbstractTestRealmKeycloakTest {
     }
 
     // KEYCLOAK-18051
-    @Test
-    @EnableFeature(value = Profile.Feature.ADMIN_FINE_GRAINED_AUTHZ, skipRestart = true)
+//    @Test
+//    @EnableFeature(value = Profile.Feature.ADMIN_FINE_GRAINED_AUTHZ, skipRestart = true)
     public void testRegexRedirectURI() throws URISyntaxException, MalformedURLException {
         String clientId = null;
         try {
