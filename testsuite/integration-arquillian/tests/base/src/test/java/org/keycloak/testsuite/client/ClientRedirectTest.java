@@ -155,41 +155,48 @@ public class ClientRedirectTest extends AbstractTestRealmKeycloakTest {
     @Test
     @EnableFeature(value = Profile.Feature.ADMIN_FINE_GRAINED_AUTHZ, skipRestart = true)
     public void testRegexRedirectURI() throws URISyntaxException, MalformedURLException {
+        String clientId = null;
+        try {
 
-        ClientsResource clientsResource = testRealm().clients();
-        testingClient.server().run(ClientRedirectTest::setupAllowRegexRedirectUriPermission);
-        String clientId = clientsResource.findByClientId("regex-client").get(0).getId();
+            ClientsResource clientsResource = testRealm().clients();
+            testingClient.server().run(ClientRedirectTest::setupAllowRegexRedirectUriPermission);
+            clientId = clientsResource.findByClientId("regex-client").get(0).getId();
 
-        ClientResource clientResource = clientsResource.get(clientId);
-        ClientRepresentation clientRepresentation = clientResource.toRepresentation();
+            ClientResource clientResource = clientsResource.get(clientId);
+            ClientRepresentation clientRepresentation = clientResource.toRepresentation();
 
-        clientRepresentation.setRedirectUris(Collections.singletonList("http://[a-zA-Z]+\\.[a-zA-Z]+/[a-zA-Z]+"));
-        clientsResource.get(clientId).update(clientRepresentation);
+            clientRepresentation.setRedirectUris(Collections.singletonList("http://[a-zA-Z]+\\.[a-zA-Z]+/[a-zA-Z]+"));
+            clientsResource.get(clientId).update(clientRepresentation);
 
-        URI login = KeycloakUriBuilder.fromUri(suiteContext.getAuthServerInfo().getBrowserContextRoot().toURI())
-            .path("auth" + ServiceUrlConstants.AUTH_PATH).queryParam(OIDCLoginProtocol.CLIENT_ID_PARAM, clientRepresentation.getClientId())
-            .queryParam(OIDCLoginProtocol.RESPONSE_TYPE_PARAM, "code").queryParam(OIDCLoginProtocol.SCOPE_PARAM, "openid")
-            .queryParam(OIDCLoginProtocol.REDIRECT_URI_PARAM, "http://example.org/launchpad").build("test");
+            URI login = KeycloakUriBuilder.fromUri(suiteContext.getAuthServerInfo().getBrowserContextRoot().toURI())
+                .path("auth" + ServiceUrlConstants.AUTH_PATH)
+                .queryParam(OIDCLoginProtocol.CLIENT_ID_PARAM, clientRepresentation.getClientId())
+                .queryParam(OIDCLoginProtocol.RESPONSE_TYPE_PARAM, "code").queryParam(OIDCLoginProtocol.SCOPE_PARAM, "openid")
+                .queryParam(OIDCLoginProtocol.REDIRECT_URI_PARAM, "http://example.org/launchpad").build("test");
 
-        driver.navigate().to(login.toURL());
+            driver.navigate().to(login.toURL());
 
-        oauth.fillLoginForm("test-user@localhost", "password");
+            oauth.fillLoginForm("test-user@localhost", "password");
 
-        events.expect(EventType.LOGIN).client(clientRepresentation.getClientId()).session(isUUID()).detail(Details.CODE_ID, isCodeId())
-            .assertEvent();
+            events.expect(EventType.LOGIN).client(clientRepresentation.getClientId()).session(isUUID()).detail(Details.CODE_ID, isCodeId())
+                .assertEvent();
 
-        URI notAllowedRedirectUri = KeycloakUriBuilder.fromUri(suiteContext.getAuthServerInfo().getBrowserContextRoot().toURI())
-            .path("auth" + ServiceUrlConstants.AUTH_PATH).queryParam(OIDCLoginProtocol.CLIENT_ID_PARAM, clientRepresentation.getClientId())
-            .queryParam(OIDCLoginProtocol.RESPONSE_TYPE_PARAM, "code").queryParam(OIDCLoginProtocol.SCOPE_PARAM, "openid")
-            .queryParam(OIDCLoginProtocol.REDIRECT_URI_PARAM, "https://example.org/launchpad").build("test");
+            URI notAllowedRedirectUri = KeycloakUriBuilder.fromUri(suiteContext.getAuthServerInfo().getBrowserContextRoot().toURI())
+                .path("auth" + ServiceUrlConstants.AUTH_PATH)
+                .queryParam(OIDCLoginProtocol.CLIENT_ID_PARAM, clientRepresentation.getClientId())
+                .queryParam(OIDCLoginProtocol.RESPONSE_TYPE_PARAM, "code").queryParam(OIDCLoginProtocol.SCOPE_PARAM, "openid")
+                .queryParam(OIDCLoginProtocol.REDIRECT_URI_PARAM, "https://example.org/launchpad").build("test");
 
-        driver.navigate().to(notAllowedRedirectUri.toURL());
+            driver.navigate().to(notAllowedRedirectUri.toURL());
 
-        events.expect(EventType.LOGIN_ERROR)
-            .error(OAuthErrorException.INVALID_REDIRECT_URI)
-            .client((String) null)
-            .user((String) null);
+            events.expect(EventType.LOGIN_ERROR).error(OAuthErrorException.INVALID_REDIRECT_URI).client((String) null).user((String) null);
 
+        } finally {
+            log.debug("removing disabled-client");
+            if (clientId != null) {
+                adminClient.realm("test").clients().get(clientId).remove();
+            }
+        }
     }
 
     public static void setupAllowRegexRedirectUriPermission(KeycloakSession session) {
