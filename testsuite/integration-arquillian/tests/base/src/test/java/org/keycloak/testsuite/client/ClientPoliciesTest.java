@@ -36,6 +36,8 @@ import org.keycloak.authentication.authenticators.client.JWTClientAuthenticator;
 import org.keycloak.authentication.authenticators.client.JWTClientSecretAuthenticator;
 import org.keycloak.authentication.authenticators.client.X509ClientAuthenticator;
 import org.keycloak.client.registration.ClientRegistrationException;
+import org.keycloak.common.util.KeycloakUriBuilder;
+import org.keycloak.constants.ServiceUrlConstants;
 import org.keycloak.common.util.Base64Url;
 import org.keycloak.events.Details;
 import org.keycloak.events.Errors;
@@ -68,6 +70,7 @@ import org.keycloak.services.clientpolicy.ClientPolicyEvent;
 import org.keycloak.services.clientpolicy.ClientPolicyException;
 import org.keycloak.services.clientpolicy.condition.AnyClientConditionFactory;
 import org.keycloak.services.clientpolicy.condition.ClientAccessTypeConditionFactory;
+import org.keycloak.services.clientpolicy.condition.ClientIdsConditionFactory;
 import org.keycloak.services.clientpolicy.condition.ClientRolesConditionFactory;
 import org.keycloak.services.clientpolicy.condition.ClientScopesConditionFactory;
 import org.keycloak.services.clientpolicy.condition.ClientUpdaterContextConditionFactory;
@@ -80,6 +83,8 @@ import org.keycloak.services.clientpolicy.executor.FullScopeDisabledExecutorFact
 import org.keycloak.services.clientpolicy.executor.HolderOfKeyEnforcerExecutorFactory;
 import org.keycloak.services.clientpolicy.executor.PKCEEnforcerExecutorFactory;
 import org.keycloak.services.clientpolicy.executor.RejectResourceOwnerPasswordCredentialsGrantExecutorFactory;
+import org.keycloak.services.clientpolicy.executor.RegexRedirectUriExecutor;
+import org.keycloak.services.clientpolicy.executor.RegexRedirectUriExecutorFactory;
 import org.keycloak.services.clientpolicy.executor.SecureClientAuthenticatorExecutorFactory;
 import org.keycloak.services.clientpolicy.executor.SecureClientUrisExecutorFactory;
 import org.keycloak.services.clientpolicy.executor.SecureLogoutExecutorFactory;
@@ -110,9 +115,11 @@ import org.keycloak.testsuite.util.UserBuilder;
 import org.keycloak.util.JsonSerialization;
 
 import java.io.IOException;
+import java.net.URI;
 import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -125,6 +132,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.keycloak.testsuite.AssertEvents.isCodeId;
+import static org.keycloak.testsuite.AssertEvents.isUUID;
 import static org.keycloak.testsuite.admin.AbstractAdminTest.loadJson;
 import static org.keycloak.testsuite.admin.ApiUtil.findUserByUsername;
 import static org.keycloak.testsuite.util.ClientPoliciesUtil.ClientPoliciesBuilder;
@@ -133,6 +142,7 @@ import static org.keycloak.testsuite.util.ClientPoliciesUtil.ClientProfileBuilde
 import static org.keycloak.testsuite.util.ClientPoliciesUtil.ClientProfilesBuilder;
 import static org.keycloak.testsuite.util.ClientPoliciesUtil.createAnyClientConditionConfig;
 import static org.keycloak.testsuite.util.ClientPoliciesUtil.createClientAccessTypeConditionConfig;
+import static org.keycloak.testsuite.util.ClientPoliciesUtil.createClientIdsConditionConfig;
 import static org.keycloak.testsuite.util.ClientPoliciesUtil.createClientRolesConditionConfig;
 import static org.keycloak.testsuite.util.ClientPoliciesUtil.createClientScopesConditionConfig;
 import static org.keycloak.testsuite.util.ClientPoliciesUtil.createClientUpdateContextConditionConfig;
@@ -142,6 +152,7 @@ import static org.keycloak.testsuite.util.ClientPoliciesUtil.createClientUpdateS
 import static org.keycloak.testsuite.util.ClientPoliciesUtil.createConsentRequiredExecutorConfig;
 import static org.keycloak.testsuite.util.ClientPoliciesUtil.createHolderOfKeyEnforceExecutorConfig;
 import static org.keycloak.testsuite.util.ClientPoliciesUtil.createPKCEEnforceExecutorConfig;
+import static org.keycloak.testsuite.util.ClientPoliciesUtil.createRegexRedirectUriExecutorConfig;
 import static org.keycloak.testsuite.util.ClientPoliciesUtil.createSecureClientAuthenticatorExecutorConfig;
 import static org.keycloak.testsuite.util.ClientPoliciesUtil.createSecureRequestObjectExecutorConfig;
 import static org.keycloak.testsuite.util.ClientPoliciesUtil.createSecureResponseTypeExecutor;
@@ -2722,7 +2733,7 @@ public class ClientPoliciesTest extends AbstractClientPoliciesTest {
         // register policies
         json = (new ClientPoliciesBuilder()).addPolicy(
                 (new ClientPolicyBuilder()).createPolicy(POLICY_NAME, "Porisii desu", Boolean.TRUE)
-                    .addCondition(AnyClientConditionFactory.PROVIDER_ID, 
+                    .addCondition(AnyClientConditionFactory.PROVIDER_ID,
                         createAnyClientConditionConfig())
                     .addProfile(PROFILE_NAME)
                     .toRepresentation()
@@ -2741,6 +2752,64 @@ public class ClientPoliciesTest extends AbstractClientPoliciesTest {
     private void openVerificationPage(String verificationUri) {
         driver.navigate().to(verificationUri);
     }
+
+  // KEYCLOAK-18051
+  @Test
+  public void testRegexRedirectUriExecutor() throws Exception {
+
+    List<String> regexPatterns = new ArrayList<>();
+    regexPatterns.add("https://[a-zA-Z]+\\.[a-zA-Z]+/[a-zA-Z]+");
+
+    String json = (new ClientProfilesBuilder()).addProfile(
+        (new ClientProfileBuilder()).createProfile(PROFILE_NAME, "Test Profile")
+            .addExecutor(RegexRedirectUriExecutorFactory.PROVIDER_ID, createRegexRedirectUriExecutorConfig(regexPatterns))
+            .toRepresentation()
+    ).toString();
+    updateProfiles(json);
+
+    String clientId = generateSuffixedName("special-app");
+    String cid = createClientByAdmin(clientId, (ClientRepresentation clientRep) -> {
+      clientRep.setRedirectUris(Collections.singletonList("*"));
+    });
+
+    List<String> clientIds = new ArrayList<>();
+    clientIds.add(clientId);
+
+    json = (new ClientPoliciesBuilder()).addPolicy(
+        (new ClientPolicyBuilder()).createPolicy(POLICY_NAME, "Test Policy", Boolean.TRUE)
+            .addCondition(ClientIdsConditionFactory.PROVIDER_ID,
+                createClientIdsConditionConfig(clientIds))
+            .addProfile(PROFILE_NAME)
+            .toRepresentation()
+    ).toString();
+    updatePolicies(json);
+
+
+    URI login = KeycloakUriBuilder.fromUri(suiteContext.getAuthServerInfo().getBrowserContextRoot().toURI())
+        .path("auth" + ServiceUrlConstants.AUTH_PATH)
+        .queryParam(OIDCLoginProtocol.CLIENT_ID_PARAM, clientId)
+        .queryParam(OIDCLoginProtocol.RESPONSE_TYPE_PARAM, "code").queryParam(OIDCLoginProtocol.SCOPE_PARAM, "openid")
+        .queryParam(OIDCLoginProtocol.REDIRECT_URI_PARAM, "https://example.org/launchpad").build("test");
+
+
+    driver.navigate().to(login.toURL());
+
+    oauth.fillLoginForm(TEST_USER_NAME, TEST_USER_PASSWORD);
+
+    events.expect(EventType.LOGIN).client(clientId).session(isUUID()).detail(Details.CODE_ID, isCodeId())
+        .assertEvent();
+
+    URI notAllowedRedirectUri = KeycloakUriBuilder.fromUri(suiteContext.getAuthServerInfo().getBrowserContextRoot().toURI())
+        .path("auth" + ServiceUrlConstants.AUTH_PATH)
+        .queryParam(OIDCLoginProtocol.CLIENT_ID_PARAM, clientId)
+        .queryParam(OIDCLoginProtocol.RESPONSE_TYPE_PARAM, "code").queryParam(OIDCLoginProtocol.SCOPE_PARAM, "openid")
+        .queryParam(OIDCLoginProtocol.REDIRECT_URI_PARAM, "http://example.org/launchpad").build("test");
+
+    driver.navigate().to(notAllowedRedirectUri.toURL());
+
+    events.expect(EventType.LOGIN_ERROR).error(OAuthErrorException.INVALID_REDIRECT_URI).client((String) null).user((String) null);
+
+  }
 
     private void checkMtlsFlow() throws IOException {
         // Check login.
