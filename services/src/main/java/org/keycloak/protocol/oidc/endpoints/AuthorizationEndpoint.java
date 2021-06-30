@@ -69,6 +69,7 @@ import org.keycloak.util.TokenUtil;
 
 import org.jboss.logging.Logger;
 
+import static org.keycloak.OAuthErrorException.INVALID_REDIRECT_URI;
 import static org.keycloak.protocol.oidc.par.endpoints.ParEndpoint.PAR_DPOP_PROOF_JKT;
 
 /**
@@ -210,6 +211,11 @@ public class AuthorizationEndpoint extends AuthorizationEndpointBase {
             event.detail(Details.CLIENT_POLICY_ERROR_DETAIL, cpe.getErrorDetail());
             event.error(cpe.getError());
             new AuthenticationSessionManager(session).removeAuthenticationSession(realm, authenticationSession, false);
+            if (cpe.getError().equals(INVALID_REDIRECT_URI)) {
+                event.error(Errors.INVALID_REDIRECT_URI);
+                throw new ErrorPageException(session, Response.Status.BAD_REQUEST, Messages.INVALID_PARAMETER,
+                    OIDCLoginProtocol.REDIRECT_URI_PARAM);
+            }
             return redirectErrorToClient(parsedResponseMode, cpe.getError(), cpe.getErrorDetail());
         }
 
