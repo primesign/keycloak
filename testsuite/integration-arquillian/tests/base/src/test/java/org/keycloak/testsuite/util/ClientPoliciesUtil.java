@@ -32,6 +32,7 @@ import org.keycloak.representations.idm.ClientProfileRepresentation;
 import org.keycloak.representations.idm.ClientProfilesRepresentation;
 import org.keycloak.services.clientpolicy.ClientPolicyEvent;
 import org.keycloak.services.clientpolicy.condition.ClientAccessTypeCondition;
+import org.keycloak.services.clientpolicy.condition.ClientIdsCondition;
 import org.keycloak.services.clientpolicy.condition.ClientRolesCondition;
 import org.keycloak.services.clientpolicy.condition.ClientScopesCondition;
 import org.keycloak.services.clientpolicy.condition.ClientUpdaterContextCondition;
@@ -45,6 +46,8 @@ import org.keycloak.services.clientpolicy.executor.IntentClientBindCheckExecutor
 import org.keycloak.services.clientpolicy.executor.PKCEEnforcerExecutor;
 import org.keycloak.services.clientpolicy.executor.RejectResourceOwnerPasswordCredentialsGrantExecutor;
 import org.keycloak.services.clientpolicy.executor.RejectImplicitGrantExecutor;
+import org.keycloak.services.clientpolicy.executor.RegexRedirectUriExecutor;
+import org.keycloak.services.clientpolicy.executor.RegexRedirectUriExecutorFactory;
 import org.keycloak.services.clientpolicy.executor.SecureClientAuthenticatorExecutor;
 import org.keycloak.services.clientpolicy.executor.SecureRequestObjectExecutor;
 import org.keycloak.services.clientpolicy.executor.SecureResponseTypeExecutor;
@@ -207,6 +210,12 @@ public final class ClientPoliciesUtil {
     public static SecureSigningAlgorithmExecutor.Configuration createSecureSigningAlgorithmEnforceExecutorConfig(String defaultAlgorithm) {
         SecureSigningAlgorithmExecutor.Configuration config = new SecureSigningAlgorithmExecutor.Configuration();
         config.setDefaultAlgorithm(defaultAlgorithm);
+        return config;
+    }
+
+    public static RegexRedirectUriExecutor.Configuration createRegexRedirectUriExecutorConfig(List<String> regexPatterns){
+        RegexRedirectUriExecutor.Configuration config = new RegexRedirectUriExecutor.Configuration();
+        config.setRedirectUriRegexPatterns(regexPatterns);
         return config;
     }
 
@@ -379,6 +388,12 @@ public final class ClientPoliciesUtil {
     public static ClientUpdaterSourceRolesCondition.Configuration createClientUpdateSourceRolesConditionConfig(List<String> roles) {
         ClientUpdaterSourceRolesCondition.Configuration config = new ClientUpdaterSourceRolesCondition.Configuration();
         config.setRoles(roles);
+        return config;
+    }
+
+    public static ClientIdsCondition.Configuration createClientIdsConditionConfig(List<String> clientIds){
+        ClientIdsCondition.Configuration config = new ClientIdsCondition.Configuration();
+        config.setClientIds(clientIds);
         return config;
     }
 }
