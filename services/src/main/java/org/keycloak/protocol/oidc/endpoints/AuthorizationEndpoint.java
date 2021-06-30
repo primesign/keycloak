@@ -66,6 +66,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
 
+import static org.keycloak.OAuthErrorException.INVALID_REDIRECT_URI;
+
 /**
  * @author <a href="mailto:sthorger@redhat.com">Stian Thorgersen</a>
  */
@@ -187,6 +189,11 @@ public class AuthorizationEndpoint extends AuthorizationEndpointBase {
         try {
             session.clientPolicy().triggerOnEvent(new AuthorizationRequestContext(parsedResponseType, request, redirectUri, params));
         } catch (ClientPolicyException cpe) {
+            if (cpe.getError().equals(INVALID_REDIRECT_URI)) {
+                event.error(Errors.INVALID_REDIRECT_URI);
+                throw new ErrorPageException(session, authenticationSession, Response.Status.BAD_REQUEST, Messages.INVALID_PARAMETER,
+                    OIDCLoginProtocol.REDIRECT_URI_PARAM);
+            }
             return redirectErrorToClient(parsedResponseMode, cpe.getError(), cpe.getErrorDetail());
         }
 
