@@ -49,6 +49,7 @@ import org.keycloak.representations.idm.ClientProfilesRepresentation;
 import org.keycloak.services.clientpolicy.ClientPolicyEvent;
 import org.keycloak.services.clientpolicy.condition.ClientAccessTypeCondition;
 import org.keycloak.services.clientpolicy.condition.ClientAttributesCondition;
+import org.keycloak.services.clientpolicy.condition.ClientIdsCondition;
 import org.keycloak.services.clientpolicy.condition.ClientRolesCondition;
 import org.keycloak.services.clientpolicy.condition.ClientScopesCondition;
 import org.keycloak.services.clientpolicy.condition.ClientUpdaterContextCondition;
@@ -63,6 +64,7 @@ import org.keycloak.services.clientpolicy.executor.HolderOfKeyEnforcerExecutor;
 import org.keycloak.services.clientpolicy.executor.IntentClientBindCheckExecutor;
 import org.keycloak.services.clientpolicy.executor.PKCEEnforcerExecutor;
 import org.keycloak.services.clientpolicy.executor.RejectResourceOwnerPasswordCredentialsGrantExecutor;
+import org.keycloak.services.clientpolicy.executor.RegexRedirectUriExecutor;
 import org.keycloak.services.clientpolicy.executor.RejectImplicitGrantExecutor;
 import org.keycloak.services.clientpolicy.executor.SecureClientAuthenticatorExecutor;
 import org.keycloak.services.clientpolicy.executor.SecureRedirectUrisEnforcerExecutor;
@@ -246,6 +248,12 @@ public final class ClientPoliciesUtil {
     public static SecureSigningAlgorithmExecutor.Configuration createSecureSigningAlgorithmEnforceExecutorConfig(String defaultAlgorithm) {
         SecureSigningAlgorithmExecutor.Configuration config = new SecureSigningAlgorithmExecutor.Configuration();
         config.setDefaultAlgorithm(defaultAlgorithm);
+        return config;
+    }
+
+    public static RegexRedirectUriExecutor.Configuration createRegexRedirectUriExecutorConfig(List<String> regexPatterns){
+        RegexRedirectUriExecutor.Configuration config = new RegexRedirectUriExecutor.Configuration();
+        config.setRedirectUriRegexPatterns(regexPatterns);
         return config;
     }
 
@@ -527,5 +535,11 @@ public final class ClientPoliciesUtil {
             default:
                 throw new IllegalArgumentException("No signer provider for key algorithm type " + keyWrapper.getType());
         }
+    }
+
+    public static ClientIdsCondition.Configuration createClientIdsConditionConfig(List<String> clientIds){
+        ClientIdsCondition.Configuration config = new ClientIdsCondition.Configuration();
+        config.setClientIds(clientIds);
+        return config;
     }
 }
