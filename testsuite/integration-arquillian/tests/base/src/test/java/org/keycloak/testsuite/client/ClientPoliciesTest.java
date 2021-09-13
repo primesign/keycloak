@@ -104,6 +104,7 @@ import org.keycloak.testsuite.util.ServerURLs;
 import org.keycloak.util.JsonSerialization;
 
 import java.io.IOException;
+import java.net.URI;
 import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
