@@ -3,7 +3,7 @@ name: Docker CI
 on:
   push:
     branches:
-      - master
+      - main
 
 jobs:
   build:
@@ -12,7 +12,7 @@ jobs:
     steps:
       - name: Set up environment
         run: curl https://raw.githubusercontent.com/primesign/keycloak/master/release-details >> $GITHUB_ENV
-      - name: Check out keycloak/keycloak-containers
+      - name: Check out primesign/keycloak-containers
         uses: actions/checkout@v2
         with:
           repository: primesign/keycloak-containers
