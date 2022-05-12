@@ -31,10 +31,14 @@ jobs:
 
       - name: Build Keycloak
         run: |
-          mvn clean install -nsu -B -e -DskipTests -Pdistribution
+          mvn clean install -DskipTestsuite -DskipExamples -DskipTests
+          mvn -f quarkus/pom.xml clean install -DskipTests
 
       - name: Set up environment
         run: cat release-details >> $GITHUB_ENV
+
+      - name: Copy keycloak artifact
+        run: cp quarkus/dist/target/keycloak-${{env.VERSION}}.tar.gz quarkus/container/
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
@@ -55,7 +59,7 @@ jobs:
           context: quarkus/container
           platforms: linux/amd64,linux/arm64
           push: ${{ github.event_name != 'pull_request' }}
-          build-args: KEYCLOAK_DIST=~/.m2/repository/org/keycloak/18.0.0/keycloak-18.0.0.tar.gz
+          build-args: KEYCLOAK_DIST=keycloak-${{env.VERSION}}.tar.gz
           tags: |
             ghcr.io/primesign/keycloak:latest
             ghcr.io/primesign/keycloak:${{env.VERSION}}
