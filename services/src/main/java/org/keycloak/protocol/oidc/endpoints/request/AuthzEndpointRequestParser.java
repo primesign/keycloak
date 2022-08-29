@@ -71,6 +71,7 @@ public abstract class AuthzEndpointRequestParser {
 
     /** Set of known protocol GET params not to be stored into additionalReqParams} */
     public static final Set<String> KNOWN_REQ_PARAMS = new HashSet<>();
+    public static final Set<String> ADDITIONAL_REQ_PARAMS_MAX_SIZE_IGNORE = new HashSet<>();
     static {
         KNOWN_REQ_PARAMS.add(OIDCLoginProtocol.CLIENT_ID_PARAM);
         KNOWN_REQ_PARAMS.add(OIDCLoginProtocol.RESPONSE_TYPE_PARAM);
@@ -101,6 +102,13 @@ public abstract class AuthzEndpointRequestParser {
         KNOWN_REQ_PARAMS.add(OAuth2Constants.CLIENT_ASSERTION_TYPE);
         KNOWN_REQ_PARAMS.add(OAuth2Constants.CLIENT_ASSERTION);
         KNOWN_REQ_PARAMS.add(OAuth2Constants.CLIENT_SECRET);
+
+		    // Ignore "hash" parameter for param size check, because more than 4 hashes get filtered by this check.
+	    ADDITIONAL_REQ_PARAMS_MAX_SIZE_IGNORE.add("hash");
+	    ADDITIONAL_REQ_PARAMS_MAX_SIZE_IGNORE.add("hashes");
+	    ADDITIONAL_REQ_PARAMS_MAX_SIZE_IGNORE.add("dtbs");
+	    ADDITIONAL_REQ_PARAMS_MAX_SIZE_IGNORE.add("authorization_details");
+
     }
 
     protected AuthzEndpointRequestParser(KeycloakSession keycloakSession) {
@@ -199,7 +207,7 @@ public abstract class AuthzEndpointRequestParser {
 
           }
 
-          if (value.length() > additionalReqParamsMaxSize) {
+          if (value.length() > additionalReqParamsMaxSize && !ADDITIONAL_REQ_PARAMS_MAX_SIZE_IGNORE.contains(paramName)) {
 
             if (additionalReqParamsFailFast) {
               logger.debugv("The OIDC additional parameter '{0}''s size is longer ({1}) than allowed ({2}).", paramName, value.length(), additionalReqParamsMaxSize);
