@@ -51,6 +51,7 @@ public abstract class AuthzEndpointRequestParser {
 
     /** Set of known protocol GET params not to be stored into additionalReqParams} */
     public static final Set<String> KNOWN_REQ_PARAMS = new HashSet<>();
+    public static final Set<String> ADDITIONAL_REQ_PARAMS_MAX_SIZE_IGNORE = new HashSet<>();
     static {
         KNOWN_REQ_PARAMS.add(OIDCLoginProtocol.CLIENT_ID_PARAM);
         KNOWN_REQ_PARAMS.add(OIDCLoginProtocol.RESPONSE_TYPE_PARAM);
@@ -73,7 +74,11 @@ public abstract class AuthzEndpointRequestParser {
         // https://tools.ietf.org/html/rfc7636#section-6.1
         KNOWN_REQ_PARAMS.add(OIDCLoginProtocol.CODE_CHALLENGE_PARAM);
         KNOWN_REQ_PARAMS.add(OIDCLoginProtocol.CODE_CHALLENGE_METHOD_PARAM);
+
+        // Ignore "hash" parameter for param size check, because more than 4 hashes get filtered by this check.
+        ADDITIONAL_REQ_PARAMS_MAX_SIZE_IGNORE.add("hash");
     }
+    
 
     public void parseRequest(AuthorizationEndpointRequest request) {
         String clientId = getParameter(OIDCLoginProtocol.CLIENT_ID_PARAM);
@@ -113,7 +118,7 @@ public abstract class AuthzEndpointRequestParser {
                 if (value != null && value.trim().isEmpty()) {
                     value = null;
                 }
-                if (value != null && value.length() <= ADDITIONAL_REQ_PARAMS_MAX_SIZE) {
+                if (value != null && ((value.length() <= ADDITIONAL_REQ_PARAMS_MAX_SIZE)) || ADDITIONAL_REQ_PARAMS_MAX_SIZE_IGNORE.contains(paramName)) {
                     if (additionalReqParams.size() >= ADDITIONAL_REQ_PARAMS_MAX_MUMBER) {
                         logger.debug("Maximal number of additional OIDC params (" + ADDITIONAL_REQ_PARAMS_MAX_MUMBER + ") exceeded, ignoring rest of them!");
                         break;
