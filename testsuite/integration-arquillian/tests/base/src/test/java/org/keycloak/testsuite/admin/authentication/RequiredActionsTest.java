@@ -19,15 +19,14 @@ package org.keycloak.testsuite.admin.authentication;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.keycloak.common.Profile;
 import org.keycloak.events.admin.OperationType;
 import org.keycloak.events.admin.ResourceType;
 import org.keycloak.representations.idm.RequiredActionProviderRepresentation;
 import org.keycloak.representations.idm.RequiredActionProviderSimpleRepresentation;
 import org.keycloak.testsuite.actions.DummyRequiredActionFactory;
-import org.keycloak.testsuite.arquillian.annotation.EnableFeature;
 import org.keycloak.testsuite.util.AdminEventPaths;
 
+import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.NotFoundException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -53,6 +52,8 @@ public class RequiredActionsTest extends AbstractAuthenticationTest {
         addRequiredAction(expected, "delete_account", "Delete Account", false, false, null);
         addRequiredAction(expected, "terms_and_conditions", "Terms and Conditions", false, false, null);
         addRequiredAction(expected, "update_user_locale", "Update User Locale", true, false, null);
+        addRequiredAction(expected, "webauthn-register", "Webauthn Register", true, false, null);
+        addRequiredAction(expected, "webauthn-register-passwordless", "Webauthn Register Passwordless", true, false, null);
 
         compareRequiredActions(expected, sort(result));
 
@@ -83,7 +84,7 @@ public class RequiredActionsTest extends AbstractAuthenticationTest {
 
         // Dummy RequiredAction is not registered in the realm and WebAuthn actions
         List<RequiredActionProviderSimpleRepresentation> result = authMgmtResource.getUnregisteredRequiredActions();
-        Assert.assertEquals(4, result.size());
+        Assert.assertEquals(2, result.size());
         RequiredActionProviderSimpleRepresentation action = result.stream().filter(
                 a -> a.getProviderId().equals(DummyRequiredActionFactory.PROVIDER_ID)
         ).findFirst().get();
@@ -93,6 +94,13 @@ public class RequiredActionsTest extends AbstractAuthenticationTest {
         // Register it
         authMgmtResource.registerRequiredAction(action);
         assertAdminEvents.assertEvent(testRealmId, OperationType.CREATE, AdminEventPaths.authMgmtBasePath() + "/register-required-action", action, ResourceType.REQUIRED_ACTION);
+
+        // Try to register 2nd time
+        try {
+            authMgmtResource.registerRequiredAction(action);
+        } catch (ClientErrorException ex) {
+            // Expected
+        }
 
         // Try to find not-existent action - should fail
         try {

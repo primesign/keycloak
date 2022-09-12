@@ -24,6 +24,7 @@ set "SERVER_OPTS=-Djava.util.logging.manager=org.jboss.logmanager.LogManager -Dq
 set DEBUG_MODE=false
 set DEBUG_PORT_VAR=8787
 set DEBUG_SUSPEND_VAR=n
+set CONFIG_ARGS=
 
 rem Read command-line args, the ~ removes the quotes from the parameter
 :READ-ARGS
@@ -45,7 +46,7 @@ if "%KEY%" == "--debug" (
   goto READ-ARGS
 )
 if "%KEY%" == "start-dev" (
-  set "CONFIG_ARGS=%CONFIG_ARGS% --profile=dev %KEY% --auto-build"
+  set "CONFIG_ARGS=%CONFIG_ARGS% --profile=dev %KEY% "
   shift
   goto READ-ARGS
 )
@@ -72,7 +73,7 @@ goto READ-ARGS
 if not "x%JAVA_OPTS%" == "x" (
   echo "JAVA_OPTS already set in environment; overriding default settings with values: %JAVA_OPTS%"
 ) else (
-  set "JAVA_OPTS=-Xms64m -Xmx512m -XX:MetaspaceSize=96M -XX:MaxMetaspaceSize=256m -Djava.net.preferIPv4Stack=true"
+  set "JAVA_OPTS=-Xms64m -Xmx512m -XX:MetaspaceSize=96M -XX:MaxMetaspaceSize=256m -Djava.net.preferIPv4Stack=true -Dfile.encoding=UTF-8"
 )
 
 if not "x%JAVA_OPTS_APPEND%" == "x" (
@@ -128,10 +129,12 @@ set "JAVA_RUN_OPTS=%JAVA_OPTS% -Dkc.home.dir="%DIRNAME%.." -Djboss.server.config
 
 SetLocal EnableDelayedExpansion
 
-set "AUTO_BUILD_OPTION=auto-build"
+set "ONLY_BUILD_OPTION= build"
+set "NO_AUTO_BUILD_OPTION=optimized"
 
-if not "!CONFIG_ARGS:%AUTO_BUILD_OPTION%=!"=="!CONFIG_ARGS!" (
-  "%JAVA%" -Dkc.config.rebuild-and-exit=true %JAVA_RUN_OPTS%
+if "!CONFIG_ARGS:%NO_AUTO_BUILD_OPTION%=!"=="!CONFIG_ARGS!" if "!CONFIG_ARGS:%ONLY_BUILD_OPTION%=!"=="!CONFIG_ARGS!" (
+    "%JAVA%" -Dkc.config.build-and-exit=true %JAVA_RUN_OPTS%
+    set "JAVA_RUN_OPTS=-Dkc.config.built=true %JAVA_RUN_OPTS%"
 )
 
 "%JAVA%" %JAVA_RUN_OPTS%

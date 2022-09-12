@@ -35,11 +35,15 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
@@ -52,6 +56,13 @@ import io.quarkus.fs.util.ZipUtils;
 import org.apache.commons.io.FileUtils;
 
 import org.keycloak.common.Version;
+import org.keycloak.it.junit5.extension.CLIResult;
+import org.keycloak.quarkus.runtime.Environment;
+import org.keycloak.quarkus.runtime.cli.command.Build;
+import org.keycloak.quarkus.runtime.configuration.mappers.PropertyMapper;
+import org.keycloak.quarkus.runtime.configuration.mappers.PropertyMappers;
+
+import static org.keycloak.quarkus.runtime.Environment.LAUNCH_MODE;
 
 public final class RawKeycloakDistribution implements KeycloakDistribution {
 
@@ -65,18 +76,21 @@ public final class RawKeycloakDistribution implements KeycloakDistribution {
     private int httpPort;
     private boolean debug;
     private boolean reCreate;
+    private boolean removeBuildOptionsAfterBuild;
     private ExecutorService outputExecutor;
     private boolean inited = false;
+    private Map<String, String> envVars = new HashMap<>();
 
-    public RawKeycloakDistribution(boolean debug, boolean manualStop, boolean reCreate) {
+    public RawKeycloakDistribution(boolean debug, boolean manualStop, boolean reCreate, boolean removeBuildOptionsAfterBuild) {
         this.debug = debug;
         this.manualStop = manualStop;
         this.reCreate = reCreate;
+        this.removeBuildOptionsAfterBuild = removeBuildOptionsAfterBuild;
         this.distPath = prepareDistribution();
     }
 
     @Override
-    public void start(List<String> arguments) {
+    public CLIResult run(List<String> arguments) {
         reset();
         if (manualStop && isRunning()) {
             throw new IllegalStateException("Server already running. You should manually stop the server before starting it again.");
@@ -94,20 +108,44 @@ public final class RawKeycloakDistribution implements KeycloakDistribution {
             stop();
             throw new RuntimeException("Failed to start the server", cause);
         } finally {
+            if (arguments.contains(Build.NAME) && removeBuildOptionsAfterBuild) {
+                for (List<PropertyMapper> mappers : PropertyMappers.getBuildTimeMappers().values()) {
+                    for (PropertyMapper mapper : mappers) {
+                        removeProperty(mapper.getFrom().substring(3));
+                    }
+                }
+            }
             if (!manualStop) {
                 stop();
+                envVars.clear();
             }
         }
+
+        return CLIResult.create(getOutputStream(), getErrorStream(), getExitCode());
     }
 
     @Override
     public void stop() {
         if (isRunning()) {
             try {
+                if (Environment.isWindows()) {
+                    // On Windows, we're executing kc.bat in a runtime as "keycloak",
+                    // so tha java process is an actual child process
+                    // we have to kill first.
+                    killChildProcessesOnWindows(false);
+                }
+
                 keycloak.destroy();
                 keycloak.waitFor(10, TimeUnit.SECONDS);
                 exitCode = keycloak.exitValue();
             } catch (Exception cause) {
+                if (Environment.isWindows()) {
+                    try {
+                        killChildProcessesOnWindows(true);
+                    } catch (Exception e) {
+                        throw new RuntimeException("Failed to stop the server", e);
+                    }
+                }
                 keycloak.destroyForcibly();
                 throw new RuntimeException("Failed to stop the server", cause);
             }
@@ -116,32 +154,68 @@ public final class RawKeycloakDistribution implements KeycloakDistribution {
         shutdownOutputExecutor();
     }
 
+    private void killChildProcessesOnWindows(boolean isForced) {
+        for (ProcessHandle childProcessHandle : keycloak.children().collect(Collectors.toList())) {
+            CompletableFuture<ProcessHandle> onExit = childProcessHandle.onExit();
+            if (isForced) {
+                childProcessHandle.destroyForcibly();
+            } else {
+                childProcessHandle.destroy();
+            }
+            //for whatever reason windows doesnt wait for the termination,
+            // and parent process returns immediately with exitCode 1 but is not exited, leading to
+            // "failed to start the distribution" bc files that should be deleted
+            // are used by another process, so we need this here.
+            onExit.join();
+        }
+    }
+
     @Override
     public List<String> getOutputStream() {
         return outputStream;
     }
+
     @Override
     public List<String> getErrorStream() {
         return errorStream;
     }
+
     @Override
     public int getExitCode() {
         return exitCode;
     }
+
     @Override
     public boolean isDebug() { return this.debug; }
+
     @Override
     public boolean isManualStop() { return this.manualStop; }
 
     @Override
     public String[] getCliArgs(List<String> arguments) {
+        List<String> allArgs = new ArrayList<>();
+
+        if (Environment.isWindows()) {
+            allArgs.add(distPath.resolve("bin") + File.separator + SCRIPT_CMD_INVOKABLE);
+        } else {
+            allArgs.add(SCRIPT_CMD_INVOKABLE);
+        }
+
+        if (this.isDebug()) {
+            allArgs.add("--debug");
+        }
+
+        if (!this.isManualStop()) {
+            allArgs.add("-D" + LAUNCH_MODE + "=test");
+        }
+
         this.relativePath = arguments.stream().filter(arg -> arg.startsWith("--http-relative-path")).map(arg -> arg.substring(arg.indexOf('=') + 1)).findAny().orElse("/");
         this.httpPort = Integer.parseInt(arguments.stream().filter(arg -> arg.startsWith("--http-port")).map(arg -> arg.substring(arg.indexOf('=') + 1)).findAny().orElse("8080"));
-        List<String> args = new ArrayList<>();
-        args.add("-Dkc.home.dir=" + distPath + File.separator);
-        args.addAll(arguments);
 
-        return KeycloakDistribution.super.getCliArgs(args);
+        allArgs.add("-Dkc.home.dir=" + distPath + File.separator);
+        allArgs.addAll(arguments);
+
+        return allArgs.toArray(String[]::new);
     }
 
     private void waitForReadiness() throws MalformedURLException {
@@ -248,37 +322,61 @@ public final class RawKeycloakDistribution implements KeycloakDistribution {
         outputStream.clear();
         errorStream.clear();
         exitCode = -1;
-        keycloak = null;
         shutdownOutputExecutor();
+        keycloak = null;
     }
 
     private Path prepareDistribution() {
         try {
             Path distRootPath = Paths.get(System.getProperty("java.io.tmpdir")).resolve("kc-tests");
             distRootPath.toFile().mkdirs();
-            File distFile = new File("../../dist/target/keycloak-" + Version.VERSION_KEYCLOAK + ".zip");
+
+            File distFile = new File("../../dist/" + File.separator + "target" + File.separator + "keycloak-" + Version.VERSION_KEYCLOAK + ".zip");
             if (!distFile.exists()) {
-                throw new RuntimeException("Distribution archive " + distFile.getAbsolutePath() +" doesn't exists");
+                throw new RuntimeException("Distribution archive " + distFile.getAbsolutePath() +" doesn't exist");
             }
             distRootPath.toFile().mkdirs();
-            String distDirName = distFile.getName().replace("keycloak-server-x-dist", "keycloak.x");
-            Path distPath = distRootPath.resolve(distDirName.substring(0, distDirName.lastIndexOf('.')));
+            String distDirName = distFile.getName();
+            Path dPath = distRootPath.resolve(distDirName.substring(0, distDirName.lastIndexOf('.')));
 
-            if (!inited || (reCreate || !distPath.toFile().exists())) {
-                FileUtils.deleteDirectory(distPath.toFile());
+            if (!inited || (reCreate || !dPath.toFile().exists())) {
+
+                if (!Environment.isWindows()) {
+                    FileUtils.deleteDirectory(dPath.toFile());
+                } else {
+                    deleteTempFilesOnWindows(dPath);
+                }
+
                 ZipUtils.unzip(distFile.toPath(), distRootPath);
             }
 
-            // make sure kc.sh is executable
-            if (!distPath.resolve("bin").resolve("kc.sh").toFile().setExecutable(true)) {
-                throw new RuntimeException("Cannot set kc.sh executable");
+            // make sure script is executable
+            if (!dPath.resolve("bin").resolve(SCRIPT_CMD).toFile().setExecutable(true)) {
+                throw new RuntimeException("Cannot set " + SCRIPT_CMD + " executable");
             }
 
             inited = true;
 
-            return distPath;
+            return dPath;
         } catch (Exception cause) {
             throw new RuntimeException("Failed to prepare distribution", cause);
+        }
+    }
+
+    private void deleteTempFilesOnWindows(Path dPath) {
+        if (Files.exists(dPath)) {
+            try (Stream<Path> walk = Files.walk(dPath)) {
+                walk.sorted(Comparator.reverseOrder())
+                        .forEach(s -> {
+                            try {
+                                Files.delete(s);
+                            } catch (IOException e) {
+                                throw new RuntimeException("Could not delete temp directory for distribution", e);
+                            }
+                        });
+            } catch (IOException e) {
+                throw new RuntimeException("Could not traverse temp directory for distribution to delete files", e);
+            }
         }
     }
 
@@ -319,6 +417,12 @@ public final class RawKeycloakDistribution implements KeycloakDistribution {
         builder.environment().put("KEYCLOAK_ADMIN", "admin");
         builder.environment().put("KEYCLOAK_ADMIN_PASSWORD", "admin");
 
+        if (debug) {
+            builder.environment().put("DEBUG_SUSPEND", "y");
+        }
+
+        builder.environment().putAll(envVars);
+
         keycloak = builder.start();
     }
 
@@ -329,12 +433,32 @@ public final class RawKeycloakDistribution implements KeycloakDistribution {
 
     @Override
     public void setProperty(String key, String value) {
-        setProperty(key, value, distPath.resolve("conf").resolve("keycloak.conf").toFile());
+        updateProperties(properties -> properties.put(key, value), distPath.resolve("conf").resolve("keycloak.conf").toFile());
+    }
+
+    @Override
+    public void setEnvVar(String key, String value) {
+        this.envVars.put(key, value);
+    }
+
+    @Override
+    public void removeProperty(String name) {
+        updateProperties(new Consumer<Properties>() {
+            @Override
+            public void accept(Properties properties) {
+                properties.remove(name);
+            }
+        }, distPath.resolve("conf").resolve("keycloak.conf").toFile());
     }
 
     @Override
     public void setQuarkusProperty(String key, String value) {
-        setProperty(key, value, getQuarkusPropertiesFile());
+        updateProperties(new Consumer<Properties>() {
+            @Override
+            public void accept(Properties properties) {
+                properties.put(key, value);
+            }
+        }, getQuarkusPropertiesFile());
     }
 
     @Override
@@ -359,27 +483,27 @@ public final class RawKeycloakDistribution implements KeycloakDistribution {
         }
     }
 
-    private void setProperty(String key, String value, File confFile) {
+    private void updateProperties(Consumer<Properties> propertiesConsumer, File propertiesFile) {
         Properties properties = new Properties();
 
-        if (confFile.exists()) {
+        if (propertiesFile.exists()) {
             try (
-                FileInputStream in = new FileInputStream(confFile);
+                FileInputStream in = new FileInputStream(propertiesFile);
             ) {
 
                 properties.load(in);
             } catch (Exception e) {
-                throw new RuntimeException("Failed to update " + confFile, e);
+                throw new RuntimeException("Failed to update " + propertiesFile, e);
             }
         }
 
         try (
-            FileOutputStream out = new FileOutputStream(confFile)
+            FileOutputStream out = new FileOutputStream(propertiesFile)
         ) {
-            properties.put(key, value);
+            propertiesConsumer.accept(properties);
             properties.store(out, "");
         } catch (Exception e) {
-            throw new RuntimeException("Failed to update " + confFile, e);
+            throw new RuntimeException("Failed to update " + propertiesFile, e);
         }
     }
 

@@ -131,7 +131,7 @@ export class ApplicationsPage extends React.Component<ApplicationsPageProps, App
     return (
       <ContentPage
         title={Msg.localize('applicationsPageTitle')}
-        introMessage="Manage your application permissions."
+        introMessage={Msg.localize('applicationsPageSubTitle')}
       >
         <PageSection isFilled variant={PageSectionVariants.light}>
 
@@ -212,7 +212,9 @@ export class ApplicationsPage extends React.Component<ApplicationsPageProps, App
                       {application.effectiveUrl &&
                         <DescriptionListGroup>
                           <DescriptionListTerm>URL</DescriptionListTerm>
-                          <DescriptionListDescription>{application.effectiveUrl.split('"')}</DescriptionListDescription>
+                          <DescriptionListDescription id={this.elementId("effectiveurl", application)}>
+                            {application.effectiveUrl.split('"')}
+                          </DescriptionListDescription>
                         </DescriptionListGroup>
                       }
                       {application.consent &&

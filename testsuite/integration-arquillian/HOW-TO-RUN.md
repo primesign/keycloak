@@ -225,10 +225,9 @@ where ${HOST} is url of keycloak, for example: `keycloak-keycloak.192.168.42.91.
 
 ### Jetty
 
-At the moment we can run the testsuite with Jetty `9.2` and `9.4`.
+At the moment we can run the testsuite with Jetty `9.4`.
 Each version has its corresponding profile:
 
-* Jetty `9.2`: `app-server-jetty92`
 * Jetty `9.4`: `app-server-jetty94`
 
 Here's how to run the tests with Jetty `9.4`:
@@ -258,143 +257,6 @@ mvn -f testsuite/integration-arquillian/pom.xml \
        -Dtest=org.keycloak.testsuite.adapter.**
 ````
 
-### Wildfly with legacy non-elytron adapter
-
-    mvn -f testsuite/integration-arquillian/pom.xml \
-       clean install \
-       -Dskip.elytron.adapter.installation=true \
-       -Dskip.adapter.offline.installation=false \
-       -Papp-server-wildfly \
-       -Dtest=org.keycloak.testsuite.adapter.**
-
-
-### Wildfly deprecated
-
-This is usually previous version of WildFly application server right before current version.
-See the property `wildfly.deprecated.version` in the file [pom.xml](pom.xml) ) .
-
-    mvn -f testsuite/integration-arquillian/pom.xml \
-       clean install \
-       -Pauth-server-wildfly \
-       -Papp-server-wildfly-deprecated \
-       -Dtest=org.keycloak.testsuite.adapter.**
-
-
-### JBoss Fuse 6.3
-
-1) Download JBoss Fuse 6.3 to your filesystem. It can be downloaded from http://origin-repository.jboss.org/nexus/content/groups/m2-proxy/org/jboss/fuse/jboss-fuse-karaf
-Assumed you downloaded `jboss-fuse-karaf-6.3.0.redhat-229.zip`
-
-2) Install to your local maven repository and change the properties according to your env (This step can be likely avoided if you somehow configure your local maven settings to point directly to Fuse repo):
-
-    mvn install:install-file \
-      -DgroupId=org.jboss.fuse \
-      -DartifactId=jboss-fuse-karaf \
-      -Dversion=6.3.0.redhat-229 \
-      -Dpackaging=zip \
-      -Dfile=/mydownloads/jboss-fuse-karaf-6.3.0.redhat-229.zip
-
-
-3) Prepare Fuse and run the tests (change props according to your environment, versions etc):
-
-
-    # Prepare Fuse server
-    mvn -f testsuite/integration-arquillian/servers/pom.xml \
-      clean install \
-      -Papp-server-fuse63 \
-      -Dfuse63.version=6.3.0.redhat-229
-
-    # Run the Fuse adapter tests
-    mvn -f testsuite/integration-arquillian/tests/base/pom.xml \
-      clean install \
-      -Pauth-server-wildfly \
-      -Papp-server-fuse63 \
-      -Dauth.server.ssl.required=false \
-      -Dadditional.fuse.repos=,$REPO \
-      -Dtest=*.fuse.*
-
-
-### JBoss Fuse 7.X
-
-1) Download JBoss Fuse 7 to your filesystem. It can be downloaded from http://origin-repository.jboss.org/nexus/content/groups/m2-proxy/org/jboss/fuse/fuse-karaf  (Fuse 7.3 or higher is required)
-Assumed you downloaded `fuse-karaf-7.3.0.fuse-730065-redhat-00002.zip`
-
-2) Install to your local maven repository and change the properties according to your env (This step can be likely avoided if you somehow configure your local maven settings to point directly to Fuse repo):
-
-
-    mvn install:install-file \
-      -DgroupId=org.jboss.fuse \
-      -DartifactId=fuse-karaf \
-      -Dversion=7.3.0.fuse-730065-redhat-00002 \
-      -Dpackaging=zip \
-      -Dfile=/mydownloads/fuse-karaf-7.3.0.fuse-730065-redhat-00002.zip
-
-
-3) Prepare Fuse and run the tests (change props according to your environment, versions etc):
-
-
-    # Prepare Fuse server
-    mvn -f testsuite/integration-arquillian/servers/pom.xml \
-      clean install \
-      -Papp-server-fuse7x \
-      -Dfuse7x.version=7.3.0.fuse-730065-redhat-00002
-
-    # Run the Fuse adapter tests
-    mvn -f testsuite/integration-arquillian/tests/base/pom.xml \
-      clean test \
-      -Papp-server-fuse7x \
-      -Dauth.server.ssl.required=false \
-      -Dadditional.fuse.repos=,$REPO \
-      -Dtest=*.fuse.*
-
-
-### EAP6 with Hawtio
-
-1) Download JBoss EAP 6.4.0.GA zip
-
-2) Install to your local maven repository and change the properties according to your env (This step can be likely avoided if you somehow configure your local maven settings to point directly to EAP repo):
-
-
-    mvn install:install-file \
-      -DgroupId=org.jboss.as \
-      -DartifactId=jboss-as-dist \
-      -Dversion=7.5.21.Final-redhat-1 \
-      -Dpackaging=zip \
-      -Dfile=/mydownloads/jboss-eap-6.4.0.zip
-
-
-3) Download Fuse EAP installer (for example from http://origin-repository.jboss.org/nexus/content/groups/m2-proxy/com/redhat/fuse/eap/fuse-eap-installer/6.3.0.redhat-220/ )
-
-4) Install previously downloaded file manually
-
-
-    mvn install:install-file \
-      -DgroupId=com.redhat.fuse.eap \
-      -DartifactId=fuse-eap-installer \
-      -Dversion=6.3.0.redhat-347 \
-      -Dpackaging=jar \
-      -Dfile=/fuse-eap-installer-6.3.0.redhat-347.jar
-
-
-5) Prepare EAP6 with Hawtio and run the test
-
-
-    # Prepare EAP6 and deploy hawtio
-    mvn -f testsuite/integration-arquillian/servers \
-      clean install \
-      -Pauth-server-wildfly \
-      -Papp-server-eap6 \
-      -Dapp.server.jboss.version=7.5.21.Final-redhat-1 \
-      -Dfuse63.version=6.3.0.redhat-347
-
-    # Run the test
-    mvn -f testsuite/integration-arquillian/tests/base/pom.xml \
-      clean install \
-      -Pauth-server-wildfly \
-      -Papp-server-eap6 \
-      -Dtest=EAP6Fuse6HawtioAdapterTest
-
-
 ## Migration test
 
 ### DB migration test
@@ -416,7 +278,7 @@ Run the test (Update according to your DB connection, versions etc):
 
     mvn -B -f testsuite/integration-arquillian/pom.xml \
       clean install \
-      -Pjpa,auth-server-wildfly,db-mariadb,auth-server-migration \
+      -Pjpa,auth-server-wildfly,db-mariadb,auth-server-migration-legacy \
       -Dauth.server.jboss.startup.timeout=900 \
       -Dtest=MigrationTest \
       -Dmigration.mode=auto \
@@ -424,10 +286,34 @@ Run the test (Update according to your DB connection, versions etc):
       -Dprevious.product.unpacked.folder.name=keycloak-$OLD_KEYCLOAK_VERSION \
       -Dmigration.import.file.name=migration-realm-$OLD_KEYCLOAK_VERSION.json \
       -Dauth.server.ssl.required=false \
-      -Djdbc.mvn.version=2.2.4
+      -Djdbc.mvn.version=2.2.4 \
+      -Dsurefire.failIfNoSpecifiedTests=false
 
 
 For the available versions of old keycloak server, you can take a look to [this directory](tests/base/src/test/resources/migration-test) .
+
+### DB migration test with Quarkus
+It is possible to execute DB migration tests for Keycloak with Quarkus distribution by specifying auth server as `-Pauth-server-quarkus` 
+and instead of the `auth-server-migration-legacy`, use only `auth-server-migration`.
+
+The first version of Keycloak on Quarkus is version `17.0.0`.
+Therefore, it is not possible to define the older version.
+You can execute those tests as follows:
+```
+export OLD_KEYCLOAK_VERSION=17.0.0
+
+mvn -B -f testsuite/integration-arquillian/pom.xml \
+  clean install \
+  -Pjpa,auth-server-quarkus,db-mariadb,auth-server-migration \
+  -Dtest=MigrationTest \
+  -Dmigration.mode=auto \
+  -Dmigrated.auth.server.version=$OLD_KEYCLOAK_VERSION \
+  -Dprevious.product.unpacked.folder.name=keycloak-$OLD_KEYCLOAK_VERSION \
+  -Dmigration.import.file.name=migration-realm-$OLD_KEYCLOAK_VERSION.json \
+  -Dauth.server.ssl.required=false \
+  -Djdbc.mvn.version=2.2.4 \
+  -Dsurefire.failIfNoSpecifiedTests=false
+```
 
 ### DB migration test with manual mode
 
@@ -454,7 +340,7 @@ For the available versions, take a look at the directory [tests/other/server-con
 
 
 ## Admin Console UI tests
-The UI tests are real-life, UI focused integration tests. Hence they do not support the default HtmlUnit browser. Only the following real-life browsers are supported: Mozilla Firefox, Google Chrome and Internet Explorer. For details on how to run the tests with these browsers, please refer to [Different Browsers](#different-browsers) chapter.
+The UI tests are real-life, UI focused integration tests. Hence they do not support the default HtmlUnit browser. Only the following real-life browsers are supported: Mozilla Firefox and Google Chrome. For details on how to run the tests with these browsers, please refer to [Different Browsers](#different-browsers) chapter.
 
 The UI tests are focused on the Admin Console. They are placed in the `console` module and are disabled by default.
 
@@ -482,8 +368,6 @@ mvn -f testsuite/integration-arquillian/tests/other/springboot-tests/pom.xml \
     -Dadapter.container=[tomcat|undertow|jetty94] \
     [-Pspringboot26]
 ```
-
- **Note:** Spring Boot 2.x doesn't work with `jetty92` and `jetty93`, only `jetty94` is tested.
 
 ## Base UI tests
 Similarly to Admin Console tests, these tests are focused on UI, specifically on the parts of the server that are accessed by an end user (like Login page, or Account Console).
@@ -598,13 +482,6 @@ Although technically they can be run with almost every test in the testsuite, th
 * **Driver download required:** [ChromeDriver](https://sites.google.com/a/chromium.org/chromedriver/) that corresponds with your version of the browser
 * **Run with:** `-Dbrowser=chrome -Dwebdriver.chrome.driver=path/to/chromedriver`
 
-#### Internet Explorer
-* **Supported test modules:** `console`, `base-ui`
-* **Supported version:** 11
-* **Driver download required:** [Internet Explorer Driver Server](http://www.seleniumhq.org/download/); recommended version [3.5.1 32-bit](http://selenium-release.storage.googleapis.com/3.5/IEDriverServer_Win32_3.5.1.zip)
-* **Run with:** `-Dbrowser=internetExplorer -Dwebdriver.ie.driver=path/to/IEDriverServer.exe -Dauth.server.ssl.required=false`
-Note: We currently do not support SSL in IE.
-
 #### Apple Safari
 * **Supported test modules:** `base-ui`
 * **Supported version:** latest stable
@@ -619,7 +496,7 @@ Note: We currently do not support SSL in IE.
 
 #### Automatic driver downloads
 You can rely on automatic driver downloads which is provided by [Arquillian Drone](http://arquillian.org/arquillian-extension-drone/#_automatic_download). To do so just omit the `-Dwebdriver.{browser}.driver` CLI argument when running the tests.
-By default latest driver version is always downloaded. To download a specific version, add `-DfirefoxDriverVersion`, `-DchromeDriverVersion` or `-DieDriverVersion` CLI argument.
+By default latest driver version is always downloaded. To download a specific version, add `-DfirefoxDriverVersion` or `-DchromeDriverVersion` CLI argument.
 
 #### Mobile browsers
 The support for testing with the mobile browsers is implemented using the [Appium](http://appium.io/) project.

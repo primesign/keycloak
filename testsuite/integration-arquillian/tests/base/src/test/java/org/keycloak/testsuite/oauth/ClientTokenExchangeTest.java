@@ -178,7 +178,7 @@ public class ClientTokenExchangeTest extends AbstractKeycloakTest {
         directPublic.setEnabled(true);
         directPublic.setProtocol(OIDCLoginProtocol.LOGIN_PROTOCOL);
         directPublic.setFullScopeAllowed(false);
-        directPublic.addRedirectUri("https://localhost:8543/auth/realms/master/app/auth");
+        directPublic.addRedirectUri("*");
         directPublic.addProtocolMapper(AudienceProtocolMapper.createClaimMapper("client-exchanger-audience", clientExchanger.getClientId(), null, true, false));
 
         ClientModel directUntrustedPublic = realm.addClient("direct-public-untrusted");
@@ -188,7 +188,8 @@ public class ClientTokenExchangeTest extends AbstractKeycloakTest {
         directUntrustedPublic.setEnabled(true);
         directUntrustedPublic.setProtocol(OIDCLoginProtocol.LOGIN_PROTOCOL);
         directUntrustedPublic.setFullScopeAllowed(false);
-        directUntrustedPublic.addRedirectUri("https://localhost:8543/auth/realms/master/app/auth");
+        directUntrustedPublic.addRedirectUri("*");
+        directUntrustedPublic.setAttribute(OIDCConfigAttributes.POST_LOGOUT_REDIRECT_URIS, "+");
         directUntrustedPublic.addProtocolMapper(AudienceProtocolMapper.createClaimMapper("client-exchanger-audience", clientExchanger.getClientId(), null, true, false));
 
         ClientModel directNoSecret = realm.addClient("direct-no-secret");
@@ -209,6 +210,15 @@ public class ClientTokenExchangeTest extends AbstractKeycloakTest {
         noRefreshToken.setFullScopeAllowed(false);
         noRefreshToken.getAttributes().put(OIDCConfigAttributes.USE_REFRESH_TOKEN, "false");
 
+        ClientModel serviceAccount = realm.addClient("my-service-account");
+        serviceAccount.setClientId("my-service-account");
+        serviceAccount.setPublicClient(false);
+        serviceAccount.setServiceAccountsEnabled(true);
+        serviceAccount.setEnabled(true);
+        serviceAccount.setSecret("secret");
+        serviceAccount.setProtocol(OIDCLoginProtocol.LOGIN_PROTOCOL);
+        serviceAccount.setFullScopeAllowed(false);
+
         // permission for client to client exchange to "target" client
         ClientPolicyRepresentation clientRep = new ClientPolicyRepresentation();
         clientRep.setName("to");
@@ -216,6 +226,7 @@ public class ClientTokenExchangeTest extends AbstractKeycloakTest {
         clientRep.addClient(legal.getId());
         clientRep.addClient(directLegal.getId());
         clientRep.addClient(noRefreshToken.getId());
+        clientRep.addClient(serviceAccount.getId());
 
         ResourceServer server = management.realmResourceServer();
         Policy clientPolicy = management.authz().getStoreFactory().getPolicyStore().create(server, clientRep);
@@ -237,13 +248,13 @@ public class ClientTokenExchangeTest extends AbstractKeycloakTest {
 
         UserModel user = session.users().addUser(realm, "user");
         user.setEnabled(true);
-        session.userCredentialManager().updateCredential(realm, user, UserCredentialModel.password("password"));
+        user.credentialManager().updateCredential(UserCredentialModel.password("password"));
         user.grantRole(exampleRole);
         user.grantRole(impersonateRole);
 
         UserModel bad = session.users().addUser(realm, "bad-impersonator");
         bad.setEnabled(true);
-        session.userCredentialManager().updateCredential(realm, bad, UserCredentialModel.password("password"));
+        bad.credentialManager().updateCredential(UserCredentialModel.password("password"));
     }
 
     public static void setUpUserImpersonatePermissions(KeycloakSession session) {
@@ -302,6 +313,27 @@ public class ClientTokenExchangeTest extends AbstractKeycloakTest {
         {
             response = oauth.doTokenExchange(TEST, accessToken, "target", "illegal", "secret");
             Assert.assertEquals(403, response.getStatusCode());
+        }
+    }
+
+    @Test
+    @UncaughtServerErrorExpected
+    public void testExchangeUsingServiceAccount() throws Exception {
+        testingClient.server().run(ClientTokenExchangeTest::setupRealm);
+
+        oauth.realm(TEST);
+        oauth.clientId("my-service-account");
+        OAuthClient.AccessTokenResponse response = oauth.doClientCredentialsGrantAccessTokenRequest("secret");
+        String accessToken = response.getAccessToken();
+
+        {
+            response = oauth.doTokenExchange(TEST, accessToken, "target", "my-service-account", "secret");
+            String exchangedTokenString = response.getAccessToken();
+            TokenVerifier<AccessToken> verifier = TokenVerifier.create(exchangedTokenString, AccessToken.class);
+            AccessToken exchangedToken = verifier.parse().getToken();
+            Assert.assertEquals("my-service-account", exchangedToken.getIssuedFor());
+            Assert.assertEquals("target", exchangedToken.getAudience()[0]);
+            Assert.assertEquals(exchangedToken.getPreferredUsername(), "service-account-my-service-account");
         }
     }
 
@@ -863,7 +895,7 @@ public class ClientTokenExchangeTest extends AbstractKeycloakTest {
 
         UserModel impersonatedUser = session.users().addUser(realm, "impersonated-user");
         impersonatedUser.setEnabled(true);
-        session.userCredentialManager().updateCredential(realm, impersonatedUser, UserCredentialModel.password("password"));
+        impersonatedUser.credentialManager().updateCredential(UserCredentialModel.password("password"));
         impersonatedUser.grantRole(exampleRole);
     }
 
