@@ -510,7 +510,14 @@ public class DefaultAuthenticationFlow implements AuthenticationFlow {
                 return null;
             case FAILED:
                 logger.debugv("authenticator FAILED: {0}", execution.getAuthenticator());
-                processor.logFailure();
+
+                
+				// ignore brute force protection for non-authentication relevant errors.
+				if (result.error != null
+						&& !result.error.equals(AuthenticationFlowError.NOT_AUTHENTICATION_RELEVANT_ERROR)) {
+					processor.logFailure();
+				}
+                
                 setExecutionStatus(execution, AuthenticationSessionModel.ExecutionStatus.FAILED);
                 if (result.getChallenge() != null) {
                     return sendChallenge(result, execution);
