@@ -322,7 +322,10 @@ export default function ClientDetails() {
       );
     }
     // reset dirty as for reason it is not resetting
-    form.reset(form.getValues(), { keepDirty: false });
+    if (client.attributes?.["accountId"]) {
+        form.setValue("attributes.accountId", client.attributes["accountId"]);
+    }
+   form.reset(form.getValues(), { keepDirty: false });
   };
 
   useFetch(
