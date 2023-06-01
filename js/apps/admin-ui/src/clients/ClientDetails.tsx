@@ -300,6 +300,9 @@ export default function ClientDetails() {
         )
       );
     }
+    if (client.attributes?.["accountId"]) {
+      form.setValue("attributes.accountId", client.attributes["accountId"]);
+    }
   };
 
   useFetch(
