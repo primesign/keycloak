@@ -37,6 +37,11 @@ export const ClientDescription = ({
           },
         }}
       />
+      <TextControl
+        name="attributes.accountId"
+        label={t("common:accountId")}
+        labelIcon={t("clients-help:accountId")}
+      />
       <DefaultSwitchControl
         name="alwaysDisplayInConsole"
         label={t("alwaysDisplayInUI")}
