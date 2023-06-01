@@ -52,7 +52,7 @@ public class ThemeResourceProviderTest extends AbstractTestRealmKeycloakTest {
                 // Fallback to default theme when requested theme don't exists
                 Theme theme = session.theme().getTheme("address", Theme.Type.ADMIN);
                 Assert.assertNotNull(theme);
-                Assert.assertEquals("keycloak.v2", theme.getName());
+                Assert.assertEquals("primesign.v2", theme.getName());
             } catch (IOException e) {
                 Assert.fail(e.getMessage());
             }
