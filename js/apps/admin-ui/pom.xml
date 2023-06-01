@@ -14,7 +14,7 @@
     <artifactId>keycloak-admin-ui</artifactId>
 
     <name>Keycloak Admin UI</name>
-    <description>The user inferface to administrate the Keycloak server.</description>
+    <description>The user interface to administrate the Keycloak server.</description>
 
     <profiles>
         <profile>
@@ -28,7 +28,7 @@
                 <resources>
                     <resource>
                         <directory>dist</directory>
-                        <targetPath>theme/keycloak.v2/admin/resources</targetPath>
+                        <targetPath>theme/primesign.v2/admin/resources</targetPath>
                         <includes>
                             <include>locales/en/**</include>
                         </includes>
@@ -47,7 +47,7 @@
                 <resources>
                     <resource>
                         <directory>dist</directory>
-                        <targetPath>theme/keycloak.v2/admin/resources</targetPath>
+                        <targetPath>theme/primesign.v2/admin/resources</targetPath>
                         <includes>
                             <include>locales/**</include>
                         </includes>
@@ -64,7 +64,7 @@
             </resource>
             <resource>
                 <directory>dist</directory>
-                <targetPath>theme/keycloak.v2/admin/resources</targetPath>
+                <targetPath>theme/primesign.v2/admin/resources</targetPath>
                 <excludes>
                     <exclude>index.html</exclude>
                     <exclude>locales/**</exclude>
@@ -104,7 +104,7 @@
                 </executions>
                 <configuration>
                     <file>dist/index.html</file>
-                    <outputFile>target/classes/theme/keycloak.v2/admin/index.ftl</outputFile>
+                    <outputFile>target/classes/theme/primesign.v2/admin/index.ftl</outputFile>
                     <regex>false</regex>
                     <replacements>
                         <replacement>
