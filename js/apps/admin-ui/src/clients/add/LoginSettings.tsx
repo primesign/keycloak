@@ -29,6 +29,22 @@ export const LoginSettings = ({
   return (
     <>
       <FormGroup
+        label={t("common:identityProviders")}
+        fieldId="identityProviders"
+        labelIcon={
+          <HelpItem
+            helpText={t("clients-help:identityProviders")}
+            fieldLabelId="clients:identityProviders"
+          />
+        }
+      >
+        <KeycloakTextInput
+          type="text"
+          id="identityProviders"
+          {...register("attributes.identityProviders")}
+        />
+      </FormGroup>
+      <FormGroup
         label={t("rootUrl")}
         fieldId="kc-root-url"
         labelIcon={
