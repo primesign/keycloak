@@ -7,7 +7,7 @@ on:
       - main
 
 env:
-  DEFAULT_JDK_VERSION: 11
+  DEFAULT_JDK_VERSION: 17
 
 concurrency:
   # Only run once for latest commit per ref and cancel other (previous) runs.
