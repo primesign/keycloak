@@ -305,6 +305,12 @@ export default function ClientDetails() {
     if (client.attributes?.["accountId"]) {
       form.setValue("attributes.accountId", client.attributes["accountId"]);
     }
+    if (client.attributes?.["identityProviders"]) {
+      form.setValue(
+        "attributes.identityProviders",
+        client.attributes["identityProviders"],
+      );
+    }
   };
 
   useFetch(
