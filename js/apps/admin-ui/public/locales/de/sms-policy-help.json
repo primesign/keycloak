@@ -1,0 +1,28 @@
+{
+  "defaultGateway": "The default gateway is used to send the first SMS.",
+  "fallbackGateway": "The fallback gateway is used to resend an SMS.",
+  "timeout": "The lifetime of a SMS-TAN until it expires and is no longer valid. In case of resend TAN the lifetime is resetted, meaning every SMS-TAN is valid for 5 minutes.",
+  "tanLength": "The length of the SMS-TAN.",
+  "refLength": "The length of the reference value (displayed as the transaction-ID in the SMS-TAN).",
+  "resendDelay": "The delay a user has to wait until he can request a new SMS.",
+  "resendMaxRetries": "The maximum number of SMS-TAN send retries a user can request.",
+  "smsat": {
+    "providerUrl": "Overrides the default URL of the SMS.AT gateway provider.",
+    "senderAddress": "Address of the sender (assigned to the account) from which the message is sent, e.g. PrimeSign.",
+    "senderAddressType": "The sender address type. The following address types are supported: national, international, alphanumeric or shortcode). We currently use alphanumeric.",
+    "authMethod": "How to authenticate at the REST API.",
+    "username": "Authenticate with this username.",
+    "password": "Authenticate with this password.",
+    "apiToken": "The API Token of SMS-AT.",
+    "connectTimeout": "How many seconds to wait for the server connection.",
+    "readTimeout": "How many seconds to wait for a response."
+  },
+  "nexmo": {
+    "providerUrl": "Overrides the default URL for the NEXMO gateway provider.",
+    "senderId": "Name or phone number of the sender.",
+    "apiKey": "Authenticate with this API key.",
+    "apiSecret": "Authenticate with this API secret.",
+    "connectTimeout": "How many seconds to wait for the server connection.",
+    "readTimeout": "How many seconds to wait for a response."
+  }
+}

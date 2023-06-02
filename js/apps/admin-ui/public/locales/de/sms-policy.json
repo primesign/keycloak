@@ -1,0 +1,43 @@
+{
+  "title": "SMS Policy",
+  "defaultGateway": "Default gateway",
+  "fallbackGateway": "Fallback gateway",
+  "timeout": "Timeout",
+  "tanLength": "TAN length",
+  "refLength": "Reference value length",
+  "resendDelay": "Resend TAN delay",
+  "resendMaxRetries": "Resend TAN maximum retries",
+  "smsat": {
+    "title": "SMS.AT",
+    "providerUrl": "Override Provider URL",
+    "senderAddress": "Sender address",
+    "senderAddressType": {
+      "title": "Sender address type",
+      "national": "National",
+      "international": "International",
+      "alphanumeric": "Alphanumeric",
+      "shortcode": "Shortcode"
+    },
+    "authMethod": {
+      "title": "Authentication method",
+      "basic": "Username / Password",
+      "token": "API Token"
+    },
+    "username": "Username",
+    "password": "Password",
+    "apiToken": "API token",
+    "connectTimeout": "Connect timeout",
+    "readTimeout": "Read timeout"
+  },
+  "nexmo": {
+    "title": "NEXMO",
+    "providerUrl": "Override Provider URL",
+    "senderId": "Sender ID",
+    "apiKey": "API Key",
+    "apiSecret": "API Secret",
+    "connectTimeout": "Connect timeout",
+    "readTimeout": "Read timeout"
+  },
+  "updateSuccess": "SMS policy successfully updated",
+  "updateError": "Could not update SMS policy: {{error}}"
+}
