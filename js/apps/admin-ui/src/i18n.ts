@@ -57,6 +57,8 @@ const initOptions = async (
       "identity-providers-help",
       "dynamic",
       "overrides",
+      "sms-policy",
+      "sms-policy-help",
     ],
     interpolation: {
       escapeValue: false,
