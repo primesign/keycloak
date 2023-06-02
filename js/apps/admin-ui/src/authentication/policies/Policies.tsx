@@ -7,6 +7,7 @@ import { CibaPolicy } from "./CibaPolicy";
 import { OtpPolicy } from "./OtpPolicy";
 import { PasswordPolicy } from "./PasswordPolicy";
 import { WebauthnPolicy } from "./WebauthnPolicy";
+import { SmsPolicy } from "./SmsPolicy";
 
 export const Policies = () => {
   const { t } = useTranslation();
@@ -62,6 +63,13 @@ export const Policies = () => {
         title={<TabTitleText>{t("cibaPolicy")}</TabTitleText>}
       >
         <CibaPolicy realm={realm} realmUpdated={refresh} />
+      </Tab>
+      <Tab
+        id="smsPolicy"
+        eventKey={6}
+        title={<TabTitleText>{t("smsTitle")}</TabTitleText>}
+      >
+        <SmsPolicy realm={realm} realmUpdated={setRealm} />
       </Tab>
     </Tabs>
   );
