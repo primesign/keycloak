@@ -38,6 +38,8 @@ export const i18n = createInstance({
     "user-federation-help",
     "identity-providers",
     "identity-providers-help",
+    "sms-policy",
+    "sms-policy-help",
     "dynamic",
   ],
   interpolation: {
