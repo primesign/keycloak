@@ -24,7 +24,7 @@
     <parent>
         <groupId>org.keycloak.testsuite</groupId>
         <artifactId>integration-arquillian</artifactId>
-        <version>21.1.2</version>
+        <version>21.1.1-PS-1</version>
     </parent>
 
     <packaging>pom</packaging>
@@ -215,7 +215,7 @@
         <github.secretToken/>
         <ieDriverArch>Win32</ieDriverArch>
         <ieDriverVersion/>
-        <js.browser>chrome</js.browser>
+        <js.browser>phantomjs</js.browser>
         <js.chromeArguments>--headless</js.chromeArguments>
         <htmlUnitBrowserVersion>chrome</htmlUnitBrowserVersion>
         <firefox_binary/> <!-- the path is set automatically based on the OS -->
