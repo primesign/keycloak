@@ -7,7 +7,7 @@
     <parent>
         <artifactId>keycloak-quarkus-parent</artifactId>
         <groupId>org.keycloak</groupId>
-        <version>22.0.1</version>
+        <version>21.1.1-PS-1</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     
@@ -42,7 +42,7 @@
             <plugin>
                 <groupId>io.quarkus</groupId>
                 <artifactId>quarkus-maven-plugin</artifactId>
-                <version>${quarkus.build.version}</version>
+                <version>${quarkus.version}</version>
                 <configuration>
                     <finalName>keycloak</finalName>
                     <systemProperties>

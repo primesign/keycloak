@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.keycloak.testsuite</groupId>
         <artifactId>integration-arquillian-servers-app-server</artifactId>
-        <version>22.0.1</version>
+        <version>21.1.1-PS-1</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -126,6 +126,7 @@
                                         <artifactItem>
                                             <groupId>org.apache.httpcomponents</groupId>
                                             <artifactId>httpcore</artifactId>
+                                            <version>${apache.httpcomponents.httpcore.version}</version>
                                         </artifactItem>
                                         <artifactItem>
                                             <groupId>org.reactivestreams</groupId>
@@ -135,10 +136,12 @@
                                         <artifactItem>
                                             <groupId>com.fasterxml.jackson.core</groupId>
                                             <artifactId>jackson-databind</artifactId>
+                                            <version>${jackson.version}</version>
                                         </artifactItem>
                                         <artifactItem>
                                             <groupId>org.jboss.logging</groupId>
                                             <artifactId>jboss-logging</artifactId>
+                                            <version>${jboss.logging.version}</version>
                                         </artifactItem>
                                         <artifactItem>
                                             <groupId>javax.json.bind</groupId>

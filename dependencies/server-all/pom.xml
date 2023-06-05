@@ -21,7 +21,7 @@
 	<parent>
 		<artifactId>keycloak-dependencies-parent</artifactId>
 		<groupId>org.keycloak</groupId>
-		<version>22.0.1</version>
+		<version>21.1.1-PS-1</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 
@@ -111,6 +111,11 @@
         <dependency>
             <groupId>org.keycloak</groupId>
             <artifactId>keycloak-authz-policy-common</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.openshift</groupId>
+            <artifactId>openshift-restclient-java</artifactId>
         </dependency>
     </dependencies>
 

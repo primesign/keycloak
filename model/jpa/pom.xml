@@ -21,7 +21,7 @@
     <parent>
         <artifactId>keycloak-model-pom</artifactId>
         <groupId>org.keycloak</groupId>
-        <version>22.0.1</version>
+        <version>21.1.1-PS-1</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -38,6 +38,7 @@
         <jdbc.mvn.groupId>com.h2database</jdbc.mvn.groupId>
         <jdbc.mvn.artifactId>h2</jdbc.mvn.artifactId>
         <jdbc.mvn.version>${h2.version}</jdbc.mvn.version>
+        <log4j.configuration>file:${project.build.directory}/dependency/log4j.properties</log4j.configuration>
     </properties>
     
     <dependencies>
@@ -74,7 +75,7 @@
             <artifactId>jakarta.persistence-api</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.hibernate.orm</groupId>
+            <groupId>org.hibernate</groupId>
             <artifactId>hibernate-core</artifactId>
         </dependency>
         <dependency>
@@ -103,9 +104,8 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.jboss.logmanager</groupId>
-            <artifactId>jboss-logmanager</artifactId>
-            <scope>test</scope>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -113,7 +113,7 @@
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-reload4j</artifactId>
+            <artifactId>slf4j-log4j12</artifactId>
         </dependency>
         <dependency>
             <groupId>${jdbc.mvn.groupId}</groupId>
@@ -135,7 +135,7 @@
                         <keycloak.connectionsJpa.default.password>${keycloak.connectionsJpa.password}</keycloak.connectionsJpa.default.password>
                         <keycloak.connectionsJpa.default.url>${keycloak.connectionsJpa.url}</keycloak.connectionsJpa.default.url>
                         <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
-                        <org.jboss.logging.provider>jboss</org.jboss.logging.provider>
+                        <org.jboss.logging.provider>log4j</org.jboss.logging.provider>
                     </systemPropertyVariables>
                 </configuration>
             </plugin>

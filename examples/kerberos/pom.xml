@@ -22,7 +22,7 @@
     <parent>
         <artifactId>keycloak-examples-parent</artifactId>
         <groupId>org.keycloak</groupId>
-        <version>22.0.1</version>
+        <version>21.1.1-PS-1</version>
     </parent>
 
     <name>Keycloak Examples - Kerberos Credential Delegation</name>
@@ -35,8 +35,8 @@
 
     <dependencies>
         <dependency>
-            <groupId>jakarta.servlet</groupId>
-            <artifactId>jakarta.servlet-api</artifactId>
+            <groupId>org.jboss.spec.javax.servlet</groupId>
+            <artifactId>jboss-servlet-api_3.0_spec</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>

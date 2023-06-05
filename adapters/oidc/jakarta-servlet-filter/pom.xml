@@ -21,7 +21,7 @@
     <parent>
         <artifactId>keycloak-parent</artifactId>
         <groupId>org.keycloak</groupId>
-        <version>22.0.1</version>
+        <version>21.1.1-PS-1</version>
         <relativePath>../../../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -40,7 +40,7 @@
             org.keycloak.adapters.servlet.*
         </keycloak.osgi.export>
         <keycloak.osgi.import>
-            jakarta.servlet.*;version="[3.1,5)";resolution:=optional,
+            javax.servlet.*;version="[3.1,5)";resolution:=optional,
             org.keycloak.*;version="${project.version}",
             *;resolution:=optional
         </keycloak.osgi.import>

@@ -19,7 +19,7 @@
     <parent>
         <groupId>org.keycloak</groupId>
         <artifactId>galleon-feature-packs-parent</artifactId>
-        <version>22.0.1</version>
+        <version>21.1.1-PS-1</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -249,7 +249,7 @@
                         <configuration>
                             <wildfly-channel-resolution-mode>REQUIRED</wildfly-channel-resolution-mode>
                             <generate-channel-manifest>true</generate-channel-manifest>
-                            <add-feature-packs-as-required-manifests>false</add-feature-packs-as-required-manifests>
+                     git        <add-feature-packs-as-required-manifests>false</add-feature-packs-as-required-manifests>
                             <fork-embedded>false</fork-embedded>
                         </configuration>
                     </execution>

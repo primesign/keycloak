@@ -22,7 +22,7 @@
     <parent>
         <groupId>org.keycloak</groupId>
         <artifactId>keycloak-rest-parent</artifactId>
-        <version>22.0.1</version>
+        <version>21.1.1-PS-1</version>
     </parent>
 
     <artifactId>keycloak-rest-admin-ui-ext</artifactId>
@@ -45,6 +45,7 @@
         <dependency>
             <groupId>org.eclipse.microprofile.openapi</groupId>
             <artifactId>microprofile-openapi-api</artifactId>
+            <version>3.1</version>
         </dependency>
     </dependencies>
 
@@ -53,6 +54,7 @@
             <plugin>
                 <artifactId>smallrye-open-api-maven-plugin</artifactId>
                 <groupId>io.smallrye</groupId>
+                <version>3.1.2</version>
                 <configuration>
                     <scanPackages>org.keycloak.admin.ui.rest</scanPackages>
                 </configuration>

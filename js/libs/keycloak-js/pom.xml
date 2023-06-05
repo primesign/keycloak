@@ -5,7 +5,7 @@
     <parent>
         <artifactId>keycloak-js-parent</artifactId>
         <groupId>org.keycloak</groupId>
-        <version>22.0.1</version>
+        <version>21.1.1-PS-1</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
@@ -47,28 +47,27 @@
                 <artifactId>frontend-maven-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>run-build</id>
+                        <id>npm-prepublish</id>
                         <goals>
-                            <goal>pnpm</goal>
+                            <goal>npm</goal>
                         </goals>
                         <configuration>
-                            <arguments>run build</arguments>
+                            <arguments>run prepublishOnly --workspace=keycloak-js</arguments>
                         </configuration>
                     </execution>
                     <execution>
-                        <id>pack</id>
+                        <id>npm-pack</id>
                         <phase>package</phase>
                         <goals>
-                            <goal>pnpm</goal>
+                            <goal>npm</goal>
                         </goals>
                         <configuration>
-                            <arguments>pack --pack-destination=target</arguments>
-                            <pnpmInheritsProxyConfigFromMaven>false</pnpmInheritsProxyConfigFromMaven>
+                            <arguments>pack --workspace=keycloak-js --pack-destination=libs/keycloak-js/target</arguments>
                         </configuration>
                     </execution>
                 </executions>
                 <configuration>
-                    <installDirectory>../..</installDirectory>
+                    <workingDirectory>../..</workingDirectory>
                 </configuration>
             </plugin>
         </plugins>

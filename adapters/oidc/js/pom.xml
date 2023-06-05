@@ -5,7 +5,7 @@
     <parent>
         <artifactId>keycloak-parent</artifactId>
         <groupId>org.keycloak</groupId>
-        <version>22.0.1</version>
+        <version>21.1.1-PS-1</version>
         <relativePath>../../../pom.xml</relativePath>
     </parent>
 
@@ -50,33 +50,31 @@
                 <executions>
                     <execution>
                         <goals>
-                            <goal>install-node-and-pnpm</goal>
+                            <goal>install-node-and-npm</goal>
                         </goals>
                     </execution>
                     <execution>
-                        <id>pnpm-install</id>
+                        <id>npm-ci</id>
                         <goals>
-                            <goal>pnpm</goal>
+                            <goal>npm</goal>
                         </goals>
                         <configuration>
-                            <arguments>install --frozen-lockfile --ignore-scripts</arguments>
+                            <arguments>ci --ignore-scripts</arguments>
                         </configuration>
                     </execution>
                     <execution>
-                        <id>run-build</id>
+                        <id>npm-build</id>
                         <goals>
-                            <goal>pnpm</goal>
+                            <goal>npm</goal>
                         </goals>
                         <configuration>
-                            <arguments>run build</arguments>
+                            <arguments>run build --workspace=keycloak-js</arguments>
                         </configuration>
                     </execution>
                 </executions>
                 <configuration>
                     <nodeVersion>${node.version}</nodeVersion>
-                    <pnpmVersion>${pnpm.version}</pnpmVersion>
-                    <installDirectory>${js.projectDir}</installDirectory>
-                    <workingDirectory>${js.projectDir}/libs/keycloak-js</workingDirectory>
+                    <workingDirectory>${js.projectDir}</workingDirectory>
                 </configuration>
             </plugin>
         </plugins>

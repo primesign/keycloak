@@ -24,7 +24,7 @@
     <parent>
         <groupId>org.keycloak.testsuite</groupId>
         <artifactId>integration-arquillian</artifactId>
-        <version>22.0.1</version>
+        <version>21.1.1-PS-1</version>
     </parent>
 
     <packaging>pom</packaging>
@@ -215,7 +215,7 @@
         <github.secretToken/>
         <ieDriverArch>Win32</ieDriverArch>
         <ieDriverVersion/>
-        <js.browser>chrome</js.browser>
+        <js.browser>phantomjs</js.browser>
         <js.chromeArguments>--headless</js.chromeArguments>
         <htmlUnitBrowserVersion>chrome</htmlUnitBrowserVersion>
         <firefox_binary/> <!-- the path is set automatically based on the OS -->
@@ -345,6 +345,18 @@
                                     <artifactItem>
                                         <groupId>org.keycloak.testsuite</groupId>
                                         <artifactId>hello-world-authz-service</artifactId>
+                                        <version>${project.version}</version>
+                                        <type>war</type>
+                                    </artifactItem>
+                                    <artifactItem>
+                                        <groupId>org.keycloak.testsuite</groupId>
+                                        <artifactId>photoz-html5-client</artifactId>
+                                        <version>${project.version}</version>
+                                        <type>war</type>
+                                    </artifactItem>
+                                    <artifactItem>
+                                        <groupId>org.keycloak.testsuite</groupId>
+                                        <artifactId>photoz-restful-api</artifactId>
                                         <version>${project.version}</version>
                                         <type>war</type>
                                     </artifactItem>
@@ -1604,12 +1616,6 @@
                 </dependency>
 
                 <dependency>
-                    <groupId>net.bytebuddy</groupId>
-                    <artifactId>byte-buddy</artifactId>
-                    <version>1.12.18</version>
-                </dependency>
-
-                <dependency>
                     <groupId>org.jboss.arquillian.junit</groupId>
                     <artifactId>arquillian-junit-container</artifactId>
                 </dependency>
@@ -1700,7 +1706,7 @@
                 </dependency>
                 <dependency>
                     <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-reload4j</artifactId>
+                    <artifactId>slf4j-log4j12</artifactId>
                 </dependency>
 
                 <dependency>
@@ -1822,7 +1828,7 @@
                 </dependency>
                 <dependency>
                     <groupId>org.infinispan</groupId>
-                    <artifactId>infinispan-core-jakarta</artifactId>
+                    <artifactId>infinispan-core</artifactId>
                 </dependency>
 
                 <dependency>
@@ -1830,13 +1836,6 @@
                     <artifactId>${jdbc.mvn.artifactId}</artifactId>
                     <version>${jdbc.mvn.version}</version>
                     <scope>compile</scope>
-                </dependency>
-
-                <!-- OpenJDK 17 and further versions doesn't provide Nashorn library out of the box. -->
-                <dependency>
-                    <groupId>org.openjdk.nashorn</groupId>
-                    <artifactId>nashorn-core</artifactId>
-                    <version>${nashorn.version}</version>
                 </dependency>
 
                 <!-- CLI -->
@@ -1855,13 +1854,6 @@
                         </exclusion>
                     </exclusions>
                     <type>zip</type>
-                </dependency>
-
-                <!-- Fuse adapter dependency -->
-                <dependency>
-                    <groupId>org.osgi</groupId>
-                    <artifactId>org.osgi.enterprise</artifactId>
-                    <scope>provided</scope>
                 </dependency>
 
                 <!-- Needed for infinispan statistics -->

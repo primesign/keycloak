@@ -22,7 +22,7 @@
     <parent>
         <artifactId>keycloak-examples-parent</artifactId>
         <groupId>org.keycloak</groupId>
-        <version>22.0.1</version>
+        <version>21.1.1-PS-1</version>
     </parent>
 
     <name>Keycloak Examples - Admin Client</name>
@@ -36,7 +36,7 @@
     <dependencies>
         <dependency>
             <groupId>org.keycloak</groupId>
-            <artifactId>keycloak-admin-client-jee</artifactId>
+            <artifactId>keycloak-admin-client</artifactId>
         </dependency>
     </dependencies>
 

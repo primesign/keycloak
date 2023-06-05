@@ -22,7 +22,7 @@
     <parent>
         <groupId>org.keycloak.testsuite</groupId>
         <artifactId>integration-arquillian-servers-app-server</artifactId>
-        <version>22.0.1</version>
+        <version>21.1.1-PS-1</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -70,33 +70,6 @@
                     <exists>src</exists>
                 </file>
             </activation>
-            <dependencies>
-                <!-- These ZIPs can be fetched from artifactItems, but we need to properly assess the Maven build execution order -->
-                <dependency>
-                    <groupId>org.keycloak</groupId>
-                    <artifactId>${app.server.oidc.adapter.artifactId}</artifactId>
-                    <version>${oidc-adapter.version}</version>
-                    <type>zip</type>
-                    <exclusions>
-                        <exclusion>
-                            <groupId>*</groupId>
-                            <artifactId>*</artifactId>
-                        </exclusion>
-                    </exclusions>
-                </dependency>
-                <dependency>
-                    <groupId>org.keycloak</groupId>
-                    <artifactId>${app.server.saml.adapter.artifactId}</artifactId>
-                    <version>${saml-adapter.version}</version>
-                    <type>zip</type>
-                    <exclusions>
-                        <exclusion>
-                            <groupId>*</groupId>
-                            <artifactId>*</artifactId>
-                        </exclusion>
-                    </exclusions>
-                </dependency>
-            </dependencies>
             <build>
                 <plugins>
 
@@ -571,7 +544,6 @@
                                     <arguments>
                                         <argument>${cli.jboss-cli.arg}</argument>
                                         <argument>--file=${app.server.jboss.home}/docs/examples/enable-elytron-se17.cli</argument>
-                                        <argument>${cli.win.working.dir}</argument>
                                     </arguments>
                                 </configuration>
                             </execution>
@@ -592,7 +564,6 @@
                                     <arguments>
                                         <argument>${cli.jboss-cli.arg}</argument>
                                         <argument>--file=${app.server.jboss.home}/docs/examples/enable-elytron-se17.cli</argument>
-                                        <argument>${cli.win.working.dir}</argument>
                                         <argument>-Dconfig=standalone-ha.xml</argument>
                                     </arguments>
                                 </configuration>
@@ -821,21 +792,8 @@
             </modules>
         </profile>
         <profile>
-            <id>app-server-eap6</id>
-            <activation>
-                <property>
-                    <name>app.server</name>
-                    <value>eap6</value>
-                </property>
-            </activation>
-            <modules>
-                <module>eap6</module>
-            </modules>
-        </profile>
-        <profile>
             <id>app-server-wildfly</id>
             <activation>
-                <activeByDefault>true</activeByDefault>
                 <property>
                     <name>app.server</name>
                     <value>wildfly</value>

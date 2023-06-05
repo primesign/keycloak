@@ -5,7 +5,7 @@
     <parent>
         <artifactId>integration-arquillian</artifactId>
         <groupId>org.keycloak.testsuite</groupId>
-        <version>22.0.1</version>
+        <version>21.1.1-PS-1</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -16,6 +16,7 @@
 
     <modules>
         <module>test-apps-dist</module>
+        <module>photoz</module>
         <module>hello-world-authz-service</module>
         <module>servlet-authz</module>
         <module>servlet-policy-enforcer</module>
@@ -23,6 +24,5 @@
         <module>app-profile-jee</module>
         <module>cors</module>
         <module>spring-boot-adapter-app</module>
-        <module>fuse</module>
     </modules>
 </project>

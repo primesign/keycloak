@@ -5,14 +5,14 @@
     <parent>
         <artifactId>keycloak-docs-parent</artifactId>
         <groupId>org.keycloak</groupId>
-        <version>22.0.1</version>
+        <version>21.1.1-PS-1</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <name>Keycloak Documentation Parent</name>
     <groupId>org.keycloak.documentation</groupId>
     <artifactId>documentation-parent</artifactId>
-    <version>22.0.1</version>
+    <version>21.1.1-PS-1</version>
     <packaging>pom</packaging>
 
     <properties>
@@ -20,6 +20,7 @@
         <imagesDir>keycloak-images</imagesDir>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <version.plugin.asciidoctor>1.5.5</version.plugin.asciidoctor>
         <version.plugin.assembly>3.0.0</version.plugin.assembly>
         <version.plugin.resources>3.0.2</version.plugin.resources>
         <version.plugin.dependency>3.0.1</version.plugin.dependency>
@@ -31,6 +32,8 @@
 
         <maven.compiler.target>1.8</maven.compiler.target>
         <maven.compiler.source>1.8</maven.compiler.source>
+
+        <buildType>archive</buildType>
     </properties>
 
     <modules>
@@ -57,6 +60,17 @@
             <modules>
                 <module>tests</module>
             </modules>
+        </profile>
+        <profile>
+            <id>latest</id>
+            <activation>
+                <property>
+                    <name>latest</name>
+                </property>
+            </activation>
+            <properties>
+                <buildType>latest</buildType>
+            </properties>
         </profile>
     </profiles>
 
@@ -131,6 +145,7 @@
                 <plugin>
                     <groupId>org.asciidoctor</groupId>
                     <artifactId>asciidoctor-maven-plugin</artifactId>
+                    <version>${version.plugin.asciidoctor}</version>
                     <executions>
                         <execution>
                             <id>asciidoc-to-html</id>
@@ -142,8 +157,9 @@
                                 <sourceDirectory>${basedir}/target/sources</sourceDirectory>
                                 <sourceDocumentName>${masterFile}.adoc</sourceDocumentName>
                                 <backend>html5</backend>
+                                <sourceHighlighter>coderay</sourceHighlighter>
+
                                 <attributes>
-                                    <source-highlighter>coderay</source-highlighter>
                                     <imagesdir>./</imagesdir>
                                     <toc>left</toc>
                                     <toc>left</toc>
@@ -153,6 +169,7 @@
                                     <idseparator>-</idseparator>
                                     <docinfo1>true</docinfo1>
                                     <masterFile>${masterFile}</masterFile>
+                                    <project_buildType>${buildType}</project_buildType>
                                 </attributes>
                                 <resources>
                                     <resource>
@@ -163,11 +180,6 @@
                                         </includes>
                                     </resource>
                                 </resources>
-                                <logHandler>
-                                    <failIf>
-                                        <severity>WARN</severity>
-                                    </failIf>
-                                </logHandler>
                             </configuration>
                         </execution>
                     </executions>
