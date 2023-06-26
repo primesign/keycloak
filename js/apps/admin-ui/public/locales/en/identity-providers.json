@@ -181,5 +181,6 @@
     "local": "LOCAL",
     "brokerId": "BROKER_ID",
     "brokerUsername": "BROKER_USERNAME"
-  }
+  },
+  "addIdgProvider": "Add IDG Provider"
 }
