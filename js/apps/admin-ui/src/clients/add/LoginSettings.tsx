@@ -31,11 +31,11 @@ export const LoginSettings = ({
   return (
     <>
       <FormGroup
-        label={t("common:identityProviders")}
+        label={t("identityProviders")}
         fieldId="identityProviders"
         labelIcon={
           <HelpItem
-            helpText={t("clients-help:identityProviders")}
+            helpText={t("identityProvidersHelp")}
             fieldLabelId="clients:identityProviders"
           />
         }
