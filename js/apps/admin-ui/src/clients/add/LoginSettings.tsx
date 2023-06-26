@@ -24,8 +24,8 @@ export const LoginSettings = ({
     <TextControl
         type="url"
         name="attributes.identityProviders"
-        label={t("common:identityProviders")}
-        labelIcon={t("clients-help:identityProviders")}
+        label={t("identityProviders")}
+        labelIcon={t("identityProvidersHelp")}
     />
       <TextControl
         type="url"
