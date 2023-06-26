@@ -71,6 +71,8 @@ import { AdminEvents } from "../../events/AdminEvents";
 import { UserProfileClaimsSettings } from "./OAuth2UserProfileClaimsSettings";
 import { KubernetesSettings } from "./KubernetesSettings";
 
+import { IdgGeneralSettings } from "./IdgGeneralSettings";
+
 type HeaderProps = {
   onChange: (value: boolean) => void;
   value: boolean;
@@ -417,6 +419,7 @@ export default function DetailSettings() {
   const isSPIFFE = provider.providerId!.includes("spiffe");
   const isKubernetes = provider.providerId!.includes("kubernetes");
   const isSocial = !isOIDC && !isSAML && !isOAuth2;
+  const isIDG = provider.providerId!.includes("german-eid");
 
   const loader = async () => {
     const [loaderMappers, loaderMapperTypes] = await Promise.all([
@@ -453,9 +456,12 @@ export default function DetailSettings() {
           isHorizontal
           onSubmit={handleSubmit(save)}
         >
-          {isSocial && <GeneralSettings create={false} id={providerId} />}
+          {isSocial && !isIDG && (
+            <GeneralSettings create={false} id={providerId} />
+          )}
           {(isOIDC || isOAuth2) && <OIDCGeneralSettings />}
           {isSAML && <SamlGeneralSettings isAliasReadonly />}
+          {isIDG && <IdgGeneralSettings id={alias} />}
           {providerInfo && (
             <DynamicComponents stringify properties={providerInfo.properties} />
           )}
