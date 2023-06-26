@@ -65,6 +65,8 @@ import { OIDCGeneralSettings } from "./OIDCGeneralSettings";
 import { ReqAuthnConstraints } from "./ReqAuthnConstraintsSettings";
 import { SamlGeneralSettings } from "./SamlGeneralSettings";
 
+import { IdgGeneralSettings } from "./IdgGeneralSettings";
+
 type HeaderProps = {
   onChange: (value: boolean) => void;
   value: boolean;
@@ -406,6 +408,7 @@ export default function DetailSettings() {
   const isOIDC = provider.providerId!.includes("oidc");
   const isSAML = provider.providerId!.includes("saml");
   const isSocial = !isOIDC && !isSAML;
+  const isIDG = provider.providerId!.includes("german-eid");
 
   const loader = async () => {
     const [loaderMappers, loaderMapperTypes] = await Promise.all([
@@ -441,9 +444,12 @@ export default function DetailSettings() {
           isHorizontal
           onSubmit={handleSubmit(save)}
         >
-          {isSocial && <GeneralSettings create={false} id={providerId} />}
+          {isSocial && !isIDG && (
+            <GeneralSettings create={false} id={providerId} />
+          )}
           {isOIDC && <OIDCGeneralSettings />}
           {isSAML && <SamlGeneralSettings isAliasReadonly />}
+          {isIDG && <IdgGeneralSettings id={alias} />}
           {providerInfo && (
             <DynamicComponents stringify properties={providerInfo.properties} />
           )}
