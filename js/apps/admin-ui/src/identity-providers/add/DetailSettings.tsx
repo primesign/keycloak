@@ -79,6 +79,8 @@ import { DefaultSwitchControl } from "../../components/SwitchControl";
 import { GroupResourceContext } from "../../context/group-resource/GroupResourceContext";
 import DefaultTrustSettings from "./DefaultTrustSettings";
 
+import { IdgGeneralSettings } from "./IdgGeneralSettings";
+
 type HeaderProps = {
   onChange: (value: boolean) => void;
   value: boolean;
@@ -441,6 +443,7 @@ export default function DetailSettings() {
   );
   const isDefaultTrust = provider.providerId === "default-trust";
   const isSocial = !isOIDC && !isSAML && !isOAuth2;
+  const isIDG = provider.providerId!.includes("german-eid");
   const isJWTAuthorizationGrantSupported =
     (isOAuth2 || isOIDC) &&
     !!provider.types?.includes(IdentityProviderType.JWT_AUTHORIZATION_GRANT) &&
@@ -485,9 +488,12 @@ export default function DetailSettings() {
           isHorizontal
           onSubmit={handleSubmit(save)}
         >
-          {isSocial && <GeneralSettings create={false} id={providerId} />}
+          {isSocial && !isIDG && (
+            <GeneralSettings create={false} id={providerId} />
+          )}
           {(isOIDC || isOAuth2) && <OIDCGeneralSettings />}
           {isSAML && <SamlGeneralSettings isAliasReadonly />}
+          {isIDG && <IdgGeneralSettings id={alias} />}
           {providerInfo && (
             <DynamicComponents stringify properties={providerInfo.properties} />
           )}
