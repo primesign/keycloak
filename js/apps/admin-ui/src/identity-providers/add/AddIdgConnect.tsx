@@ -25,7 +25,7 @@ type DiscoveryIdentityProvider = IdentityProviderRepresentation & {
 export default function AddIdgConnect() {
   const { t } = useTranslation("identity-providers");
   const navigate = useNavigate();
-  const id = "idg-eid-identity-provider";
+  const id = "german-eid";
 
   const form = useForm<DiscoveryIdentityProvider>({
     defaultValues: { alias: id, config: { allowCreate: "true" } },
