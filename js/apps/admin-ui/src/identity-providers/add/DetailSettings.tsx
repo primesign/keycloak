@@ -293,7 +293,7 @@ export default function DetailSettings() {
 
   const isOIDC = provider.providerId!.includes("oidc");
   const isSAML = provider.providerId!.includes("saml");
-  const isIDG = provider.providerId!.includes("idg-eid-identity-provider");
+  const isIDG = provider.providerId!.includes("german-eid");
 
   const loader = async () => {
     const [loaderMappers, loaderMapperTypes] = await Promise.all([
