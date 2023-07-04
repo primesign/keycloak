@@ -68,6 +68,13 @@ public class EventBuilder {
         this.listeners = getEventListeners(session, realm);
 
         realm(realm);
+
+        String storeImmediatelyProperty = System.getenv("KC_EVENT_STOREIMMEDIATELY");
+
+        if (storeImmediatelyProperty != null) {
+            this.storeImmediately = Boolean.parseBoolean(storeImmediatelyProperty);
+        }
+
     }
 
     private static EventStoreProvider getEventStoreProvider(KeycloakSession session) {
