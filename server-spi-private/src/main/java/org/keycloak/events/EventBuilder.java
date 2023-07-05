@@ -93,11 +93,12 @@ public class EventBuilder {
         .collect(Collectors.toList());
     }
 
-    private EventBuilder(KeycloakSessionFactory sessionFactory, List<EventListenerProvider> listeners, RealmModel realm, Event event) {
+    private EventBuilder(KeycloakSessionFactory sessionFactory, List<EventListenerProvider> listeners, EventStoreProvider eventStoreProvider,RealmModel realm, Event event) {
         this.listeners = listeners;
         this.realm = realm;
         this.event = event;
         this.sessionFactory = sessionFactory;
+        this.store = eventStoreProvider;
     }
 
     public EventBuilder realm(RealmModel realm) {
@@ -232,7 +233,7 @@ public class EventBuilder {
     }
 
     public EventBuilder clone() {
-        return new EventBuilder(sessionFactory, listeners, realm, event.clone());
+        return new EventBuilder(sessionFactory, listeners, store, realm, event.clone());
     }
 
     private void send(boolean sendImmediately) {
