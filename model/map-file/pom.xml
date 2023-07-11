@@ -22,7 +22,7 @@
     <parent>
         <artifactId>keycloak-model-pom</artifactId>
         <groupId>org.keycloak</groupId>
-        <version>21.1.1-PS-2-SNAPSHOT</version>
+        <version>21.1.1-PS-2</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
