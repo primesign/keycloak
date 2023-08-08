@@ -1,7 +1,7 @@
 
 {
   "name": "keycloak-js",
-  "version": "22.0.1-PS-1-SNAPSHOT",
+  "version": "22.0.1-PS-1",
   "description": "A client-side JavaScript OpenID Connect library that can be used to secure web applications",
   "main": "./dist/keycloak.js",
   "module": "./dist/keycloak.mjs",
