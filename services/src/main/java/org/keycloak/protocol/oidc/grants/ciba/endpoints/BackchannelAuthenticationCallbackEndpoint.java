@@ -83,11 +83,11 @@ public class BackchannelAuthenticationCallbackEndpoint extends AbstractCibaEndpo
 
         switch (status) {
             case SUCCEED:
-                approveRequest(bearerToken, response.getAdditionalParams());
+                approveRequest(bearerToken.getId(), response.getAdditionalParams());
                 break;
             case CANCELLED:
             case UNAUTHORIZED:
-                denyRequest(bearerToken, status);
+                denyRequest(bearerToken.getId(), status);
                 break;
         }
 
@@ -152,24 +152,24 @@ public class BackchannelAuthenticationCallbackEndpoint extends AbstractCibaEndpo
         return new BackchannelAuthCallbackContext(bearerToken, deviceCode);
     }
 
-    private void cancelRequest(String authResultId) {
+    protected void cancelRequest(String authResultId) {
         OAuth2DeviceCodeModel userCode = DeviceEndpoint.getDeviceByUserCode(session, realm, authResultId);
         DeviceGrantType.removeDeviceByDeviceCode(session, userCode.getDeviceCode());
         DeviceGrantType.removeDeviceByUserCode(session, realm, authResultId);
     }
 
-    private void approveRequest(AccessToken authReqId, Map<String, String> additionalParams) {
-        DeviceGrantType.approveUserCode(session, realm, authReqId.getId(), "fake", additionalParams);
+    protected void approveRequest(String authReqId, Map<String, String> additionalParams) {
+        DeviceGrantType.approveUserCode(session, realm, authReqId, "fake", additionalParams);
     }
 
-    private void denyRequest(AccessToken authReqId, Status status) {
+    protected void denyRequest(String authReqId, Status status) {
         if (CANCELLED.equals(status)) {
             event.error(Errors.NOT_ALLOWED);
         } else {
             event.error(Errors.CONSENT_DENIED);
         }
 
-        DeviceGrantType.denyUserCode(session, realm, authReqId.getId());
+        DeviceGrantType.denyUserCode(session, realm, authReqId);
     }
 
     protected void sendClientNotificationRequest(ClientModel client, CibaConfig cibaConfig, OAuth2DeviceCodeModel deviceModel) {
