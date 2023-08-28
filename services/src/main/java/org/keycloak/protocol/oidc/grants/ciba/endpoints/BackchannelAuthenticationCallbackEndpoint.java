@@ -57,6 +57,7 @@ public class BackchannelAuthenticationCallbackEndpoint extends AbstractCibaEndpo
     private static final Logger logger = Logger.getLogger(BackchannelAuthenticationCallbackEndpoint.class);
 
     private final HttpRequest httpRequest;
+    protected AuthenticationChannelResponse authenticationChannelResponse;
 
     public BackchannelAuthenticationCallbackEndpoint(KeycloakSession session, EventBuilder event) {
         super(session, event);
@@ -70,7 +71,8 @@ public class BackchannelAuthenticationCallbackEndpoint extends AbstractCibaEndpo
     @Produces(MediaType.APPLICATION_JSON)
     public Response processAuthenticationChannelResult(AuthenticationChannelResponse response) {
         event.event(EventType.LOGIN);
-        BackchannelAuthCallbackContext ctx = verifyAuthenticationRequest(getRawBearerToken(httpRequest.getHttpHeaders(), response));
+	    this.authenticationChannelResponse = response;
+	    BackchannelAuthCallbackContext ctx = verifyAuthenticationRequest(getRawBearerToken(httpRequest.getHttpHeaders(), response));
         AccessToken bearerToken = ctx.bearerToken;
         OAuth2DeviceCodeModel deviceModel = ctx.deviceModel;
 
@@ -83,7 +85,7 @@ public class BackchannelAuthenticationCallbackEndpoint extends AbstractCibaEndpo
         }
 
         status = preApprove(response);
-        
+
         switch (status) {
             case SUCCEED:
                 approveRequest(bearerToken.getId(), response.getAdditionalParams());
@@ -92,6 +94,10 @@ public class BackchannelAuthenticationCallbackEndpoint extends AbstractCibaEndpo
             case UNAUTHORIZED:
                 denyRequest(bearerToken.getId(), status);
                 break;
+        }
+
+        if (!postApprove(response)) {
+            denyRequest(bearerToken.getId(), status);
         }
 
         // Call the notification endpoint
@@ -113,12 +119,7 @@ public class BackchannelAuthenticationCallbackEndpoint extends AbstractCibaEndpo
         AccessToken bearerToken;
 
         try {
-            bearerToken = TokenVerifier.createWithoutSignature(session.tokens().decode(rawBearerToken, AccessToken.class))
-                    .withDefaultChecks()
-                    .realmUrl(Urls.realmIssuer(session.getContext().getUri().getBaseUri(), realm.getName()))
-                    .checkActive(true)
-                    .audience(Urls.realmIssuer(session.getContext().getUri().getBaseUri(), realm.getName()))
-                    .verify().getToken();
+            bearerToken = getTokenVerifier(rawBearerToken).verify().getToken();
         } catch (Exception e) {
             event.error(Errors.INVALID_TOKEN);
             // authentication channel id format is invalid or it has already been used
@@ -156,7 +157,7 @@ public class BackchannelAuthenticationCallbackEndpoint extends AbstractCibaEndpo
 
     /**
      * Handels the cancellation of an authentication request.
-     * 
+     *
      * @param authResultId The id to identify the request.
      */
     protected void cancelRequest(String authResultId) {
@@ -164,12 +165,11 @@ public class BackchannelAuthenticationCallbackEndpoint extends AbstractCibaEndpo
         DeviceGrantType.removeDeviceByDeviceCode(session, userCode.getDeviceCode());
         DeviceGrantType.removeDeviceByUserCode(session, realm, authResultId);
     }
-
     /**
      * Is called before the request approving, allows additional validation of other factors.
-     * 
+     *
      * @param response The {@link AuthenticationChannelResponse} to work with.
-     *                 
+     *
      * @return The {@link Status} of the response, after pre-approving.
      */
     protected Status preApprove(AuthenticationChannelResponse response) {
@@ -178,7 +178,7 @@ public class BackchannelAuthenticationCallbackEndpoint extends AbstractCibaEndpo
 
     /**
      * Approves the request respectively the code.
-     * 
+     *
      * @param authReqId The id to identify the request.
      * @param additionalParams Additional parameters.
      */
@@ -186,7 +186,11 @@ public class BackchannelAuthenticationCallbackEndpoint extends AbstractCibaEndpo
         DeviceGrantType.approveUserCode(session, realm, authReqId, "fake", additionalParams);
     }
 
-    protected void denyRequest(String authReqId, Status status) {
+	protected boolean postApprove(AuthenticationChannelResponse response) {
+		return true;
+	}
+
+	protected void denyRequest(String authReqId, Status status) {
         if (CANCELLED.equals(status)) {
             event.error(Errors.NOT_ALLOWED);
         } else {
@@ -198,10 +202,10 @@ public class BackchannelAuthenticationCallbackEndpoint extends AbstractCibaEndpo
 
     /**
      * Extracts the raw bearer token from the request.
-     * 
+     *
      * @param httpHeaders The request headers.
      * @param response The {@link AuthenticationChannelResponse}
-     *                 
+     *
      * @return The raw bearer token.
      */
     protected String getRawBearerToken(HttpHeaders httpHeaders, AuthenticationChannelResponse response) {
@@ -209,6 +213,30 @@ public class BackchannelAuthenticationCallbackEndpoint extends AbstractCibaEndpo
         return authHeader == null ? null : authHeader.getToken();
     }
 
+    /**
+     * Returns a tokenverifier for {@link AccessToken}s with
+     * {@link TokenVerifier#withDefaultChecks()} with configured realmurl, isactive
+     * check an audience.
+     * 
+     * @param rawBearerToken The raw bearer token. (required; must not be
+     *                       {@code null})
+     * 
+     * @return The token verifier for {@link AccessToken}s. (never {@code null})
+     * 
+     * @implNote Note that the token will only verified once
+     *           {@link TokenVerifier#verify()} is called.
+     */
+    protected TokenVerifier<AccessToken> getTokenVerifier(String rawBearerToken) {
+      
+      return TokenVerifier
+          .createWithoutSignature(session.tokens().decode(rawBearerToken, AccessToken.class))
+          .withDefaultChecks()
+          .realmUrl(Urls.realmIssuer(session.getContext().getUri().getBaseUri(), realm.getName()))
+          .checkActive(true)
+          .audience(Urls.realmIssuer(session.getContext().getUri().getBaseUri(), realm.getName()));
+      
+    }
+    
     protected void sendClientNotificationRequest(ClientModel client, CibaConfig cibaConfig, OAuth2DeviceCodeModel deviceModel) {
         String clientNotificationEndpoint = cibaConfig.getBackchannelClientNotificationEndpoint(client);
         if (clientNotificationEndpoint == null) {
