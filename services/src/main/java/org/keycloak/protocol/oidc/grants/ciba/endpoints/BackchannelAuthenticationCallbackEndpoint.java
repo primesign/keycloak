@@ -56,6 +56,7 @@ public class BackchannelAuthenticationCallbackEndpoint extends AbstractCibaEndpo
     private static final Logger logger = Logger.getLogger(BackchannelAuthenticationCallbackEndpoint.class);
 
     private final HttpRequest httpRequest;
+    protected AuthenticationChannelResponse authenticationChannelResponse;
 
     public BackchannelAuthenticationCallbackEndpoint(KeycloakSession session, EventBuilder event) {
         super(session, event);
@@ -69,7 +70,8 @@ public class BackchannelAuthenticationCallbackEndpoint extends AbstractCibaEndpo
     @Produces(MediaType.APPLICATION_JSON)
     public Response processAuthenticationChannelResult(AuthenticationChannelResponse response) {
         event.event(EventType.LOGIN);
-        BackchannelAuthCallbackContext ctx = verifyAuthenticationRequest(getRawBearerToken(httpRequest.getHttpHeaders(), response));
+	    this.authenticationChannelResponse = response;
+	    BackchannelAuthCallbackContext ctx = verifyAuthenticationRequest(getRawBearerToken(httpRequest.getHttpHeaders(), response));
         AccessToken bearerToken = ctx.bearerToken;
         OAuth2DeviceCodeModel deviceModel = ctx.deviceModel;
 
@@ -82,7 +84,7 @@ public class BackchannelAuthenticationCallbackEndpoint extends AbstractCibaEndpo
         }
 
         status = preApprove(response);
-        
+
         switch (status) {
             case SUCCEED:
                 approveRequest(bearerToken.getId(), response.getAdditionalParams());
@@ -91,6 +93,10 @@ public class BackchannelAuthenticationCallbackEndpoint extends AbstractCibaEndpo
             case UNAUTHORIZED:
                 denyRequest(bearerToken.getId(), status);
                 break;
+        }
+
+        if (!postApprove(response)) {
+            denyRequest(bearerToken.getId(), status);
         }
 
         // Call the notification endpoint
@@ -155,7 +161,7 @@ public class BackchannelAuthenticationCallbackEndpoint extends AbstractCibaEndpo
 
     /**
      * Handels the cancellation of an authentication request.
-     * 
+     *
      * @param authResultId The id to identify the request.
      */
     protected void cancelRequest(String authResultId) {
@@ -163,12 +169,11 @@ public class BackchannelAuthenticationCallbackEndpoint extends AbstractCibaEndpo
         DeviceGrantType.removeDeviceByDeviceCode(session, userCode.getDeviceCode());
         DeviceGrantType.removeDeviceByUserCode(session, realm, authResultId);
     }
-
     /**
      * Is called before the request approving, allows additional validation of other factors.
-     * 
+     *
      * @param response The {@link AuthenticationChannelResponse} to work with.
-     *                 
+     *
      * @return The {@link Status} of the response, after pre-approving.
      */
     protected Status preApprove(AuthenticationChannelResponse response) {
@@ -177,7 +182,7 @@ public class BackchannelAuthenticationCallbackEndpoint extends AbstractCibaEndpo
 
     /**
      * Approves the request respectively the code.
-     * 
+     *
      * @param authReqId The id to identify the request.
      * @param additionalParams Additional parameters.
      */
@@ -185,7 +190,11 @@ public class BackchannelAuthenticationCallbackEndpoint extends AbstractCibaEndpo
         DeviceGrantType.approveUserCode(session, realm, authReqId, "fake", additionalParams);
     }
 
-    protected void denyRequest(String authReqId, Status status) {
+	protected boolean postApprove(AuthenticationChannelResponse response) {
+		return true;
+	}
+
+	protected void denyRequest(String authReqId, Status status) {
         if (CANCELLED.equals(status)) {
             event.error(Errors.NOT_ALLOWED);
         } else {
@@ -197,10 +206,10 @@ public class BackchannelAuthenticationCallbackEndpoint extends AbstractCibaEndpo
 
     /**
      * Extracts the raw bearer token from the request.
-     * 
+     *
      * @param httpHeaders The request headers.
      * @param response The {@link AuthenticationChannelResponse}
-     *                 
+     *
      * @return The raw bearer token.
      */
     protected String getRawBearerToken(HttpHeaders httpHeaders, AuthenticationChannelResponse response) {
