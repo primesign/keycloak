@@ -100,12 +100,12 @@ public class BackchannelAuthenticationEndpoint extends AbstractCibaEndpoint {
             UserModel user = request.getUser();
 
             String infoUsedByAuthentication = resolver.getInfoUsedByAuthentication(user);
+            CibaConfig cibaPolicy = realm.getCibaPolicy();
+            int poolingInterval = cibaPolicy.getPoolingInterval();
+
+            storeAuthenticationRequest(request, cibaPolicy, authReqId);
 
             if (provider.requestAuthentication(request, infoUsedByAuthentication)) {
-                CibaConfig cibaPolicy = realm.getCibaPolicy();
-                int poolingInterval = cibaPolicy.getPoolingInterval();
-
-                storeAuthenticationRequest(request, cibaPolicy, authReqId);
 
                 ObjectNode response = JsonSerialization.createObjectNode();
 
@@ -152,12 +152,19 @@ public class BackchannelAuthenticationEndpoint extends AbstractCibaEndpoint {
 
         // To inform "expired_token" to the client, the lifespan of the cache provider is longer than device code
         int lifespanSeconds = expiresIn + poolingInterval + 10;
+        
+        this.store(userCode, deviceCode, lifespanSeconds);
 
-        SingleUseObjectProvider singleUseStore = session.singleUseObjects();
+    }
+    
+    
+    protected void store(OAuth2DeviceUserCodeModel userCode, OAuth2DeviceCodeModel deviceCode, int lifespanSeconds) {
+
+        SingleUseObjectProvider singleUseStore = session.getProvider(SingleUseObjectProvider.class);
 
         singleUseStore.put(deviceCode.serializeKey(), lifespanSeconds, deviceCode.toMap());
         singleUseStore.put(userCode.serializeKey(), lifespanSeconds, userCode.serializeValue());
-    }
+    } 
 
     private CIBAAuthenticationRequest authorizeClient(MultivaluedMap<String, String> params) {
         ClientModel client = null;
