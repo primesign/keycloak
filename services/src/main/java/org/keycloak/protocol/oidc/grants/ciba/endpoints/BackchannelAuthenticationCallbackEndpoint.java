@@ -118,12 +118,7 @@ public class BackchannelAuthenticationCallbackEndpoint extends AbstractCibaEndpo
         AccessToken bearerToken;
 
         try {
-            bearerToken = TokenVerifier.createWithoutSignature(session.tokens().decode(rawBearerToken, AccessToken.class))
-                    .withDefaultChecks()
-                    .realmUrl(Urls.realmIssuer(session.getContext().getUri().getBaseUri(), realm.getName()))
-                    .checkActive(true)
-                    .audience(Urls.realmIssuer(session.getContext().getUri().getBaseUri(), realm.getName()))
-                    .verify().getToken();
+            bearerToken = getTokenVerifier(rawBearerToken).verify().getToken();
         } catch (Exception e) {
             event.error(Errors.INVALID_TOKEN);
             // authentication channel id format is invalid or it has already been used
@@ -191,6 +186,30 @@ public class BackchannelAuthenticationCallbackEndpoint extends AbstractCibaEndpo
         return AppAuthManager.extractAuthorizationHeaderTokenOrReturnNull(httpRequest.getHttpHeaders());
     }
 
+    /**
+     * Returns a tokenverifier for {@link AccessToken}s with
+     * {@link TokenVerifier#withDefaultChecks()} with configured realmurl, isactive
+     * check an audience.
+     * 
+     * @param rawBearerToken The raw bearer token. (required; must not be
+     *                       {@code null})
+     * 
+     * @return The token verifier for {@link AccessToken}s. (never {@code null})
+     * 
+     * @implNote Note that the token will only verified once
+     *           {@link TokenVerifier#verify()} is called.
+     */
+    protected TokenVerifier<AccessToken> getTokenVerifier(String rawBearerToken) {
+      
+      return TokenVerifier
+          .createWithoutSignature(session.tokens().decode(rawBearerToken, AccessToken.class))
+          .withDefaultChecks()
+          .realmUrl(Urls.realmIssuer(session.getContext().getUri().getBaseUri(), realm.getName()))
+          .checkActive(true)
+          .audience(Urls.realmIssuer(session.getContext().getUri().getBaseUri(), realm.getName()));
+      
+    }
+    
     protected void sendClientNotificationRequest(ClientModel client, CibaConfig cibaConfig, OAuth2DeviceCodeModel deviceModel) {
         String clientNotificationEndpoint = cibaConfig.getBackchannelClientNotificationEndpoint(client);
         if (clientNotificationEndpoint == null) {
