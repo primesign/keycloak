@@ -175,7 +175,7 @@ public class BackchannelAuthenticationEndpoint extends AbstractCibaEndpoint {
             throw new ErrorResponseException(errorRep.getError(), errorRep.getErrorDescription(), Response.Status.UNAUTHORIZED);
         }
         BackchannelAuthenticationEndpointRequest endpointRequest = BackchannelAuthenticationEndpointRequestParserProcessor.parseRequest(event, session, client, params, realm.getCibaPolicy());
-        UserModel user = resolveUser(endpointRequest, realm.getCibaPolicy().getAuthRequestedUserHint());
+        UserModel user = resolveUser(endpointRequest, getAuthRequestedUserHint());
 
         CIBAAuthenticationRequest request = new CIBAAuthenticationRequest(session, user, client);
 
@@ -248,6 +248,10 @@ public class BackchannelAuthenticationEndpoint extends AbstractCibaEndpoint {
         }
 
         return request;
+    }
+
+    protected String getAuthRequestedUserHint() {
+        return realm.getCibaPolicy().getAuthRequestedUserHint();
     }
 
     protected void extractAdditionalParams(BackchannelAuthenticationEndpointRequest endpointRequest, CIBAAuthenticationRequest request) {
