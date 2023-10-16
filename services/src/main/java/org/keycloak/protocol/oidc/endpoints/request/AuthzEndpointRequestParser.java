@@ -38,7 +38,7 @@ public abstract class AuthzEndpointRequestParser {
      * Max number of additional req params copied into client session note to prevent DoS attacks
      *
      */
-    public static final int ADDITIONAL_REQ_PARAMS_MAX_MUMBER = 5;
+    public static final int ADDITIONAL_REQ_PARAMS_MAX_MUMBER = 10;
 
     /**
      * Max size of additional req param value copied into client session note to prevent DoS attacks - params with longer value are ignored
