@@ -19,7 +19,7 @@
     <parent>
         <groupId>org.keycloak</groupId>
         <artifactId>feature-packs-parent</artifactId>
-        <version>22.0.4</version>
+        <version>22.0.4-PS-1-SNAPSHOT</version>
     </parent>
 
     <properties>
