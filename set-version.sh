@@ -33,3 +33,6 @@ echo "$(jq '. += {"version": "'$NEW_NPM_VERSION'"}' js/libs/keycloak-admin-clien
 
 echo "New Mvn Version: $NEW_VERSION" >&2
 echo "New NPM Version: $NEW_NPM_VERSION" >&2
+
+# js-ci.yml remove 999
+sed -i 's/keycloak-999.0.0-SNAPSHOT/keycloak-'$NEW_VERSION'/g' .github/workflows/js-ci.yml
