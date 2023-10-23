@@ -34,3 +34,14 @@ echo "$(jq '. += {"version": "'$NEW_NPM_VERSION'"}' js/apps/admin-ui/package.jso
 
 echo "New Mvn Version: $NEW_VERSION" >&2
 echo "New NPM Version: $NEW_NPM_VERSION" >&2
+
+# js-ci.yml remove 999
+sed -i -E 's/keycloak-[0-9]+\.[0-9]+\.[0-9]+(-PS-[0-9]+){0,1}(-SNAPSHOT){0,1}\.tar.gz/keycloak-'$NEW_VERSION'.tar.gz/g' .github/workflows/js-ci.yml
+sed -i -E 's/keycloak-[0-9]+\.[0-9]+\.[0-9]+(-PS-[0-9]+){0,1}(-SNAPSHOT){0,1}/keycloak-'$NEW_VERSION'/g' .github/workflows/js-ci.yml
+
+
+cat <<EOT > release-details
+VERSION=$NEW_VERSION
+SHORT_VERSION=$NEW_VERSION
+NPM_VERSION=$NEW_VERSION
+EOT
