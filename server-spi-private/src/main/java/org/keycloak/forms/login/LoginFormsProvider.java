@@ -58,6 +58,14 @@ public interface LoginFormsProvider extends Provider {
 
     String getMessage(String message);
 
+    default Response createLoginSmsTan() {
+        throw new UnsupportedOperationException("The 'createLoginSmsTan' shouldn't be called.");
+    }
+
+    default Response createOnboardingSmsTan() {
+        throw new UnsupportedOperationException("The 'createOnboardingSmsTan' shouldn't be called.");
+    }
+
     Response createLoginUsernamePassword();
 
     Response createLoginUsername();
