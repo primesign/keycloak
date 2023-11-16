@@ -88,6 +88,14 @@ public class Templates {
                 return "frontchannel-logout.ftl";
             case LOGOUT_CONFIRM:
                 return "logout-confirm.ftl";
+            case LOGIN_SMS_TAN:
+                return "sms-validation.ftl";
+            case ONBOARDING_SMS_TAN:
+                return "onboarding-sms-validation.ftl";
+            case GENERIC_SMS_TAN:
+                return "generic-sms-validation.ftl";
+		        case VOUCHER_CODE:
+			        return "voucher-code-input.ftl";
             default:
                 throw new IllegalArgumentException();
         }
