@@ -31,11 +31,11 @@
     </description>
     <groupId>org.keycloak</groupId>
     <artifactId>keycloak-parent</artifactId>
-    <version>22.0.4-PS-1-SNAPSHOT</version>
+    <version>22.0.4-PS-1</version>
     <packaging>pom</packaging>
 
     <properties>
-        <project.version.npm>22.0.4-PS-1-SNAPSHOT</project.version.npm>
+        <project.version.npm>22.0.4-PS-1</project.version.npm>
 
         <asciidoctor.plugin.version>1.5.8</asciidoctor.plugin.version>
 
