@@ -50,13 +50,13 @@ jobs:
       - name: Build Keycloak
         run: |
           ./mvnw clean install --batch-mode --errors -DskipTests -DskipTestsuite -DskipExamples -Pdistribution
-          mv ./quarkus/dist/target/keycloak-999.0.0-SNAPSHOT.tar.gz ./keycloak-999.0.0-SNAPSHOT.tar.gz
+          mv ./quarkus/dist/target/keycloak-23.0.1-PS-1-SNAPSHOT.tar.gz ./keycloak-23.0.1-PS-1-SNAPSHOT.tar.gz
 
       - name: Upload Keycloak dist
         uses: actions/upload-artifact@v3
         with:
           name: keycloak
-          path: keycloak-999.0.0-SNAPSHOT.tar.gz
+          path: keycloak-23.0.1-PS-1-SNAPSHOT.tar.gz
 
   admin-client:
     name: Admin Client
@@ -210,7 +210,7 @@ jobs:
 
       - name: Start Keycloak server
         run: |
-          tar xfvz keycloak-999.0.0-SNAPSHOT.tar.gz
+          tar xfvz keycloak-23.0.1-PS-1-SNAPSHOT.tar.gz
           keycloak-999.0.0-SNAPSHOT/bin/kc.sh start-dev --features=declarative-user-profile,transient-users &> ~/server.log &
         env:
           KEYCLOAK_ADMIN: admin
@@ -293,7 +293,7 @@ jobs:
 
       - name: Start Keycloak server
         run: |
-          tar xfvz keycloak-999.0.0-SNAPSHOT.tar.gz
+          tar xfvz keycloak-23.0.1-PS-1-SNAPSHOT.tar.gz
           keycloak-999.0.0-SNAPSHOT/bin/kc.sh start-dev --features=admin-fine-grained-authz,declarative-user-profile,transient-users &> ~/server.log &
         env:
           KEYCLOAK_ADMIN: admin
