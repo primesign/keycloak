@@ -23,7 +23,7 @@ type DiscoveryIdentityProvider = IdentityProviderRepresentation & {
 };
 
 export default function AddIdgConnect() {
-  const { t } = useTranslation("identity-providers");
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const id = "german-eid";
 
@@ -81,7 +81,7 @@ export default function AddIdgConnect() {
                 type="submit"
                 data-testid="createProvider"
               >
-                {t("common:add")}
+                {t("add")}
               </Button>
               <Button
                 variant="link"
@@ -90,7 +90,7 @@ export default function AddIdgConnect() {
                   <Link {...props} to={toIdentityProviders({ realm })} />
                 )}
               >
-                {t("common:cancel")}
+                {t("cancel")}
               </Button>
             </ActionGroup>
           </FormAccess>

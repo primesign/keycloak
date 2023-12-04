@@ -11,7 +11,7 @@ import { TextField } from "../component/TextField";
 import type { IdentityProviderParams } from "../routes/IdentityProvider";
 
 export const IdgGeneralSettings = ({ id }: { id: string }) => {
-  const { t } = useTranslation("identity-providers");
+  const { t } = useTranslation();
   const { tab } = useParams<IdentityProviderParams>();
 
   const {
@@ -25,18 +25,13 @@ export const IdgGeneralSettings = ({ id }: { id: string }) => {
 
       <FormGroup
         label={t("alias")}
-        labelIcon={
-          <HelpItem
-            helpText={t("identity-providers-help:alias")}
-            fieldLabelId="identity-providers:alias"
-          />
-        }
+        labelIcon={<HelpItem helpText={t("aliasHelp")} fieldLabelId="alias" />}
         fieldId="alias"
         isRequired
         validated={
           errors.alias ? ValidatedOptions.error : ValidatedOptions.default
         }
-        helperTextInvalid={t("common:required")}
+        helperTextInvalid={t("required")}
       >
         <KeycloakTextInput
           isReadOnly={tab === "settings"}
