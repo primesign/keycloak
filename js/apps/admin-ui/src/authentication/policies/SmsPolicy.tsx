@@ -33,7 +33,7 @@ type SmsPolicyProps = {
 };
 
 export const SmsPolicy = ({ realm, realmUpdated }: SmsPolicyProps) => {
-  const { t } = useTranslation("sms-policy");
+  const { t } = useTranslation();
   const {
     control,
     register,
@@ -67,41 +67,41 @@ export const SmsPolicy = ({ realm, realmUpdated }: SmsPolicyProps) => {
   const SMS_GATEWAYS = [
     {
       key: "smsat",
-      title: t("smsat.title"),
+      title: t("smsatTitle"),
     },
     {
       key: "nexmo",
-      title: t("nexmo.title"),
+      title: t("nexmoTitle"),
     },
   ] as const;
 
   const SENDER_ADDRESS_TYPES = [
     {
       key: "national",
-      title: t("smsat.senderAddressType.national"),
+      title: t("smsatSenderAddressTypeNational"),
     },
     {
       key: "international",
-      title: t("smsat.senderAddressType.international"),
+      title: t("smsatSenderAddressTypeInternational"),
     },
     {
       key: "alphanumeric",
-      title: t("smsat.senderAddressType.alphanumeric"),
+      title: t("smsatSenderAddressTypeAlphanumeric"),
     },
     {
       key: "shortcode",
-      title: t("smsat.senderAddressType.shortcode"),
+      title: t("smsatSenderAddressTypeShortcode"),
     },
   ] as const;
 
   const AUTH_METHOD = [
     {
       key: "basic",
-      title: t("smsat.authMethod.basic"),
+      title: t("smsatAuthMethodBasic"),
     },
     {
       key: "token",
-      title: t("smsat.authMethod.token"),
+      title: t("smsatAuthMethodToken"),
     },
   ] as const;
 
@@ -144,9 +144,9 @@ export const SmsPolicy = ({ realm, realmUpdated }: SmsPolicyProps) => {
       });
       realmUpdated(updatedRealm!);
       setupForm(updatedRealm!);
-      addAlert(t("updateSuccess"), AlertVariant.success);
+      addAlert(t("smsUpdateSuccess"), AlertVariant.success);
     } catch (error) {
-      addError("updateError", error);
+      addError("smsUpdateError", error);
     }
   };
 
@@ -159,11 +159,11 @@ export const SmsPolicy = ({ realm, realmUpdated }: SmsPolicyProps) => {
         className="keycloak__sms_policies_authentication__form"
       >
         <FormGroup
-          label={t("defaultGateway")}
+          label={t("smsDefaultGateway")}
           labelIcon={
             <HelpItem
-              helpText={t(`sms-policy-help:defaultGateway`)}
-              fieldLabelId={`sms-policy:defaultGateway`}
+              helpText={t(`smsDefaultGatewayHelpText`)}
+              fieldLabelId={`smsDefaultGateway`}
             />
           }
           fieldId="attributes.smsDefaultGateway"
@@ -182,8 +182,8 @@ export const SmsPolicy = ({ realm, realmUpdated }: SmsPolicyProps) => {
                 }}
                 selections={field.value}
                 variant={SelectVariant.single}
-                aria-label={t("defaultGateway")}
-                typeAheadAriaLabel={t("defaultGateway")}
+                aria-label={t("smsDefaultGateway")}
+                typeAheadAriaLabel={t("smsDefaultGateway")}
                 isOpen={openDefaultGateway}
               >
                 {SMS_GATEWAYS.map((option) => (
@@ -200,11 +200,11 @@ export const SmsPolicy = ({ realm, realmUpdated }: SmsPolicyProps) => {
           />
         </FormGroup>
         <FormGroup
-          label={t("fallbackGateway")}
+          label={t("smsFallbackGateway")}
           labelIcon={
             <HelpItem
-              helpText={t(`sms-policy-help:fallbackGateway`)}
-              fieldLabelId={`sms-policy:fallbackGateway`}
+              helpText={t(`smsFallbackGatewayHelpText`)}
+              fieldLabelId={`smsFallbackGateway`}
             />
           }
           fieldId="attributes.smsFallbackGateway"
@@ -223,8 +223,8 @@ export const SmsPolicy = ({ realm, realmUpdated }: SmsPolicyProps) => {
                 }}
                 selections={field.value}
                 variant={SelectVariant.single}
-                aria-label={t("fallbackGateway")}
-                typeAheadAriaLabel={t("fallbackGateway")}
+                aria-label={t("smsFallbackGateway")}
+                typeAheadAriaLabel={t("smsFallbackGateway")}
                 isOpen={openFallbackGateway}
               >
                 {SMS_GATEWAYS.map((option) => (
@@ -241,11 +241,11 @@ export const SmsPolicy = ({ realm, realmUpdated }: SmsPolicyProps) => {
           />
         </FormGroup>
         <FormGroup
-          label={t("sms-policy:timeout")}
+          label={t("smsTimeout")}
           labelIcon={
             <HelpItem
-              helpText={t("sms-policy-help:timeout")}
-              fieldLabelId="sms-policy:timeout"
+              helpText={t("smsTimeoutHelpText")}
+              fieldLabelId="smsTimeout"
             />
           }
           fieldId="attributes.smsTimeout"
@@ -277,11 +277,11 @@ export const SmsPolicy = ({ realm, realmUpdated }: SmsPolicyProps) => {
           />
         </FormGroup>
         <FormGroup
-          label={t("sms-policy:tanLength")}
+          label={t("smsTanLength")}
           labelIcon={
             <HelpItem
-              helpText={t("sms-policy-help:tanLength")}
-              fieldLabelId="sms-policy:tanLength"
+              helpText={t("smsTanLengthHelpText")}
+              fieldLabelId="smsTanLength"
             />
           }
           fieldId="attributes.smsTanLength"
@@ -313,11 +313,11 @@ export const SmsPolicy = ({ realm, realmUpdated }: SmsPolicyProps) => {
           />
         </FormGroup>
         <FormGroup
-          label={t("sms-policy:refLength")}
+          label={t("smsRefLength")}
           labelIcon={
             <HelpItem
-              helpText={t("sms-policy-help:refLength")}
-              fieldLabelId="sms-policy:refLength"
+              helpText={t("smsRefLengthHelpText")}
+              fieldLabelId="smsRefLength"
             />
           }
           fieldId="attributes.smsRefLength"
@@ -349,11 +349,11 @@ export const SmsPolicy = ({ realm, realmUpdated }: SmsPolicyProps) => {
           />
         </FormGroup>
         <FormGroup
-          label={t("sms-policy:resendDelay")}
+          label={t("smsResendDelay")}
           labelIcon={
             <HelpItem
-              helpText={t("sms-policy-help:resendDelay")}
-              fieldLabelId="sms-policy:resendDelay"
+              helpText={t("smsResendDelayHelpText")}
+              fieldLabelId="smsResendDelay"
             />
           }
           fieldId="attributes.smsResendDelay"
@@ -385,11 +385,11 @@ export const SmsPolicy = ({ realm, realmUpdated }: SmsPolicyProps) => {
           />
         </FormGroup>
         <FormGroup
-          label={t("sms-policy:resendMaxRetries")}
+          label={t("smsResendMaxRetries")}
           labelIcon={
             <HelpItem
-              helpText={t("sms-policy-help:resendMaxRetries")}
-              fieldLabelId="sms-policy:resendMaxRetries"
+              helpText={t("smsResendMaxRetriesHelpText")}
+              fieldLabelId="smsResendMaxRetries"
             />
           }
           fieldId="attributes.smsResendMaxRetries"
@@ -437,11 +437,11 @@ export const SmsPolicy = ({ realm, realmUpdated }: SmsPolicyProps) => {
               <FormGroup
                 labelIcon={
                   <HelpItem
-                    helpText={t("sms-policy-help:smsat.providerUrl")}
-                    fieldLabelId="sms-policy:smsat.providerUrl"
+                    helpText={t("smsatProviderUrlHelpText")}
+                    fieldLabelId="smsatProviderUrl"
                   />
                 }
-                label={t("smsat.providerUrl")}
+                label={t("smsatProviderUrl")}
                 fieldId="attributes.smsatProviderUrl"
                 validated={ValidatedOptions.default}
               >
@@ -456,11 +456,11 @@ export const SmsPolicy = ({ realm, realmUpdated }: SmsPolicyProps) => {
               <FormGroup
                 labelIcon={
                   <HelpItem
-                    helpText={t("sms-policy-help:smsat.senderAddress")}
-                    fieldLabelId="sms-policy:smsat.senderAddress"
+                    helpText={t("smsatSenderAddressHelpText")}
+                    fieldLabelId="smsatSenderAddress"
                   />
                 }
-                label={t("smsat.senderAddress")}
+                label={t("smsatSenderAddress")}
                 fieldId="attributes.smsatSenderAddress"
                 validated={ValidatedOptions.default}
               >
@@ -473,11 +473,11 @@ export const SmsPolicy = ({ realm, realmUpdated }: SmsPolicyProps) => {
                 />
               </FormGroup>
               <FormGroup
-                label={t("smsat.senderAddressType.title")}
+                label={t("smsatSenderAddressTypeTitle")}
                 labelIcon={
                   <HelpItem
-                    helpText={t(`sms-policy-help:smsat.senderAddressType`)}
-                    fieldLabelId={`sms-policy:smsat.senderAddressType.title`}
+                    helpText={t(`smsatSenderAddressTypeHelpText`)}
+                    fieldLabelId={`smsatSenderAddressTypeTitle`}
                   />
                 }
                 fieldId="attributes.smsatSenderAddressType"
@@ -496,8 +496,8 @@ export const SmsPolicy = ({ realm, realmUpdated }: SmsPolicyProps) => {
                       }}
                       selections={field.value}
                       variant={SelectVariant.single}
-                      aria-label={t("smsat.senderAddressType.title")}
-                      typeAheadAriaLabel={t("smsat.senderAddressType.title")}
+                      aria-label={t("smsatSenderAddressTypeTitle")}
+                      typeAheadAriaLabel={t("smsatSenderAddressTypeTitle")}
                       isOpen={openSenderAddressType}
                     >
                       {SENDER_ADDRESS_TYPES.map((option) => (
@@ -514,11 +514,11 @@ export const SmsPolicy = ({ realm, realmUpdated }: SmsPolicyProps) => {
                 />
               </FormGroup>
               <FormGroup
-                label={t("smsat.authMethod.title")}
+                label={t("smsatAuthMethodTitle")}
                 labelIcon={
                   <HelpItem
-                    helpText={t(`sms-policy-help:smsat.authMethod`)}
-                    fieldLabelId={`sms-policy:smsat.authMethod.title`}
+                    helpText={t(`smsatAuthMethodHelpText`)}
+                    fieldLabelId={`smsatAuthMethodTitle`}
                   />
                 }
                 fieldId="attributes.smsatAuthMethod"
@@ -538,8 +538,8 @@ export const SmsPolicy = ({ realm, realmUpdated }: SmsPolicyProps) => {
                       }}
                       selections={field.value}
                       variant={SelectVariant.single}
-                      aria-label={t("smsat.authMethod.title")}
-                      typeAheadAriaLabel={t("smsat.authMethod.title")}
+                      aria-label={t("smsatAuthMethodTitle")}
+                      typeAheadAriaLabel={t("smsatAuthMethodTitle")}
                       isOpen={openAuthMethod}
                     >
                       {AUTH_METHOD.map((option) => (
@@ -559,11 +559,11 @@ export const SmsPolicy = ({ realm, realmUpdated }: SmsPolicyProps) => {
                 <FormGroup
                   labelIcon={
                     <HelpItem
-                      helpText={t("sms-policy-help:smsat.apiToken")}
-                      fieldLabelId="sms-policy:smsat.apiToken"
+                      helpText={t("smsatApiTokenHelpText")}
+                      fieldLabelId="smsatApiToken"
                     />
                   }
-                  label={t("smsat.apiToken")}
+                  label={t("smsatApiToken")}
                   fieldId="attributes.smsatApiToken"
                   validated={ValidatedOptions.default}
                 >
@@ -580,11 +580,11 @@ export const SmsPolicy = ({ realm, realmUpdated }: SmsPolicyProps) => {
                 <FormGroup
                   labelIcon={
                     <HelpItem
-                      helpText={t("sms-policy-help:smsat.username")}
-                      fieldLabelId="sms-policy:smsat.username"
+                      helpText={t("smsatUsernameHelpText")}
+                      fieldLabelId="smsatUsername"
                     />
                   }
-                  label={t("smsat.username")}
+                  label={t("smsatUsername")}
                   fieldId="attributes.smsatUsername"
                   validated={ValidatedOptions.default}
                 >
@@ -599,11 +599,11 @@ export const SmsPolicy = ({ realm, realmUpdated }: SmsPolicyProps) => {
                 <FormGroup
                   labelIcon={
                     <HelpItem
-                      helpText={t("sms-policy-help:smsat.password")}
-                      fieldLabelId="sms-policy:smsat.password"
+                      helpText={t("smsatPasswordHelpText")}
+                      fieldLabelId="smsatPassword"
                     />
                   }
-                  label={t("smsat.password")}
+                  label={t("smsatPassword")}
                   fieldId="attributes.smsatPassword"
                   validated={ValidatedOptions.default}
                 >
@@ -617,11 +617,11 @@ export const SmsPolicy = ({ realm, realmUpdated }: SmsPolicyProps) => {
                 </FormGroup>
               </div>
               <FormGroup
-                label={t("sms-policy:smsat.connectTimeout")}
+                label={t("smsatConnectTimeout")}
                 labelIcon={
                   <HelpItem
-                    helpText={t("sms-policy-help:smsat.connectTimeout")}
-                    fieldLabelId="sms-policy:smsat.connectTimeout"
+                    helpText={t("smsatConnectTimeoutHelpText")}
+                    fieldLabelId="smsatConnectTimeout"
                   />
                 }
                 fieldId="attributes.smsatConnectTimeout"
@@ -653,11 +653,11 @@ export const SmsPolicy = ({ realm, realmUpdated }: SmsPolicyProps) => {
                 />
               </FormGroup>
               <FormGroup
-                label={t("sms-policy:smsat.readTimeout")}
+                label={t("smsatReadTimeout")}
                 labelIcon={
                   <HelpItem
-                    helpText={t("sms-policy-help:smsat.readTimeout")}
-                    fieldLabelId="sms-policy:smsat.readTimeout"
+                    helpText={t("smsatReadTimeoutHelpText")}
+                    fieldLabelId="smsatReadTimeout"
                   />
                 }
                 fieldId="attributes.smsatReadTimeout"
@@ -696,7 +696,7 @@ export const SmsPolicy = ({ realm, realmUpdated }: SmsPolicyProps) => {
               isExpanded={expanded.includes("nexmo-toggle")}
               id="nexmo-toggle"
             >
-              {t("nexmo.title")}
+              {t("nexmoTitle")}
             </AccordionToggle>
             <AccordionContent
               id="nexmo-exp"
@@ -705,11 +705,11 @@ export const SmsPolicy = ({ realm, realmUpdated }: SmsPolicyProps) => {
               <FormGroup
                 labelIcon={
                   <HelpItem
-                    helpText={t("sms-policy-help:nexmo.providerUrl")}
-                    fieldLabelId="sms-policy:nexmo.providerUrl"
+                    helpText={t("nexmoProviderUrlHelpText")}
+                    fieldLabelId="nexmoProviderUrl"
                   />
                 }
-                label={t("nexmo.providerUrl")}
+                label={t("nexmoProviderUrl")}
                 fieldId="attributes.nexmoProviderUrl"
                 validated={ValidatedOptions.default}
               >
@@ -724,11 +724,11 @@ export const SmsPolicy = ({ realm, realmUpdated }: SmsPolicyProps) => {
               <FormGroup
                 labelIcon={
                   <HelpItem
-                    helpText={t("sms-policy-help:nexmo.senderId")}
-                    fieldLabelId="sms-policy:nexmo.senderId"
+                    helpText={t("nexmoSenderIdHelpText")}
+                    fieldLabelId="nexmoSenderId"
                   />
                 }
-                label={t("nexmo.senderId")}
+                label={t("nexmoSenderId")}
                 fieldId="attributes.nexmoSenderId"
                 validated={ValidatedOptions.default}
               >
@@ -743,11 +743,11 @@ export const SmsPolicy = ({ realm, realmUpdated }: SmsPolicyProps) => {
               <FormGroup
                 labelIcon={
                   <HelpItem
-                    helpText={t("sms-policy-help:nexmo.apiKey")}
-                    fieldLabelId="sms-policy:nexmo.apiKey"
+                    helpText={t("nexmoApiKeyHelpText")}
+                    fieldLabelId="nexmoApiKey"
                   />
                 }
-                label={t("nexmo.apiKey")}
+                label={t("nexmoApiKey")}
                 fieldId="attributes.nexmoApiKey"
                 validated={ValidatedOptions.default}
               >
@@ -762,11 +762,11 @@ export const SmsPolicy = ({ realm, realmUpdated }: SmsPolicyProps) => {
               <FormGroup
                 labelIcon={
                   <HelpItem
-                    helpText={t("sms-policy-help:nexmo.apiSecret")}
-                    fieldLabelId="sms-policy:nexmo.apiSecret"
+                    helpText={t("nexmoApiSecretHelpText")}
+                    fieldLabelId="nexmoApiSecret"
                   />
                 }
-                label={t("nexmo.apiSecret")}
+                label={t("nexmoApiSecret")}
                 fieldId="attributes.nexmoApiSecret"
                 validated={ValidatedOptions.default}
               >
@@ -779,11 +779,11 @@ export const SmsPolicy = ({ realm, realmUpdated }: SmsPolicyProps) => {
                 />
               </FormGroup>
               <FormGroup
-                label={t("sms-policy:nexmo.connectTimeout")}
+                label={t("nexmoConnectTimeout")}
                 labelIcon={
                   <HelpItem
-                    helpText={t("sms-policy-help:nexmo.connectTimeout")}
-                    fieldLabelId="sms-policy:nexmo.connectTimeout"
+                    helpText={t("nexmoConnectTimeoutHelpText")}
+                    fieldLabelId="nexmoConnectTimeout"
                   />
                 }
                 fieldId="attributes.nexmoConnectTimeout"
@@ -815,11 +815,11 @@ export const SmsPolicy = ({ realm, realmUpdated }: SmsPolicyProps) => {
                 />
               </FormGroup>
               <FormGroup
-                label={t("sms-policy:nexmo.readTimeout")}
+                label={t("nexmoReadTimeout")}
                 labelIcon={
                   <HelpItem
-                    helpText={t("sms-policy-help:nexmo.readTimeout")}
-                    fieldLabelId="sms-policy:nexmo.readTimeout"
+                    helpText={t("nexmoReadTimeoutHelpText")}
+                    fieldLabelId="nexmoReadTimeout"
                   />
                 }
                 fieldId="attributes.nexmoReadTimeout"
@@ -861,14 +861,14 @@ export const SmsPolicy = ({ realm, realmUpdated }: SmsPolicyProps) => {
             type="submit"
             isDisabled={!isDirty}
           >
-            {t("common:save")}
+            {t("save")}
           </Button>
           <Button
             data-testid="reload"
             variant={ButtonVariant.link}
             onClick={() => setupForm(realm)}
           >
-            {t("common:reload")}
+            {t("reload")}
           </Button>
         </ActionGroup>
       </FormAccess>
