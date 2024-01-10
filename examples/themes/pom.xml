@@ -20,7 +20,7 @@
     <parent>
         <artifactId>keycloak-examples-parent</artifactId>
         <groupId>org.keycloak</groupId>
-        <version>23.0.4</version>
+        <version>23.0.4-PS-1</version>
     </parent>
 
     <name>Themes Examples</name>
