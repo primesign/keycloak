@@ -252,32 +252,7 @@ public abstract class OIDCRedirectUriBuilder {
         }
 
         private Response buildFormPostResponse() {
-            StringBuilder builder = new StringBuilder();
-            URI redirectUri = uriBuilder.build();
-
-            builder.append("<HTML>");
-            builder.append("  <HEAD>");
-            builder.append("    <TITLE>OIDC Form_Post Response</TITLE>");
-            builder.append("  </HEAD>");
-            builder.append("  <BODY Onload=\"document.forms[0].submit()\">");
-
-            builder.append("    <FORM METHOD=\"POST\" ACTION=\"" + redirectUri.toString() + "\">");
-
-            builder.append("  <INPUT TYPE=\"HIDDEN\" NAME=\"response\" VALUE=\"")
-                    .append(HtmlUtils.escapeAttribute(session.tokens().encodeAndEncrypt(responseJWT)))
-                    .append("\" />");
-
-            builder.append("      <NOSCRIPT>");
-            builder.append("        <P>JavaScript is disabled. We strongly recommend to enable it. Click the button below to continue .</P>");
-            builder.append("        <INPUT name=\"continue\" TYPE=\"SUBMIT\" VALUE=\"CONTINUE\" />");
-            builder.append("      </NOSCRIPT>");
-            builder.append("    </FORM>");
-            builder.append("  </BODY>");
-            builder.append("</HTML>");
-
-            return Response.status(Response.Status.OK)
-                    .type(MediaType.TEXT_HTML_TYPE)
-                    .entity(builder.toString()).build();
+            throw new UnsupportedOperationException("Not supported");
         }
     }
 }

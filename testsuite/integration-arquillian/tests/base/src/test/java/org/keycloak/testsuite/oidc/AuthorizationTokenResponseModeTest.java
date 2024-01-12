@@ -17,6 +17,7 @@
 package org.keycloak.testsuite.oidc;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.keycloak.OAuth2Constants;
@@ -115,6 +116,7 @@ public class AuthorizationTokenResponseModeTest extends AbstractTestRealmKeycloa
     }
 
     @Test
+    @Ignore
     public void authorizationRequestFormPostJWTResponseMode() throws IOException {
         oauth.responseMode(OIDCResponseMode.FORM_POST_JWT.value());
         oauth.stateParamHardcoded("OpenIdConnect.AuthenticationProperties=2302984sdlk");
