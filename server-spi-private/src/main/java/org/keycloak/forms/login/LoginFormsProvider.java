@@ -66,6 +66,10 @@ public interface LoginFormsProvider extends Provider {
         throw new UnsupportedOperationException("The 'createOnboardingSmsTan' shouldn't be called.");
     }
 
+    default Response createGenericSmsTanPage() {
+        throw new UnsupportedOperationException("The 'createGenericSmsTanPage' shouldn't be called.");
+    }
+
     Response createLoginUsernamePassword();
 
     Response createLoginUsername();
