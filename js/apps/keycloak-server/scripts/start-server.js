@@ -12,7 +12,7 @@ import { parseArgs } from "node:util";
 const DIR_NAME = path.dirname(fileURLToPath(import.meta.url));
 const SERVER_DIR = path.resolve(DIR_NAME, "../server");
 const LOCAL_QUARKUS = path.resolve(DIR_NAME, "../../../../quarkus/dist/target");
-const LOCAL_DIST_NAME = "keycloak-999.0.0-SNAPSHOT.tar.gz";
+const LOCAL_DIST_NAME = "keycloak-26.0.5-PS-1.tar.gz";
 const SCRIPT_EXTENSION = process.platform === "win32" ? ".bat" : ".sh";
 const ADMIN_USERNAME = "admin";
 const ADMIN_PASSWORD = "admin";
