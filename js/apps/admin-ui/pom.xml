@@ -71,6 +71,13 @@
             <resource>
                 <directory>maven-resources</directory>
             </resource>
+            <resource>
+                <directory>dist</directory>
+                <targetPath>theme/primesign.v2/admin/resources</targetPath>
+                <excludes>
+                    <exclude>index.html</exclude>
+                </excludes>
+            </resource>
         </resources>
         <plugins>
             <plugin>
