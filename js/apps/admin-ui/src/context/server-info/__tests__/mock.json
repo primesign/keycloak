@@ -96,7 +96,7 @@
           "zh-CN"
         ]
       },
-      { "name": "keycloak.v2" }
+      { "name": "primesign.v2" }
     ],
     "login": [
       {
@@ -203,7 +203,7 @@
         ]
       },
       {
-        "name": "keycloak.v2",
+        "name": "primesign.v2",
         "locales": [
           "ca",
           "cs",

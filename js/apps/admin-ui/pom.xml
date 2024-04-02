@@ -14,7 +14,7 @@
     <artifactId>keycloak-admin-ui</artifactId>
 
     <name>Keycloak Admin UI</name>
-    <description>The user inferface to administrate the Keycloak server.</description>
+    <description>The user interface to administrate the Keycloak server.</description>
 
     <profiles>
         <profile>
@@ -25,28 +25,28 @@
                 </property>
             </activation>
             <build>
-                <plugins>
-                    <plugin>
-                        <artifactId>maven-resources-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>copy-resources</id>
-                                <phase>generate-resources</phase>
-                                <goals>
-                                    <goal>copy-resources</goal>
-                                </goals>
-                                <configuration>
-                                    <outputDirectory>${project.build.outputDirectory}</outputDirectory>
-                                    <resources>
-                                        <resource>
-                                            <directory>maven-resources-community</directory>
-                                        </resource>
-                                    </resources>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
+	            <plugins>
+		            <plugin>
+			            <artifactId>maven-resources-plugin</artifactId>
+			            <executions>
+				            <execution>
+					            <id>copy-resources</id>
+					            <phase>generate-resources</phase>
+					            <goals>
+						            <goal>copy-resources</goal>
+					            </goals>
+					            <configuration>
+						            <outputDirectory>${project.build.outputDirectory}</outputDirectory>
+						            <resources>
+							            <resource>
+								            <directory>maven-resources-community</directory>
+							            </resource>
+						            </resources>
+					            </configuration>
+				            </execution>
+			            </executions>
+		            </plugin>
+	            </plugins>
             </build>
         </profile>
     </profiles>
@@ -58,7 +58,7 @@
             </resource>
             <resource>
                 <directory>dist</directory>
-                <targetPath>theme/keycloak.v2/admin/resources</targetPath>
+                <targetPath>theme/primesign.v2/admin/resources</targetPath>
                 <excludes>
                     <exclude>index.html</exclude>
                     <exclude>locales/**</exclude>
@@ -109,7 +109,7 @@
                 </executions>
                 <configuration>
                     <file>dist/index.html</file>
-                    <outputFile>target/classes/theme/keycloak.v2/admin/index.ftl</outputFile>
+                    <outputFile>target/classes/theme/primesign.v2/admin/index.ftl</outputFile>
                     <regex>false</regex>
                     <replacements>
                         <replacement>
@@ -123,10 +123,6 @@
                         <replacement>
                             <token><![CDATA[<link rel="icon" type="image/svg+xml" href="${resourceUrl}/favicon.svg" />]]></token>
                             <value xml:space="preserve"><![CDATA[<link rel="icon" type="${properties.favIconType!"image/svg+xml"}" href="${resourceUrl}${properties.favIcon!"/favicon.svg"}" />]]></value>
-                        </replacement>
-                        <replacement>
-                            <token><![CDATA[<meta name="description" content="Web site to manage keycloak" />]]></token>
-                            <value xml:space="preserve"><![CDATA[<meta name="description" content="${properties.description!"Web site to manage keycloak"}" />]]></value>
                         </replacement>
                         <replacement>
                             <token><![CDATA[<title>Keycloak Administration UI</title>]]></token>
