@@ -29,6 +29,7 @@ public interface ThemeSelectorProvider extends Provider {
     String DEFAULT = "keycloak";
     String DEFAULT_V2 = "keycloak.v2";
     String DEFAULT_V3 = "keycloak.v3";
+    String PRIMESIGN_V2 = "primesign.v2";
 
     /**
      * Return the theme name to use for the specified type
@@ -49,7 +50,7 @@ public interface ThemeSelectorProvider extends Provider {
         }
 
         if ((type == Theme.Type.ADMIN) && Profile.isFeatureEnabled(Profile.Feature.ADMIN_V2)) {
-            return DEFAULT_V2;
+            return PRIMESIGN_V2;
         }
 
         if ((type == Theme.Type.LOGIN) && Profile.isFeatureEnabled(Profile.Feature.LOGIN_V2)) {
