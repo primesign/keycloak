@@ -49,7 +49,7 @@ public class AdminConsoleLandingPageTest extends AbstractKeycloakTest {
         Assert.assertEquals(suiteContext.getAuthServerInfo().getContextRoot() + "/auth", authUrl);
 
         String resourceUrl = config.get("resourceUrl");
-        Assert.assertTrue(resourceUrl.matches("/auth/resources/[^/]*/admin/keycloak.v2"));
+        Assert.assertTrue(resourceUrl.matches("/auth/resources/[^/]*/admin/primesign.v2"));
 
         String consoleBaseUrl = config.get("consoleBaseUrl");
         Assert.assertEquals(consoleBaseUrl, "/auth/admin/master/console/");
