@@ -18,6 +18,7 @@ build:
   only:
     refs:
       - main
+      - release/**
   except:
     variables:
       - $CI_COMMIT_MESSAGE =~ /\[maven-release-plugin\] prepare release/
