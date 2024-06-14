@@ -21,6 +21,7 @@ package org.keycloak.protocol.oidc.grants.ciba.endpoints.request;
 import org.jboss.logging.Logger;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.protocol.oidc.OIDCLoginProtocol;
+import org.keycloak.protocol.oidc.endpoints.request.AuthzEndpointRequestParser;
 import org.keycloak.protocol.oidc.grants.ciba.CibaGrantType;
 
 import java.util.HashSet;
@@ -38,13 +39,13 @@ public abstract class BackchannelAuthenticationEndpointRequestParser {
      * Max number of additional req params copied into client session note to prevent DoS attacks
      *
      */
-    public static final int ADDITIONAL_REQ_PARAMS_MAX_MUMBER = 5;
+    public static final int ADDITIONAL_REQ_PARAMS_MAX_MUMBER = AuthzEndpointRequestParser.ADDITIONAL_REQ_PARAMS_MAX_MUMBER;
 
     /**
      * Max size of additional req param value copied into client session note to prevent DoS attacks - params with longer value are ignored
      *
      */
-    public static final int ADDITIONAL_REQ_PARAMS_MAX_SIZE = 200;
+    public static final int ADDITIONAL_REQ_PARAMS_MAX_SIZE = AuthzEndpointRequestParser.ADDITIONAL_REQ_PARAMS_MAX_SIZE;
 
     public static final String CIBA_SIGNED_AUTHENTICATION_REQUEST = "ParsedSignedAuthenticationRequest";
 
@@ -77,6 +78,16 @@ public abstract class BackchannelAuthenticationEndpointRequestParser {
         // if these are included in Backchannel Authentication Request's body part for "client_secret_post" client authentication
         KNOWN_REQ_PARAMS.add(OAuth2Constants.CLIENT_ID);
         KNOWN_REQ_PARAMS.add(OAuth2Constants.CLIENT_SECRET);
+
+        /* Ignore JTI as additional parameter.
+         *
+         * if not ignored it leads to a duplicate entry in the AUTH_REQ_ID JWE token
+         * (see BackchannelAuthenticationEndpoint:processGrantRequest) and due to
+         * deserialization to a wrong id in CibaGrantType:process
+         * which leads to an HTTP 400 response in the ciba token call.
+        */
+        KNOWN_REQ_PARAMS.add("jti");
+        KNOWN_REQ_PARAMS.add("hash");
     }
 
     public void parseRequest(BackchannelAuthenticationEndpointRequest request) {
@@ -98,6 +109,8 @@ public abstract class BackchannelAuthenticationEndpointRequestParser {
         request.claims = replaceIfNotNull(request.claims, getParameter(OIDCLoginProtocol.CLAIMS_PARAM));
 
         extractAdditionalReqParams(request.additionalReqParams);
+        
+        request.additionalReqParams.put("hash", getParameter("hash"));
     }
 
     protected void extractAdditionalReqParams(Map<String, String> additionalReqParams) {
