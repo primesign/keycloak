@@ -87,6 +87,7 @@ public abstract class BackchannelAuthenticationEndpointRequestParser {
          * which leads to an HTTP 400 response in the ciba token call.
         */
         KNOWN_REQ_PARAMS.add("jti");
+        KNOWN_REQ_PARAMS.add("hash");
     }
 
     public void parseRequest(BackchannelAuthenticationEndpointRequest request) {
@@ -108,6 +109,8 @@ public abstract class BackchannelAuthenticationEndpointRequestParser {
         request.claims = replaceIfNotNull(request.claims, getParameter(OIDCLoginProtocol.CLAIMS_PARAM));
 
         extractAdditionalReqParams(request.additionalReqParams);
+        
+        request.additionalReqParams.put("hash", getParameter("hash"));
     }
 
     protected void extractAdditionalReqParams(Map<String, String> additionalReqParams) {
