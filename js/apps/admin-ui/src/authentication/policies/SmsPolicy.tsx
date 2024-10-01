@@ -13,19 +13,21 @@ import {
   FormGroup,
   NumberInput,
   PageSection,
-  Select,
-  SelectOption,
-  SelectVariant,
+  TextInput,
   ValidatedOptions,
 } from "@patternfly/react-core";
+import { SelectOption } from "@patternfly/react-core/deprecated";
 import { FormAccess } from "../../components/form/FormAccess";
 import { Controller, useForm } from "react-hook-form";
 import useToggle from "../../utils/useToggle";
-import { adminClient } from "../../admin-client";
+import { useAdminClient } from "../../admin-client";
 import { useRealm } from "../../context/realm-context/RealmContext";
-import { useAlerts } from "../../components/alert/Alerts";
-import { KeycloakTextInput } from "../../components/keycloak-text-input/KeycloakTextInput";
-import { HelpItem } from "ui-shared";
+import { useAlerts } from "@keycloak/keycloak-ui-shared";
+import {
+  HelpItem,
+  KeycloakSelect,
+  SelectVariant,
+} from "@keycloak/keycloak-ui-shared";
 
 type SmsPolicyProps = {
   realm: RealmRepresentation;
@@ -33,6 +35,7 @@ type SmsPolicyProps = {
 };
 
 export const SmsPolicy = ({ realm, realmUpdated }: SmsPolicyProps) => {
+  const { adminClient } = useAdminClient();
   const { t } = useTranslation();
   const {
     control,
@@ -173,18 +176,19 @@ export const SmsPolicy = ({ realm, realmUpdated }: SmsPolicyProps) => {
             defaultValue={SMS_GATEWAYS[0].key}
             control={control}
             render={({ field }) => (
-              <Select
+              <KeycloakSelect
                 toggleId="attributes.smsDefaultGateway"
                 onToggle={toggleDefaultGateway}
-                onSelect={(_, selectedValue) => {
+                onSelect={(selectedValue) => {
                   field.onChange(selectedValue.toString());
                   toggleDefaultGateway();
                 }}
                 selections={field.value}
                 variant={SelectVariant.single}
                 aria-label={t("smsDefaultGateway")}
-                typeAheadAriaLabel={t("smsDefaultGateway")}
+                // typeAheadAriaLabel={t("smsDefaultGateway")}
                 isOpen={openDefaultGateway}
+                validated={ValidatedOptions.default}
               >
                 {SMS_GATEWAYS.map((option) => (
                   <SelectOption
@@ -195,7 +199,7 @@ export const SmsPolicy = ({ realm, realmUpdated }: SmsPolicyProps) => {
                     {option.title}
                   </SelectOption>
                 ))}
-              </Select>
+              </KeycloakSelect>
             )}
           />
         </FormGroup>
@@ -214,17 +218,18 @@ export const SmsPolicy = ({ realm, realmUpdated }: SmsPolicyProps) => {
             defaultValue={SMS_GATEWAYS[0].key}
             control={control}
             render={({ field }) => (
-              <Select
+              <KeycloakSelect
                 toggleId="attributes.smsFallbackGateway"
                 onToggle={toggleFallbackGateway}
-                onSelect={(_, selectedValue) => {
-                  field.onChange(selectedValue.toString());
+                onSelect={(selectedValue) => {
+                  field.onChange(selectedValue as string);
                   toggleFallbackGateway();
                 }}
                 selections={field.value}
                 variant={SelectVariant.single}
                 aria-label={t("smsFallbackGateway")}
-                typeAheadAriaLabel={t("smsFallbackGateway")}
+                // typeAheadAriaLabel={t("smsFallbackGateway")}
+                validated={ValidatedOptions.default}
                 isOpen={openFallbackGateway}
               >
                 {SMS_GATEWAYS.map((option) => (
@@ -236,7 +241,7 @@ export const SmsPolicy = ({ realm, realmUpdated }: SmsPolicyProps) => {
                     {option.title}
                   </SelectOption>
                 ))}
-              </Select>
+              </KeycloakSelect>
             )}
           />
         </FormGroup>
@@ -443,14 +448,12 @@ export const SmsPolicy = ({ realm, realmUpdated }: SmsPolicyProps) => {
                 }
                 label={t("smsatProviderUrl")}
                 fieldId="attributes.smsatProviderUrl"
-                validated={ValidatedOptions.default}
               >
-                <KeycloakTextInput
+                <TextInput
                   {...register("attributes.smsatProviderUrl")}
                   type="text"
                   id="smsatProviderUrl"
                   name="attributes.smsatProviderUrl"
-                  validated={ValidatedOptions.default}
                 />
               </FormGroup>
               <FormGroup
@@ -462,9 +465,8 @@ export const SmsPolicy = ({ realm, realmUpdated }: SmsPolicyProps) => {
                 }
                 label={t("smsatSenderAddress")}
                 fieldId="attributes.smsatSenderAddress"
-                validated={ValidatedOptions.default}
               >
-                <KeycloakTextInput
+                <TextInput
                   {...register("attributes.smsatSenderAddress")}
                   type="text"
                   id="smsatSenderAddress"
@@ -487,17 +489,17 @@ export const SmsPolicy = ({ realm, realmUpdated }: SmsPolicyProps) => {
                   defaultValue={SENDER_ADDRESS_TYPES[0].key}
                   control={control}
                   render={({ field }) => (
-                    <Select
+                    <KeycloakSelect
                       toggleId="attributes.smsatSenderAddressType"
                       onToggle={toggleSenderAddressType}
-                      onSelect={(_, selectedValue) => {
+                      onSelect={(selectedValue) => {
                         field.onChange(selectedValue.toString());
                         toggleSenderAddressType();
                       }}
                       selections={field.value}
                       variant={SelectVariant.single}
                       aria-label={t("smsatSenderAddressTypeTitle")}
-                      typeAheadAriaLabel={t("smsatSenderAddressTypeTitle")}
+                      // typeAheadAriaLabel={t("smsatSenderAddressTypeTitle")}
                       isOpen={openSenderAddressType}
                     >
                       {SENDER_ADDRESS_TYPES.map((option) => (
@@ -509,7 +511,7 @@ export const SmsPolicy = ({ realm, realmUpdated }: SmsPolicyProps) => {
                           {option.title}
                         </SelectOption>
                       ))}
-                    </Select>
+                    </KeycloakSelect>
                   )}
                 />
               </FormGroup>
@@ -528,10 +530,10 @@ export const SmsPolicy = ({ realm, realmUpdated }: SmsPolicyProps) => {
                   defaultValue={AUTH_METHOD[0].key}
                   control={control}
                   render={({ field }) => (
-                    <Select
+                    <KeycloakSelect
                       toggleId="attributes.smsatAuthMethod"
                       onToggle={toggleAuthMethod}
-                      onSelect={(_, selectedValue) => {
+                      onSelect={(selectedValue) => {
                         field.onChange(selectedValue.toString());
                         toggleAuthMethod();
                         setSmsAuthMethod(selectedValue.toString());
@@ -539,7 +541,7 @@ export const SmsPolicy = ({ realm, realmUpdated }: SmsPolicyProps) => {
                       selections={field.value}
                       variant={SelectVariant.single}
                       aria-label={t("smsatAuthMethodTitle")}
-                      typeAheadAriaLabel={t("smsatAuthMethodTitle")}
+                      // typeAheadAriaLabel={t("smsatAuthMethodTitle")}
                       isOpen={openAuthMethod}
                     >
                       {AUTH_METHOD.map((option) => (
@@ -551,7 +553,7 @@ export const SmsPolicy = ({ realm, realmUpdated }: SmsPolicyProps) => {
                           {option.title}
                         </SelectOption>
                       ))}
-                    </Select>
+                    </KeycloakSelect>
                   )}
                 />
               </FormGroup>
@@ -565,9 +567,8 @@ export const SmsPolicy = ({ realm, realmUpdated }: SmsPolicyProps) => {
                   }
                   label={t("smsatApiToken")}
                   fieldId="attributes.smsatApiToken"
-                  validated={ValidatedOptions.default}
                 >
-                  <KeycloakTextInput
+                  <TextInput
                     {...register("attributes.smsatApiToken")}
                     type="password"
                     id="smsatApiToken"
@@ -586,9 +587,8 @@ export const SmsPolicy = ({ realm, realmUpdated }: SmsPolicyProps) => {
                   }
                   label={t("smsatUsername")}
                   fieldId="attributes.smsatUsername"
-                  validated={ValidatedOptions.default}
                 >
-                  <KeycloakTextInput
+                  <TextInput
                     {...register("attributes.smsatUsername")}
                     type="text"
                     id="username"
@@ -605,9 +605,8 @@ export const SmsPolicy = ({ realm, realmUpdated }: SmsPolicyProps) => {
                   }
                   label={t("smsatPassword")}
                   fieldId="attributes.smsatPassword"
-                  validated={ValidatedOptions.default}
                 >
-                  <KeycloakTextInput
+                  <TextInput
                     {...register("attributes.smsatPassword")}
                     type="password"
                     id="smsatPassword"
@@ -647,6 +646,7 @@ export const SmsPolicy = ({ realm, realmUpdated }: SmsPolicyProps) => {
                           const newValue = Number(event.currentTarget.value);
                           setValue(!isNaN(newValue) ? newValue : 0);
                         }}
+                        validated={ValidatedOptions.default}
                       />
                     );
                   }}
@@ -711,9 +711,8 @@ export const SmsPolicy = ({ realm, realmUpdated }: SmsPolicyProps) => {
                 }
                 label={t("nexmoProviderUrl")}
                 fieldId="attributes.nexmoProviderUrl"
-                validated={ValidatedOptions.default}
               >
-                <KeycloakTextInput
+                <TextInput
                   {...register("attributes.nexmoProviderUrl")}
                   type="text"
                   id="nexmoProviderUrl"
@@ -730,9 +729,8 @@ export const SmsPolicy = ({ realm, realmUpdated }: SmsPolicyProps) => {
                 }
                 label={t("nexmoSenderId")}
                 fieldId="attributes.nexmoSenderId"
-                validated={ValidatedOptions.default}
               >
-                <KeycloakTextInput
+                <TextInput
                   {...register("attributes.nexmoSenderId")}
                   type="text"
                   id="nexmoSenderId"
@@ -749,9 +747,8 @@ export const SmsPolicy = ({ realm, realmUpdated }: SmsPolicyProps) => {
                 }
                 label={t("nexmoApiKey")}
                 fieldId="attributes.nexmoApiKey"
-                validated={ValidatedOptions.default}
               >
-                <KeycloakTextInput
+                <TextInput
                   {...register("attributes.nexmoApiKey")}
                   type="password"
                   id="nexmoApiKey"
@@ -768,9 +765,8 @@ export const SmsPolicy = ({ realm, realmUpdated }: SmsPolicyProps) => {
                 }
                 label={t("nexmoApiSecret")}
                 fieldId="attributes.nexmoApiSecret"
-                validated={ValidatedOptions.default}
               >
-                <KeycloakTextInput
+                <TextInput
                   {...register("attributes.nexmoApiSecret")}
                   type="password"
                   id="nexmoApiSecret"
@@ -845,6 +841,7 @@ export const SmsPolicy = ({ realm, realmUpdated }: SmsPolicyProps) => {
                           const newValue = Number(event.currentTarget.value);
                           setValue(!isNaN(newValue) ? newValue : 0);
                         }}
+                        validated={ValidatedOptions.default}
                       />
                     );
                   }}
