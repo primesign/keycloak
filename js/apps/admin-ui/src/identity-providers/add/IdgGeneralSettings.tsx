@@ -1,10 +1,9 @@
-import { FormGroup, ValidatedOptions } from "@patternfly/react-core";
+import {FormGroup, TextInput, ValidatedOptions} from "@patternfly/react-core";
 import { useFormContext } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
 
-import { HelpItem } from "ui-shared";
-import { KeycloakTextInput } from "../../components/keycloak-text-input/KeycloakTextInput";
+import {HelpItem, TextControl} from "@keycloak/keycloak-ui-shared";
 import { DisplayOrder } from "../component/DisplayOrder";
 import { RedirectUrl } from "../component/RedirectUrl";
 import { TextField } from "../component/TextField";
@@ -23,27 +22,15 @@ export const IdgGeneralSettings = ({ id }: { id: string }) => {
     <>
       <RedirectUrl id={id} />
 
-      <FormGroup
-        label={t("alias")}
-        labelIcon={<HelpItem helpText={t("aliasHelp")} fieldLabelId="alias" />}
-        fieldId="alias"
-        isRequired
-        validated={
-          errors.alias ? ValidatedOptions.error : ValidatedOptions.default
-        }
-        helperTextInvalid={t("required")}
-      >
-        <KeycloakTextInput
-          isReadOnly={tab === "settings"}
-          isRequired
-          id="alias"
-          data-testid="alias"
-          validated={
-            errors.alias ? ValidatedOptions.error : ValidatedOptions.default
-          }
-          {...register("alias", { required: true })}
-        />
-      </FormGroup>
+      <TextControl
+       name="alias"
+       label={t("alias")}
+       labelIcon={t("aliasHelp")}
+       rules={{
+           required: t("required"),
+       }}
+       readOnly={tab === "settings"}
+       />
 
       <TextField field="displayName" label="displayName" />
       <DisplayOrder />
