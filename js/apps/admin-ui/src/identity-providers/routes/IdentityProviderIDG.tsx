@@ -1,7 +1,7 @@
 import { lazy } from "react";
 import type { Path } from "react-router-dom";
-import { generatePath } from "react-router-dom";
 import type { AppRouteObject } from "../../routes";
+import {generateEncodedPath} from "../../utils/generateEncodedPath";
 
 export type IdentityProviderIdgParams = { realm: string };
 
@@ -19,5 +19,5 @@ export const IdentityProviderIdgRoute: AppRouteObject = {
 export const toIdentityProviderIdg = (
   params: IdentityProviderIdgParams,
 ): Partial<Path> => ({
-  pathname: generatePath(IdentityProviderIdgRoute.path, params),
+  pathname: generateEncodedPath(IdentityProviderIdgRoute.path, params),
 });
