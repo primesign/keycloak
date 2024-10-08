@@ -1,7 +1,7 @@
 import { lazy } from "react";
 import type { Path } from "react-router-dom";
 import type { AppRouteObject } from "../../routes";
-import {generateEncodedPath} from "../../utils/generateEncodedPath";
+import { generateEncodedPath } from "../../utils/generateEncodedPath";
 
 export type IdentityProviderIdgParams = { realm: string };
 
