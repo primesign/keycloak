@@ -45,7 +45,7 @@ public class BackchannelAuthenticationEndpointRequestParserProcessor {
         try {
             BackchannelAuthenticationEndpointRequest request = new BackchannelAuthenticationEndpointRequest();
 
-            BackchannelAuthenticationEndpointRequestBodyParser parser = new BackchannelAuthenticationEndpointRequestBodyParser(requestParams);
+            BackchannelAuthenticationEndpointRequestBodyParser parser = new BackchannelAuthenticationEndpointRequestBodyParser(session, requestParams);
             parser.parseRequest(request);
 
             if (parser.getInvalidRequestMessage() != null) {

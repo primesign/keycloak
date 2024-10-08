@@ -20,6 +20,8 @@ package org.keycloak.protocol.oidc.grants.ciba.endpoints.request;
 
 import org.jboss.logging.Logger;
 import org.keycloak.OAuth2Constants;
+import org.keycloak.models.KeycloakSession;
+import org.keycloak.models.RealmModel;
 import org.keycloak.protocol.oidc.OIDCLoginProtocol;
 import org.keycloak.protocol.oidc.endpoints.request.AuthzEndpointRequestParser;
 import org.keycloak.protocol.oidc.grants.ciba.CibaGrantType;
@@ -39,13 +41,13 @@ public abstract class BackchannelAuthenticationEndpointRequestParser {
      * Max number of additional req params copied into client session note to prevent DoS attacks
      *
      */
-    public static final int ADDITIONAL_REQ_PARAMS_MAX_MUMBER = AuthzEndpointRequestParser.ADDITIONAL_REQ_PARAMS_MAX_MUMBER;
+    private final int additionalReqParamsMaxNumber;
 
     /**
      * Max size of additional req param value copied into client session note to prevent DoS attacks - params with longer value are ignored
      *
      */
-    public static final int ADDITIONAL_REQ_PARAMS_MAX_SIZE = AuthzEndpointRequestParser.ADDITIONAL_REQ_PARAMS_MAX_SIZE;
+    private final int additionalReqParamsMaxSize;
 
     public static final String CIBA_SIGNED_AUTHENTICATION_REQUEST = "ParsedSignedAuthenticationRequest";
 
@@ -90,6 +92,12 @@ public abstract class BackchannelAuthenticationEndpointRequestParser {
         KNOWN_REQ_PARAMS.add("hash");
     }
 
+    BackchannelAuthenticationEndpointRequestParser(KeycloakSession keycloakSession) {
+        RealmModel realm = keycloakSession.getContext().getRealm();
+        this.additionalReqParamsMaxNumber = realm.getAttribute("additionalReqParamsMaxNumber", AuthzEndpointRequestParser.DEFAULT_ADDITIONAL_REQ_PARAMS_MAX_MUMBER);
+        this.additionalReqParamsMaxSize = realm.getAttribute("additionalReqParamsMaxSize", AuthzEndpointRequestParser.DEFAULT_ADDITIONAL_REQ_PARAMS_MAX_SIZE);
+    }
+
     public void parseRequest(BackchannelAuthenticationEndpointRequest request) {
         request.scope = replaceIfNotNull(request.scope, getParameter(OIDCLoginProtocol.SCOPE_PARAM));
 
@@ -120,14 +128,14 @@ public abstract class BackchannelAuthenticationEndpointRequestParser {
                 if (value != null && value.trim().isEmpty()) {
                     value = null;
                 }
-                if (value != null && value.length() <= ADDITIONAL_REQ_PARAMS_MAX_SIZE) {
-                    if (additionalReqParams.size() >= ADDITIONAL_REQ_PARAMS_MAX_MUMBER) {
-                        logger.debug("Maximal number of additional OIDC CIBA params (" + ADDITIONAL_REQ_PARAMS_MAX_MUMBER + ") exceeded, ignoring rest of them!");
+                if (value != null && value.length() <= additionalReqParamsMaxSize) {
+                    if (additionalReqParams.size() >= additionalReqParamsMaxNumber) {
+                        logger.debug("Maximal number of additional OIDC CIBA params (" + additionalReqParamsMaxNumber + ") exceeded, ignoring rest of them!");
                         break;
                     }
                     additionalReqParams.put(paramName, value);
                 } else {
-                    logger.debug("OIDC CIBA Additional param " + paramName + " ignored because value is empty or longer than " + ADDITIONAL_REQ_PARAMS_MAX_SIZE);
+                    logger.debug("OIDC CIBA Additional param " + paramName + " ignored because value is empty or longer than " + additionalReqParamsMaxSize);
                 }
             }
 
