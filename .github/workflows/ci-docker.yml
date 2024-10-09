@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - main
+      - fb-**
 
 env:
   DEFAULT_JDK_VERSION: 17
