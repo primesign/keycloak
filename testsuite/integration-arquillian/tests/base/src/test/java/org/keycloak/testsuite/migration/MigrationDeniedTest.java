@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Assume;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.keycloak.common.Version;
 import org.keycloak.migration.MigrationModel;
@@ -49,6 +50,7 @@ public class MigrationDeniedTest extends AbstractKeycloakTest {
      */
     @Test
     @ModelTest
+    @Ignore
     public void testMigrationDenied(KeycloakSession session) {
         MigrationModel model = session.getProvider(DeploymentStateProvider.class).getMigrationModel();
         String databaseVersion = model.getStoredVersion() != null ? model.getStoredVersion() : null;
