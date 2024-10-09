@@ -18,6 +18,7 @@
 package org.keycloak.protocol.oidc.grants.ciba.endpoints.request;
 
 import jakarta.ws.rs.core.MultivaluedMap;
+import org.keycloak.models.KeycloakSession;
 
 import java.util.Set;
 
@@ -32,7 +33,8 @@ class BackchannelAuthenticationEndpointRequestBodyParser extends BackchannelAuth
 
     private String invalidRequestMessage = null;
 
-    public BackchannelAuthenticationEndpointRequestBodyParser(MultivaluedMap<String, String> requestParams) {
+    public BackchannelAuthenticationEndpointRequestBodyParser(KeycloakSession session, MultivaluedMap<String, String> requestParams) {
+        super(session);
         this.requestParams = requestParams;
     }
 

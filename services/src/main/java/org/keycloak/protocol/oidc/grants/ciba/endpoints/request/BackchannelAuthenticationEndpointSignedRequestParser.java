@@ -43,6 +43,7 @@ class BackchannelAuthenticationEndpointSignedRequestParser extends BackchannelAu
     private final JsonNode requestParams;
 
     public BackchannelAuthenticationEndpointSignedRequestParser(KeycloakSession session, String signedAuthReq, ClientModel client, CibaConfig config) throws Exception {
+        super(session);
         JOSE jwt = JOSEParser.parse(signedAuthReq);
 
         if (jwt instanceof JWE) {

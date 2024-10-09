@@ -1,6 +1,13 @@
 package org.keycloak.protocol.oidc.endpoints.request;
 
+import org.junit.Before;
 import org.junit.Test;
+import org.keycloak.models.KeycloakContext;
+import org.keycloak.models.KeycloakSession;
+import org.keycloak.models.RealmModel;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -12,12 +19,31 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 public class AuthzEndpointRequestParserTest {
-  
+
+  @Mock
+  KeycloakSession keycloakSession;
+
+  @Mock
+  RealmModel realmModel;
+
+  @Mock
+  KeycloakContext keycloakContext;
+
+  @Before
+  public void setUp() throws Exception {
+    MockitoAnnotations.initMocks(this);
+    Mockito.lenient().when(keycloakSession.getContext()).thenReturn(keycloakContext);
+    Mockito.lenient().when(keycloakContext.getRealm()).thenReturn(realmModel);
+    Mockito.lenient().when(realmModel.getAttribute("additionalReqParamsMaxNumber", 10)).thenReturn(10);
+    Mockito.lenient().when(realmModel.getAttribute("additionalReqParamsMaxSize", 2000)).thenReturn(2000);
+    Mockito.lenient().when(realmModel.getAttribute("additionalReqParamsFailFast", false)).thenReturn(false);
+    Mockito.lenient().when(realmModel.getAttribute("additionalReqParamsMaxOverallSize", Integer.MAX_VALUE)).thenReturn(Integer.MAX_VALUE);
+  }
   
   @Test
   public void testExtractAdditionalReqParams() {
     
-    TestAuthzEndpointRequestParser test = new TestAuthzEndpointRequestParser();
+    TestAuthzEndpointRequestParser test = new TestAuthzEndpointRequestParser(keycloakSession);
 
     Map<String, String> additionalReqParams = new HashMap<>();
     
@@ -31,6 +57,10 @@ public class AuthzEndpointRequestParserTest {
   
   
   private class TestAuthzEndpointRequestParser extends AuthzEndpointRequestParser {
+
+    protected TestAuthzEndpointRequestParser(KeycloakSession keycloakSession) {
+      super(keycloakSession);
+    }
 
     @Override
     protected String getParameter(String paramName) {
