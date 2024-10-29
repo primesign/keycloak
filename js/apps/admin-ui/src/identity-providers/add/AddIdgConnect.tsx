@@ -23,7 +23,7 @@ type DiscoveryIdentityProvider = IdentityProviderRepresentation & {
 };
 
 export default function AddIdgConnect() {
-  const {adminClient} = useAdminClient();
+  const { adminClient } = useAdminClient();
 
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -32,8 +32,9 @@ export default function AddIdgConnect() {
   const form = useForm<DiscoveryIdentityProvider>({
     defaultValues: {
       alias: id,
-      config: { allowCreate: "true" }},
-      mode: "onChange",
+      config: { allowCreate: "true" },
+    },
+    mode: "onChange",
   });
   const {
     handleSubmit,
