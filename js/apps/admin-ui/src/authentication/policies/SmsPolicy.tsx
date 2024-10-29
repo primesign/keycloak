@@ -13,10 +13,10 @@ import {
   FormGroup,
   NumberInput,
   PageSection,
+  SelectOption,
   TextInput,
   ValidatedOptions,
 } from "@patternfly/react-core";
-import { SelectOption } from "@patternfly/react-core/deprecated";
 import { FormAccess } from "../../components/form/FormAccess";
 import { Controller, useForm } from "react-hook-form";
 import useToggle from "../../utils/useToggle";
