@@ -152,7 +152,7 @@ public class ParEndpoint extends AbstractParEndpoint {
 
         httpRequest.getDecodedFormParameters().forEach((k, v) -> {
                 // PAR store only accepts Map so that MultivaluedMap needs to be converted to Map.
-                String singleValue = String.valueOf(v).replace("[", "").replace("]", "");
+                String singleValue = String.valueOf(v).replaceAll("^\\[|]$", "");
                 params.put(k, singleValue);
             });
         params.put(PAR_CREATED_TIME, String.valueOf(System.currentTimeMillis()));
