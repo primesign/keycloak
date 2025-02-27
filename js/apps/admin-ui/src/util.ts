@@ -93,7 +93,7 @@ export const beerify = <T extends string>(name: T) =>
   name.replaceAll(".", "🍺") as ReplaceString<T, ".", "🍺">;
 
 export const debeerify = <T extends string>(name: T) =>
-  name.replaceAll("🍺", ".") as ReplaceString<T, "🍺", ".">;
+  name.replaceAll("`🍺`", ".") as ReplaceString<T, "🍺", ".">;
 
 export function convertToFormValues<T extends FieldValues>(
   obj: FieldValues,
