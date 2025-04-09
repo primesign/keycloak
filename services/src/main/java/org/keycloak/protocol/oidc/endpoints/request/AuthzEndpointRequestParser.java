@@ -78,6 +78,7 @@ public abstract class AuthzEndpointRequestParser {
         // Ignore "hash" parameter for param size check, because more than 4 hashes get filtered by this check.
         ADDITIONAL_REQ_PARAMS_MAX_SIZE_IGNORE.add("hash");
 	      ADDITIONAL_REQ_PARAMS_MAX_SIZE_IGNORE.add("dtbs");
+	      ADDITIONAL_REQ_PARAMS_MAX_SIZE_IGNORE.add("authorization_details");
 
 	    // Those are not OAuth/OIDC parameters, but they should never be added to the additionalRequestParameters
 	    KNOWN_REQ_PARAMS.add(OAuth2Constants.CLIENT_ASSERTION_TYPE);
