@@ -109,8 +109,11 @@ public abstract class BackchannelAuthenticationEndpointRequestParser {
         request.claims = replaceIfNotNull(request.claims, getParameter(OIDCLoginProtocol.CLAIMS_PARAM));
 
         extractAdditionalReqParams(request.additionalReqParams);
-        
+
         request.additionalReqParams.put("hash", getParameter("hash"));
+        request.additionalReqParams.put("hashes", getParameter("hashes"));
+        request.additionalReqParams.put("authorization_details", getParameter("authorization_details"));
+        request.additionalReqParams.put("dtbs", getParameter("dtbs"));
     }
 
     protected void extractAdditionalReqParams(Map<String, String> additionalReqParams) {

@@ -75,8 +75,9 @@ public abstract class AuthzEndpointRequestParser {
         KNOWN_REQ_PARAMS.add(OIDCLoginProtocol.CODE_CHALLENGE_PARAM);
         KNOWN_REQ_PARAMS.add(OIDCLoginProtocol.CODE_CHALLENGE_METHOD_PARAM);
 
-        // Ignore "hash" parameter for param size check, because more than 4 hashes get filtered by this check.
+        // Ignore "hash" and other parameters for param size check, because more than 4 hashes get filtered by this check.
         ADDITIONAL_REQ_PARAMS_MAX_SIZE_IGNORE.add("hash");
+        ADDITIONAL_REQ_PARAMS_MAX_SIZE_IGNORE.add("hashes");
 	      ADDITIONAL_REQ_PARAMS_MAX_SIZE_IGNORE.add("dtbs");
 	      ADDITIONAL_REQ_PARAMS_MAX_SIZE_IGNORE.add("authorization_details");
 
