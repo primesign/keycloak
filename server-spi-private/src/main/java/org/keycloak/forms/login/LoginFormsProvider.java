@@ -70,6 +70,10 @@ public interface LoginFormsProvider extends Provider {
         throw new UnsupportedOperationException("The 'createGenericSmsTanPage' shouldn't be called.");
     }
 
+	default Response voucherCodePage() {
+		throw new UnsupportedOperationException("The 'voucherCodeInputPage' shouldn't be called.");
+	}
+
     Response createLoginUsernamePassword();
 
     Response createLoginUsername();
@@ -128,15 +132,15 @@ public interface LoginFormsProvider extends Provider {
 
     /**
      * Set one global error message.
-     * 
+     *
      * @param message key of message
      * @param parameters to be formatted into message
      */
     LoginFormsProvider setError(String message, Object ... parameters);
-    
+
     /**
      * Set multiple error messages.
-     * 
+     *
      * @param messages to be set
      */
     LoginFormsProvider setErrors(List<FormMessage> messages);

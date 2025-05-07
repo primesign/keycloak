@@ -94,6 +94,8 @@ public class Templates {
                 return "onboarding-sms-validation.ftl";
             case GENERIC_SMS_TAN:
                 return "generic-sms-validation.ftl";
+		        case VOUCHER_CODE:
+			        return "voucher-code-input.ftl";
             default:
                 throw new IllegalArgumentException();
         }
