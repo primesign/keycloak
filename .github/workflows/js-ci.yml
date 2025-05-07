@@ -48,13 +48,13 @@ jobs:
 
       - name: Prepare archive for upload
         run: |
-          mv ./quarkus/dist/target/keycloak-26.0.5-PS-5.tar.gz ./keycloak-26.0.5-PS-5.tar.gz
+          mv ./quarkus/dist/target/keycloak-26.0.5-PS-6.tar.gz ./keycloak-26.0.5-PS-6.tar.gz
 
       - name: Upload Keycloak dist
         uses: actions/upload-artifact@v4
         with:
           name: keycloak
-          path: keycloak-26.0.5-PS-5.tar.gz
+          path: keycloak-26.0.5-PS-6.tar.gz
 
   admin-client:
     name: Admin Client
@@ -148,8 +148,8 @@ jobs:
 
       - name: Start Keycloak server
         run: |
-          tar xfvz keycloak-26.0.5-PS-5.tar.gz
-          keycloak-26.0.5-PS-5/bin/kc.sh start-dev --features=transient-users,oid4vc-vci &> ~/server.log &
+          tar xfvz keycloak-26.0.5-PS-6.tar.gz
+          keycloak-26.0.5-PS-6/bin/kc.sh start-dev --features=transient-users,oid4vc-vci &> ~/server.log &
         env:
           KC_BOOTSTRAP_ADMIN_USERNAME: admin
           KC_BOOTSTRAP_ADMIN_PASSWORD: admin
@@ -239,8 +239,8 @@ jobs:
 
       - name: Start Keycloak server
         run: |
-          tar xfvz keycloak-26.0.5-PS-5.tar.gz
-          keycloak-26.0.5-PS-5/bin/kc.sh start-dev --features=admin-fine-grained-authz,transient-users &> ~/server.log &
+          tar xfvz keycloak-26.0.5-PS-6.tar.gz
+          keycloak-26.0.5-PS-6/bin/kc.sh start-dev --features=admin-fine-grained-authz,transient-users &> ~/server.log &
         env:
           KC_BOOTSTRAP_ADMIN_USERNAME: admin
           KC_BOOTSTRAP_ADMIN_PASSWORD: admin
