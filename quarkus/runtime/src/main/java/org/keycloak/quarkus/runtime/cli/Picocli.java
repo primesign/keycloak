@@ -361,7 +361,9 @@ public class Picocli {
                     }
                 } else if (newValue != null && !isIgnoredPersistedOption(key)
                         && isUserModifiable(Configuration.getConfigValue(key))) {
-                    ignoredBuildTime.add(key);
+									if (!key.startsWith("quarkus.log")) {
+										ignoredBuildTime.add(key);
+									}
                 }
             });
         }
