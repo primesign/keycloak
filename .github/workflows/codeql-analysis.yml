@@ -6,6 +6,7 @@ on:
       - main
       - dependabot/**
       - quarkus-next
+      - fb-keycloak-812-keycloak-update-26.2.4
   pull_request:
      branches: [main]
   workflow_dispatch:

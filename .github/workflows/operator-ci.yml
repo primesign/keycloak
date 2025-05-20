@@ -5,6 +5,7 @@ on:
     branches-ignore:
       - main
       - dependabot/**
+      - fb-*
   pull_request:
   workflow_dispatch:
 

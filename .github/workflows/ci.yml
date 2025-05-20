@@ -5,6 +5,7 @@ on:
     branches-ignore:
       - main
       - dependabot/**
+      - fb-keycloak-812-keycloak-update-26.2.4
   pull_request:
   workflow_dispatch:
 
