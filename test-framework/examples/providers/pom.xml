@@ -5,7 +5,7 @@
     <parent>
         <artifactId>keycloak-test-framework-examples</artifactId>
         <groupId>org.keycloak.testframework</groupId>
-        <version>26.2.4</version>
+        <version>26.2.4-PS-1-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 

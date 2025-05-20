@@ -55,13 +55,13 @@ jobs:
 
       - name: Prepare archive for upload
         run: |
-          mv ./quarkus/dist/target/keycloak-999.0.0-SNAPSHOT.tar.gz ./keycloak-999.0.0-SNAPSHOT.tar.gz
+          mv ./quarkus/dist/target/keycloak-26.2.4-PS-1-SNAPSHOT.tar.gz ./keycloak-26.2.4-PS-1-SNAPSHOT.tar.gz
 
       - name: Upload Keycloak dist
         uses: actions/upload-artifact@v4
         with:
           name: keycloak
-          path: keycloak-999.0.0-SNAPSHOT.tar.gz
+          path: keycloak-26.2.4-PS-1-SNAPSHOT.tar.gz
 
   admin-client:
     name: Admin Client
@@ -162,8 +162,8 @@ jobs:
 
       - name: Start Keycloak server
         run: |
-          tar xfvz keycloak-999.0.0-SNAPSHOT.tar.gz
-          keycloak-999.0.0-SNAPSHOT/bin/kc.sh start-dev --features=transient-users,oid4vc-vci &> ~/server.log &
+          tar xfvz keycloak-26.2.4-PS-1-SNAPSHOT.tar.gz
+          keycloak-26.2.4-PS-1-SNAPSHOT/bin/kc.sh start-dev --features=transient-users,oid4vc-vci &> ~/server.log &
         env:
           KC_BOOTSTRAP_ADMIN_USERNAME: admin
           KC_BOOTSTRAP_ADMIN_PASSWORD: admin
@@ -243,8 +243,8 @@ jobs:
 
       - name: Start Keycloak server
         run: |
-          tar xfvz keycloak-999.0.0-SNAPSHOT.tar.gz
-          keycloak-999.0.0-SNAPSHOT/bin/kc.sh start-dev --features=admin-fine-grained-authz:v2,transient-users &> ~/server.log &
+          tar xfvz keycloak-26.2.4-PS-1-SNAPSHOT.tar.gz
+          keycloak-26.2.4-PS-1-SNAPSHOT/bin/kc.sh start-dev --features=admin-fine-grained-authz:v2,transient-users &> ~/server.log &
         env:
           KC_BOOTSTRAP_ADMIN_USERNAME: admin
           KC_BOOTSTRAP_ADMIN_PASSWORD: admin
