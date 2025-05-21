@@ -211,7 +211,7 @@ public class AuthorizationEndpoint extends AuthorizationEndpointBase {
             new AuthenticationSessionManager(session).removeAuthenticationSession(realm, authenticationSession, false);
             if (cpe.getError().equals(INVALID_REDIRECT_URI)) {
                 event.error(Errors.INVALID_REDIRECT_URI);
-                throw new ErrorPageException(session, authenticationSession, Response.Status.BAD_REQUEST, Messages.INVALID_PARAMETER,
+                throw new ErrorPageException(session, Response.Status.BAD_REQUEST, Messages.INVALID_PARAMETER,
                     OIDCLoginProtocol.REDIRECT_URI_PARAM);
             }
             return redirectErrorToClient(parsedResponseMode, cpe.getError(), cpe.getErrorDetail());
