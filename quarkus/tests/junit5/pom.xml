@@ -24,7 +24,7 @@
     <parent>
         <artifactId>keycloak-quarkus-test-parent</artifactId>
         <groupId>org.keycloak</groupId>
-        <version>26.2.5</version>
+        <version>26.2.5-PS-1</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
