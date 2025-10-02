@@ -253,19 +253,20 @@
     </licenses>
 
     <scm>
-        <connection>scm:git:git://github.com/keycloak/keycloak.git</connection>
-        <developerConnection>scm:git:git@github.com:keycloak/keycloak.git</developerConnection>
-        <url>https://github.com/keycloak/keycloak/tree/master/</url>
+        <developerConnection>scm:git:git@gitlab.intra.prime-sign.com:tc-dev/keycloak.git</developerConnection>
+        <tag>HEAD</tag>
     </scm>
 
     <distributionManagement>
         <repository>
-            <id>keycloak-publish</id>
-            <url>https://central.sonatype.com/</url>
+            <id>releases</id>
+            <name>libs-releases-local</name>
+            <url>${env.MAVEN_REPO_URL}/libs-releases-local</url>
         </repository>
         <snapshotRepository>
-            <id>keycloak-publish</id>
-            <url>https://central.sonatype.com/repository/maven-snapshots/</url>
+            <id>snapshots</id>
+            <name>libs-snapshots-local</name>
+            <url>${env.MAVEN_REPO_URL}/libs-snapshots-local</url>
         </snapshotRepository>
     </distributionManagement>
 
