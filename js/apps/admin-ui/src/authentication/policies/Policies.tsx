@@ -69,7 +69,7 @@ export const Policies = () => {
         eventKey={6}
         title={<TabTitleText>{t("smsTitle")}</TabTitleText>}
       >
-        <SmsPolicy realm={realm} realmUpdated={setRealm} />
+        <SmsPolicy realm={realm} realmUpdated={refresh} />
       </Tab>
     </Tabs>
   );
