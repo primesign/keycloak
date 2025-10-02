@@ -7,6 +7,9 @@
         "types": [ "login", "common", "email", "welcome" ]
     }, {
         "name" : "keycloak.v2",
-        "types": [ "login" ]
+      "types": [ "login" ]
+    }, {
+        "name" : "primesign.v2",
+        "types": [ "admin" ]
     }]
 }
