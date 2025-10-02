@@ -54,7 +54,7 @@
         "vite.config.ts"
       ],
       "output": [
-        "target/classes/theme/keycloak.v2/admin/resources"
+        "target/classes/theme/primesign.v2/admin/resources"
       ]
     },
     "build-lib": {
