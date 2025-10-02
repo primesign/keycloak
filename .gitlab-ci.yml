@@ -1,0 +1,39 @@
+---
+stages:
+  - build
+
+image: maven:3.9.9-eclipse-temurin-17
+
+
+variables:
+  MAVEN_OPTS: "-Dmaven.repo.local=${CI_PROJECT_DIR}/.m2/repository -Dhttps.protocols=TLSv1.2 -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=WARN -Dorg.slf4j.simpleLogger.showDateTime=true"
+  MAVEN_CLI_OPTS: "-f ${CI_PROJECT_DIR}/pom.xml -s ${CI_PROJECT_DIR}/.m2/settings.xml --batch-mode --errors --show-version -DskipTests -DskipExamples -DskipTestsuite -DinstallAtEnd=false -DdeployAtEnd=false"
+
+cache:
+  paths:
+    - .m2/repository
+
+build:
+  stage: build
+  only:
+    refs:
+      - main
+  except:
+    variables:
+      - $CI_COMMIT_MESSAGE =~ /\[maven-release-plugin\] prepare release/
+  script:
+    - mvn $MAVEN_CLI_OPTS $MAVEN_PROJECT_OPTS deploy
+
+build-fb:
+  stage: build
+  only:
+    refs:
+       # feature branch
+      - /^fb-.*$/
+       # bugfix branch
+      - /^fix-.*$/
+  except:
+    variables:
+      - $CI_COMMIT_MESSAGE =~ /\[maven-release-plugin\] prepare release/
+  script:
+    - mvn $MAVEN_CLI_OPTS $MAVEN_PROJECT_OPTS clean deploy
