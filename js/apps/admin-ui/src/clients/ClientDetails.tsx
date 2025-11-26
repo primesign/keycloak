@@ -325,10 +325,22 @@ export default function ClientDetails() {
     if (client.attributes?.["accountId"]) {
       form.setValue("attributes.accountId", client.attributes["accountId"]);
     }
+    if (client.attributes?.["certificateProfile"]) {
+      form.setValue(
+        "attributes.certificateProfile",
+        client.attributes["certificateProfile"],
+      );
+    }
     if (client.attributes?.["identityProviders"]) {
       form.setValue(
         "attributes.identityProviders",
         client.attributes["identityProviders"],
+      );
+    }
+    if (client.attributes?.["certificateProfiles"]) {
+      form.setValue(
+        "attributes.certificateProfiles",
+        client.attributes["certificateProfiles"],
       );
     }
     form.reset(form.getValues(), { keepDirty: false });
