@@ -29,6 +29,11 @@ export const OIDCGeneralSettings = () => {
 
       <TextControl name="displayName" label={t("displayName")} />
       <DisplayOrder />
+      <TextControl
+        name="config.allowedCertificateProfiles"
+        labelIcon={t("possibleCertificateProfilesHelp")}
+        label={t("allowedCertificateProfiles")}
+      />
     </>
   );
 };
