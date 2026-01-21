@@ -1,6 +1,6 @@
 {
   "name": "@keycloak/keycloak-admin-ui",
-  "version": "26.4.2-PS-3",
+  "version": "26.4.2-PS-4",
   "type": "module",
   "main": "lib/keycloak-admin-ui.js",
   "types": "./lib/keycloak-admin-ui.d.ts",
