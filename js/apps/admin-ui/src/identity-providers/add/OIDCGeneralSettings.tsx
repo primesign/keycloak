@@ -30,9 +30,9 @@ export const OIDCGeneralSettings = () => {
       <TextControl name="displayName" label={t("displayName")} />
       <DisplayOrder />
       <TextControl
-        name="config.certificateProfiles"
+        name="config.allowedCertificateProfiles"
         labelIcon={t("possibleCertificateProfilesHelp")}
-        label={t("possibleCertificateProfiles")}
+        label={t("allowedCertificateProfiles")}
       />
     </>
   );

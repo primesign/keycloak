@@ -28,9 +28,9 @@ export const IdgGeneralSettings = ({ id }: { id: string }) => {
       <TextField field="displayName" label="displayName" />
       <DisplayOrder />
       <TextControl
-        name="config.certificateProfiles"
+        name="config.allowedCertificateProfiles"
         labelIcon={t("possibleCertificateProfilesHelp")}
-        label={t("possibleCertificateProfiles")}
+        label={t("allowedCertificateProfiles")}
       />
     </>
   );

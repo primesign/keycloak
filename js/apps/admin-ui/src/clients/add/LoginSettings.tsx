@@ -29,14 +29,14 @@ export const LoginSettings = ({
         labelIcon={t("identityProvidersHelp")}
       />
       <TextControl
-        name="attributes.certificateProfiles"
-        label={t("certificateProfiles")}
-        labelIcon={t("certificateProfilesHelp")}
+        name="attributes.allowedCertificateProfiles"
+        label={t("allowedCertificateProfiles")}
+        labelIcon={t("allowedCertificateProfilesHelp")}
       />
       <TextControl
-        name="attributes.certificateProfile"
-        label={t("defaultcertificateProfile")}
-        labelIcon={t("defaultcertificateProfileHelp")}
+        name="attributes.defaultCertificateProfile"
+        label={t("defaultCertificateProfile")}
+        labelIcon={t("defaultCertificateProfileHelp")}
       />
       <TextControl
         type="url"
