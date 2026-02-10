@@ -89,6 +89,7 @@ public class CachedRealm extends AbstractExtendableRevisioned {
     protected long quickLoginCheckMilliSeconds;
     protected int maxDeltaTimeSeconds;
     protected int failureFactor;
+    protected int maxSecondaryAuthFailures;
     //--- end brute force settings
 
     protected String defaultSignatureAlgorithm;
@@ -206,6 +207,7 @@ public class CachedRealm extends AbstractExtendableRevisioned {
         quickLoginCheckMilliSeconds = model.getQuickLoginCheckMilliSeconds();
         maxDeltaTimeSeconds = model.getMaxDeltaTimeSeconds();
         failureFactor = model.getFailureFactor();
+        maxSecondaryAuthFailures = model.getMaxSecondaryAuthFailures();
         //--- end brute force settings
 
         defaultSignatureAlgorithm = model.getDefaultSignatureAlgorithm();
@@ -408,6 +410,10 @@ public class CachedRealm extends AbstractExtendableRevisioned {
 
     public int getFailureFactor() {
         return failureFactor;
+    }
+
+    public int getMaxSecondaryAuthFailures() {
+        return maxSecondaryAuthFailures;
     }
 
     public boolean isVerifyEmail() {
