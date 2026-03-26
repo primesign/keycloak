@@ -39,6 +39,11 @@ export const LoginSettings = ({
         labelIcon={t("defaultCertificateProfileHelp")}
       />
       <TextControl
+        name="attributes.credentialCreationAuthDetailsSchema"
+        label={t("credentialCreationAuthDetailsSchema")}
+        labelIcon={t("credentialCreationAuthDetailsSchemaHelp")}
+      />
+      <TextControl
         type="url"
         name="rootUrl"
         label={t("rootUrl")}
