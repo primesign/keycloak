@@ -343,6 +343,12 @@ export default function ClientDetails() {
         client.attributes["allowedCertificateProfiles"],
       );
     }
+    if (client.attributes?.["credentialCreationAuthDetailsSchema"]) {
+      form.setValue(
+        "attributes.credentialCreationAuthDetailsSchema",
+        client.attributes["credentialCreationAuthDetailsSchema"],
+      );
+    }
     form.reset(form.getValues(), { keepDirty: false });
   };
 
