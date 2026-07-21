@@ -325,6 +325,12 @@ export default function ClientDetails() {
     if (client.attributes?.["accountId"]) {
       form.setValue("attributes.accountId", client.attributes["accountId"]);
     }
+    if (client.attributes?.["PADRES_NON_INTERACTIVE_ENABLED"]) {
+      form.setValue("attributes.PADRES_INTERACTIVE_ENABLED", client.attributes["PADRES_INTERACTIVE_ENABLED"]);
+    }
+    if (client.attributes?.["padresInteractiveEnabled"]) {
+      form.setValue("attributes.padresInteractiveEnabled", client.attributes["padresInteractiveEnabled"]);
+    }
     if (client.attributes?.["defaultCertificateProfile"]) {
       form.setValue(
         "attributes.defaultCertificateProfile",
