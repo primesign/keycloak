@@ -179,7 +179,7 @@ public class SessionCodeChecks {
         try {
             clientData = ClientData.decodeClientDataFromParameter(clientDataString);
         } catch (RuntimeException | IOException e) {
-            logger.debugf(e, "ClientData parameter in invalid format. ClientData parameter was %s", clientDataString);
+            logger.infof(e, "ClientData parameter in invalid format. ClientData parameter was %s", clientDataString);
             event.detail(Details.REASON, "Invalid client data: " + e.getMessage());
             event.error(Errors.INVALID_REQUEST);
             response = ErrorPage.error(session, null, Response.Status.BAD_REQUEST, Messages.INVALID_REQUEST);
