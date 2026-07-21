@@ -365,6 +365,12 @@ export default function ClientDetails() {
     if (client.attributes?.["accountId"]) {
       form.setValue("attributes.accountId", client.attributes["accountId"]);
     }
+    if (client.attributes?.["padresNonInteractiveEnabled"]) {
+      form.setValue("attributes.padresNonInteractiveEnabled", client.attributes["padresNonInteractiveEnabled"]);
+    }
+    if (client.attributes?.["padresInteractiveEnabled"]) {
+      form.setValue("attributes.padresInteractiveEnabled", client.attributes["padresInteractiveEnabled"]);
+    }
     if (client.attributes?.["defaultCertificateProfile"]) {
       form.setValue(
         "attributes.defaultCertificateProfile",
