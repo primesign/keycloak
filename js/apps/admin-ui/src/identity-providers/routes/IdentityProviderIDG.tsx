@@ -10,9 +10,9 @@ const AddIdgConnect = lazy(() => import("../add/AddIdgConnect"));
 export const IdentityProviderIdgRoute: AppRouteObject = {
   path: "/:realm/identity-providers/german-eid/add",
   element: <AddIdgConnect />,
-  breadcrumb: (t) => t("addIdgProvider"),
   handle: {
     access: "manage-identity-providers",
+    breadcrumb: (t) => t("addIdgProvider"),
   },
 };
 
