@@ -6,7 +6,7 @@ import { HelpItem, TextControl } from "@keycloak/keycloak-ui-shared";
 import { MultiLineInput } from "../../components/multi-line-input/MultiLineInput";
 import { convertAttributeNameToForm } from "../../util";
 import { FormFields } from "../ClientDetails";
-import {DefaultSwitchControl} from "../../components/SwitchControl";
+import { DefaultSwitchControl } from "../../components/SwitchControl";
 
 type LoginSettingsProps = {
   protocol?: string;
@@ -22,15 +22,16 @@ export const LoginSettings = ({
   const implicitFlowEnabled = watch("implicitFlowEnabled");
 
   return (
-    <><DefaultSwitchControl
-          name="attributes.padresNonInteractiveEnabled"
-          label={t("padresNonInteractiveEnabled")}
-          labelIcon={t("padresNonInteractiveEnabledHelp")}
+    <>
+      <DefaultSwitchControl
+        name="attributes.padresNonInteractiveEnabled"
+        label={t("padresNonInteractiveEnabled")}
+        labelIcon={t("padresNonInteractiveEnabledHelp")}
       />
       <DefaultSwitchControl
-          name="attributes.padresInteractiveEnabled"
-          label={t("padresInteractiveEnabled")}
-          labelIcon={t("padresInteractiveEnabledHelp")}
+        name="attributes.padresInteractiveEnabled"
+        label={t("padresInteractiveEnabled")}
+        labelIcon={t("padresInteractiveEnabledHelp")}
       />
       <TextControl
         type="url"
