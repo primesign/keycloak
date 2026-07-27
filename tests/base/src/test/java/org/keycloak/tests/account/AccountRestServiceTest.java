@@ -1435,7 +1435,7 @@ public class AccountRestServiceTest extends AbstractRestServiceTest {
                 .clientId("account")
                 .userId(getUser(manageConsentToken).getId())
                 .details(Details.GRANTED_CLIENT, appId)
-                .details(Details.SCOPE, expectedScopeDetails);
+                .hasScope(expectedScopeDetails);
         Assertions.assertNull(events.poll());
 
         //cleanup
