@@ -1,5 +1,9 @@
 import type ClientRepresentation from "@keycloak/keycloak-admin-client/lib/defs/clientRepresentation";
-import { useAlerts, useFetch } from "@keycloak/keycloak-ui-shared";
+import {
+  KeycloakSpinner,
+  useAlerts,
+  useFetch,
+} from "@keycloak/keycloak-ui-shared";
 import {
   AlertVariant,
   ButtonVariant,
@@ -25,7 +29,6 @@ import {
 } from "../components/confirm-dialog/ConfirmDialog";
 import { DownloadDialog } from "../components/download-dialog/DownloadDialog";
 import type { KeyValueType } from "../components/key-value-form/key-value-convert";
-import { KeycloakSpinner } from "@keycloak/keycloak-ui-shared";
 import { PermissionsTab } from "../components/permission-tab/PermissionTab";
 import { RolesList } from "../components/roles-list/RolesList";
 import {
@@ -368,13 +371,13 @@ export default function ClientDetails() {
     if (client.attributes?.["padresNonInteractiveEnabled"]) {
       form.setValue(
         "attributes.padresNonInteractiveEnabled",
-        client.attributes["padresNonInteractiveEnabled"],
+        client.attributes["padresNonInteractiveEnabled"]?.toString() === "true",
       );
     }
     if (client.attributes?.["padresInteractiveEnabled"]) {
       form.setValue(
         "attributes.padresInteractiveEnabled",
-        client.attributes["padresInteractiveEnabled"],
+        client.attributes["padresInteractiveEnabled"]?.toString() === "true",
       );
     }
     if (client.attributes?.["defaultCertificateProfile"]) {
