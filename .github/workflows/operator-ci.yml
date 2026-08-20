@@ -6,6 +6,7 @@ on:
       - main
       - dependabot/**
       - copilot/**
+      - fb-keycloak-update-26.7.2
   pull_request:
   workflow_dispatch:
 

@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - main
+      - fb-keycloak-update-26.7.2
 
 env:
   DEFAULT_JDK_VERSION: 21
